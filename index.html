@@ -768,7 +768,7 @@ let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
   ci:0,fl:false,shuffled:null,againPile:null,
   qi:0,sel:null,qs:0,streak:0,wrongAnswers:[],
   heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
-  err:'',proCodeErr:'',proCodeOk:'',authLoading:false,showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
+  err:'',proCodeErr:'',proCodeOk:'',showProCode:false,authLoading:false,showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
 
 const lp=()=>{var c=aC();if(!c)return 0;return Math.min(100,Math.round(xpInLevel(c.xp||0)/xpForThisLevel(c.lv||1)*100));};
 async function saveUser(){if(U)await sbSaveUser();}
@@ -1757,14 +1757,17 @@ function paywallH(){
   h+='<div style="font-size:8px;color:var(--tx3);margin-top:8px;text-align:center">Secure payment via Stripe</div>';
   h+='</div></div>';
   // Already have code
-  h+='<div style="margin-top:16px;background:#0e0818;border:2px solid #4020a0;border-radius:10px;padding:14px">';
-  h+='<div class="pf" style="font-size:8px;color:var(--tx3);margin-bottom:8px">HAVE A PRO CODE?</div>';
-  h+='<div style="display:flex;gap:8px">';
-  h+='<input id="procode" placeholder="Enter code..." style="flex:1;font-size:11px"/>';
-  h+='<button class="btn gc pf" style="font-size:7px;width:auto;padding:8px 12px" onclick="redeemCode()">APPLY</button>';
-  h+='</div>';
-  if(S.proCodeErr)h+='<div class="er" style="margin-top:6px">'+S.proCodeErr+'</div>';
-  if(S.proCodeOk)h+='<div style="color:#60ff90;font-size:10px;margin-top:6px">✓ '+S.proCodeOk+'</div>';
+  // Collapsible promo code
+  h+='<div style="margin-top:12px;text-align:center">';
+  h+='<button onclick="S.showProCode=!S.showProCode;draw()" style="background:none;border:none;color:var(--tx3);font-size:9px;cursor:pointer;text-decoration:underline">Have a promo code?</button>';
+  if(S.showProCode){
+    h+='<div style="margin-top:8px;display:flex;gap:8px">';
+    h+='<input id="procode" placeholder="Enter code..." style="flex:1;font-size:11px"/>';
+    h+='<button class="btn gc pf" style="font-size:7px;width:auto;padding:8px 12px" onclick="redeemCode()">APPLY</button>';
+    h+='</div>';
+    if(S.proCodeErr)h+='<div class="er" style="margin-top:6px">'+S.proCodeErr+'</div>';
+    if(S.proCodeOk)h+='<div style="color:#60ff90;font-size:10px;margin-top:6px">✓ '+S.proCodeOk+'</div>';
+  }
   h+='</div>';
   h+='</div>';
   return h;
