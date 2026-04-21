@@ -695,7 +695,19 @@ async function generateQuizQuestions(dung,diffConfig,isFinal,char){
   if(!source&&dung.story)source=dung.story.title+'. '+(dung.story.intro||'');
   if(!source)source='General study material.';
   var sysPrompt=isMath?'You are a math quiz generator. Output ONLY valid JSON. Include step-by-step solutions. No markdown, no code fences.':'You are a quiz generator. Output ONLY valid JSON. No markdown, no code fences.';
-  var userPrompt=['VARIATION SEEDS: '+seed1+', '+seed2+', '+seed3,diffPart,mathPart,'SOURCE MATERIAL:\n'+source,(isMath?'Return ONLY: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0,"solution":"Step 1:..."}]}':'Return ONLY: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}'),'Generate EXACTLY '+qCount+' questions. correct is 0-3.'].filter(Boolean).join('\n\n');
+  // Strong randomization instructions
+  var angleOptions=['Test understanding of causes','Test definitions','Ask for examples','Test ability to compare','Ask about consequences','Test application to new scenarios','Ask why something matters','Test common misconceptions'];
+  var chosenAngles=angleOptions.sort(function(){return Math.random()-.5;}).slice(0,3).join(', ');
+  var userPrompt=[
+    'RANDOM SEEDS (use to vary questions every run): '+seed1+'-'+seed2+'-'+seed3,
+    'QUESTION ANGLES TO USE THIS RUN: '+chosenAngles,
+    'STRICT RULE: Do NOT repeat question phrasings from previous runs. Use the seeds and angles to generate a completely fresh set each time.',
+    diffPart,
+    mathPart,
+    'SOURCE MATERIAL:\n'+source,
+    (isMath?'Return ONLY valid JSON: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0,"solution":"Step 1:...Answer:..."}]}':'Return ONLY valid JSON: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}'),
+    'Generate EXACTLY '+qCount+' questions. correct is 0-3. Make each question test a DIFFERENT concept or angle from the source material. Vary question style: some definitional, some applied, some analytical.'
+  ].filter(Boolean).join('\n\n');
   var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:3000,system:sysPrompt,messages:[{role:'user',content:userPrompt}]})});
   if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
   var data=await resp.json();
