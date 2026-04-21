@@ -1736,13 +1736,13 @@ function friendlyApiError(err){
   if(msg.indexOf('401')>=0||msg.indexOf('auth')>=0||msg.indexOf('API key')>=0){
     return 'API key issue. Let b know!';
   }
-  if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0||msg.indexOf('network')>=0){
-    return 'No internet connection. Check your connection and try again.';
+  if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0||msg.indexOf('Load failed')>=0||msg.indexOf('network')>=0){
+    return 'Connection error — could not reach Anthropic. Raw error: '+msg;
   }
   if(msg.indexOf('503')>=0||msg.indexOf('502')>=0||msg.indexOf('500')>=0){
     return 'Anthropic is having issues right now. Try again in a few minutes.';
   }
-  return msg;
+  return 'API error: '+msg;
 }
 
 function goTo(sc){
