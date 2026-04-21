@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/press-start-2p@5.0.0/index.css">
 <style>
 
-
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#12093a;--bg2:#1a1050;--bg3:#221668;--bd1:#7040c8;--bd2:#3a1e80;--bdg:#c89018;--tx1:#fff;--tx2:#f0d060;--tx3:#9878c8;--gold:#ffd040;}
 body{background:var(--bg);background-image:radial-gradient(ellipse at 20% 20%,#2a1060 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,#1a2060 0%,transparent 50%);color:var(--tx1);font-family:monospace;min-height:100vh;padding:16px;}
@@ -52,8 +51,8 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 .nm{font-size:6px;color:var(--tx2);margin-top:4px;display:block;line-height:1.5;font-family:'Press Start 2P',monospace;}
 .pr-badge{display:inline-block;font-size:6px;background:#1a0840;border:1px solid #8040d0;color:#c080ff;padding:2px 5px;border-radius:2px;margin-top:3px;}
 /* DIFFICULTY */
-.diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
-.diff-card{border:2px solid;border-radius:8px;padding:8px 4px;cursor:pointer;text-align:center;overflow:hidden;transition:filter .15s,transform .1s;}
+.diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px;}
+.diff-card{border:2px solid;border-radius:8px;padding:12px 8px;cursor:pointer;text-align:center;transition:filter .15s,transform .1s;}
 .diff-card:hover{filter:brightness(1.2);transform:translateY(-1px);}
 .diff-card.on{filter:brightness(1.3);}
 .diff-e{background:#082818;border-color:#20a050;color:#50ff90;}
@@ -159,8 +158,8 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 .col{display:flex;flex-direction:column;gap:9px;}
 .f1{flex:1;}
 .bob{animation:bob 2.5s ease-in-out infinite;}
-.heart{display:inline-block;font-size:20px;color:#ff2020;filter:drop-shadow(0 0 4px #ff000088);line-height:1;}
-.heart.lost{color:#1a0808;filter:none;opacity:.25;}
+.heart{display:inline-block;font-size:14px;}
+.heart.lost{opacity:.25;filter:grayscale(1);}
 /* UPLOAD DROP ZONE */
 .dropzone{background:#0c0830;border:2px dashed #5030a0;border-radius:10px;padding:22px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s,background .2s;}
 .dropzone:hover{border-color:#a060ff;background:#100c38;}
@@ -171,55 +170,6 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fadein{animation:fadeIn .4s ease-out;}
 .shaking{animation:shake .5s;}
-
-
-/* ── DAILY QUESTS ── */
-.quest-card{background:#140a38;border:2px solid #5030a0;border-radius:9px;padding:12px;margin-bottom:8px;display:flex;gap:10px;align-items:center;}
-.quest-card.done{border-color:#30c060;background:#082818;}
-.quest-icon{font-size:22px;min-width:30px;text-align:center;}
-.quest-info{flex:1;}
-.quest-title{font-size:11px;color:#fff;margin-bottom:4px;}
-.quest-prog{height:8px;background:#0a0620;border-radius:4px;overflow:hidden;margin-top:4px;}
-.quest-fill{height:100%;border-radius:4px;transition:width .4s;}
-.quest-reward{font-size:9px;color:var(--gold);margin-top:3px;}
-/* ── ACHIEVEMENTS ── */
-.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.ach{background:#140a38;border:2px solid #2a1060;border-radius:8px;padding:10px;text-align:center;transition:border-color .2s;}
-.ach.earned{border-color:var(--bdg);background:#1e1408;}
-.ach.earned:hover{border-color:var(--gold);}
-.ach-icon{font-size:24px;margin-bottom:5px;}
-.ach-name{font-size:7px;line-height:1.5;color:var(--tx2);font-family:'Press Start 2P',monospace;}
-.ach-desc{font-size:9px;color:var(--tx3);margin-top:3px;line-height:1.5;}
-/* ── MASTERY STARS ── */
-.stars{display:flex;gap:2px;margin-top:3px;}
-.star{font-size:11px;opacity:.2;}
-.star.earned{opacity:1;}
-/* ── SPELLS ── */
-.spell-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
-.spell-card{background:#140a38;border:2px solid #5030a0;border-radius:9px;padding:10px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;}
-.spell-card:hover{border-color:#a060ff;background:#1e1060;}
-.spell-card.on{border-color:var(--gold);background:#2a1a08;}
-.spell-card.dis{opacity:.35;cursor:not-allowed;}
-.spell-icon{font-size:28px;margin-bottom:5px;}
-.spell-btn{position:fixed;bottom:80px;right:16px;z-index:20;background:#2a1060;border:2px solid #a060ff;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;box-shadow:0 0 16px rgba(160,96,255,.4);}
-.spell-btn.used{opacity:.3;cursor:not-allowed;}
-/* ── TIMER ── */
-.timer-bar{height:6px;border-radius:3px;margin-bottom:10px;overflow:hidden;background:#0a0620;border:1px solid #3a1e80;}
-.timer-fill{height:100%;border-radius:3px;transition:width .1s linear;}
-.timer-num{font-size:14px;font-family:'Press Start 2P',monospace;text-align:center;margin-bottom:8px;}
-/* ── GAUNTLET ── */
-.gauntlet-chain{display:flex;align-items:center;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px;}
-.gc-node{background:#140a38;border:2px solid #5030a0;border-radius:7px;padding:6px 10px;text-align:center;min-width:60px;flex-shrink:0;}
-.gc-node.done{border-color:#30c060;background:#082818;}
-.gc-node.active{border-color:var(--gold);background:#2a1a08;}
-/* ── CALENDAR ── */
-.cal-grid{display:flex;gap:3px;flex-wrap:wrap;}
-.cal-day{width:14px;height:14px;border-radius:2px;background:#0a0620;}
-/* ── UNLOCK POPUP ── */
-.unlock-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0840;border:3px solid var(--gold);border-radius:14px;padding:24px 30px;text-align:center;z-index:100;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);max-width:280px;box-shadow:0 0 40px rgba(255,208,64,.4);}
-@keyframes popIn{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-/* ── SHARE CARD ── */
-.share-card{background:#0c0830;border:2px solid #8040d0;border-radius:10px;padding:14px;margin-bottom:12px;font-family:monospace;font-size:11px;color:#c0a8ff;line-height:1.8;white-space:pre-wrap;word-break:break-all;}
 
 </style>
 </head>
@@ -247,12 +197,10 @@ const SPRITES={
 
 
 async function stGet(k){try{const r=await window.storage.get(k);return r?r.value:null;}catch(e){return null;}}
-function getApiKey(){return localStorage.getItem('rbApiKey')||'';}
-function setApiKey(k){localStorage.setItem('rbApiKey',k);}
 async function stSet(k,v){try{await window.storage.set(k,v);}catch(e){}}
 async function stDel(k){try{await window.storage.delete(k);}catch(e){}}
 
-const XL=100,FREE_DUNGEONS=3,FREE_CHARS=1,FINAL_BOSS_REQUIRED=5;
+const XL=100,FREE_DUNGEONS=3,FINAL_BOSS_REQUIRED=5;
 const TNAME=lv=>lv<3?'Apprentice':lv<6?'Journeyman':lv<10?'Expert':'Legendary';
 const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
 const CLASSES=[
@@ -261,255 +209,35 @@ const CLASSES=[
   {id:'ranger',name:'Ranger',pro:true},{id:'rogue',name:'Rogue',pro:true},
 ];
 const DIFF={
-  easy:  {label:'EASY',  hp:4,qCount:4, xpMult:.8, color:'#20a050',bg:'#082818',desc:'4 hearts|4 questions|+0.8x XP'},
-  normal:{label:'NORMAL',hp:3,qCount:7, xpMult:1,  color:'#6030c0',bg:'#181030',desc:'3 hearts|7 questions|+1x XP'},
-  hard:  {label:'HARD',  hp:2,qCount:12,xpMult:1.5,color:'#c02020',bg:'#280808',desc:'2 hearts|12 questions|+1.5x XP'},
+  easy:{label:'EASY',hp:5,bossHpMult:1,xpMult:.8,color:'#20a050',bg:'#082818',hint:true,desc:'5 hero HP\nSimpler questions\nHints available'},
+  normal:{label:'NORMAL',hp:3,bossHpMult:1,xpMult:1,color:'#6030c0',bg:'#181030',hint:false,desc:'3 hero HP\nBalanced questions\nNo hints'},
+  hard:{label:'HARD',hp:2,bossHpMult:1.5,xpMult:1.5,color:'#c02020',bg:'#280808',hint:false,desc:'2 hero HP\nTricky questions\n+50% XP reward'},
 };
 
-function getRank(p){
-  if(p>=100)return{label:'S',name:'PERFECT', color:'#e8d0ff',bg:'#2a0850',icon:'&#x1F451;',xp:100};
-  if(p>=90) return{label:'A',name:'CHAMPION',color:'#ffd040',bg:'#2a1e00',icon:'&#x2B50;', xp:60};
-  if(p>=80) return{label:'B',name:'WARRIOR', color:'#60ffaa',bg:'#002a14',icon:'&#x1F6E1;',xp:35};
-  if(p>=70) return{label:'C',name:'CLEARED', color:'#c080ff',bg:'#1a0840',icon:'&#x2694;', xp:15};
-  if(p>=50) return{label:'D',name:'CLOSE',   color:'#ff8070',bg:'#280808',icon:'&#x1F4A8;',xp:0};
-  return         {label:'F',name:'DEFEATED', color:'#ff4040',bg:'#1a0000',icon:'&#x1F480;',xp:0};
-}
-function getDiffRecord(d,diff){return(d.scores&&d.scores[diff])||{best:0,attempts:0};}
-function rankBadge(p){if(!p)return'';var r=getRank(p);return'<span class="pf" style="font-size:6px;background:'+r.bg+';color:'+r.color+';border:1px solid '+r.color+';border-radius:2px;padding:1px 4px">'+r.label+'</span>';}
-
-// ── ACHIEVEMENTS ──
-const ACHIEVEMENTS=[
-  {id:'first_clear',  icon:'&#x2694;', name:'First Blood',   desc:'Clear any dungeon',         check:function(u){return anyDungeonCleared(u);}},
-  {id:'hard_clear',   icon:'&#x1F525;',name:'Iron Will',     desc:'Clear a dungeon on Hard',   check:function(u){return anyHardCleared(u);}},
-  {id:'perfect',      icon:'&#x1F451;',name:'Perfectionist', desc:'Score 100% on any quiz',    check:function(u){return u._stats&&u._stats.perfects>0;}},
-  {id:'streak7',      icon:'&#x1F525;',name:'Streak Lord',   desc:'7-day study streak',        check:function(u){return(u.streak||0)>=7;}},
-  {id:'streak30',     icon:'&#x1F31F;',name:'Unstoppable',   desc:'30-day study streak',       check:function(u){return(u.streak||0)>=30;}},
-  {id:'s_rank',       icon:'&#x1F451;',name:'S-Ranker',      desc:'Achieve S rank on a quiz',  check:function(u){return u._stats&&u._stats.sRanks>0;}},
-  {id:'combo10',      icon:'&#x26A1;', name:'Combo King',    desc:'10-answer combo streak',    check:function(u){return u._stats&&u._stats.maxCombo>=10;}},
-  {id:'quests7',      icon:'&#x1F4CB;',name:'Devoted',       desc:'Complete 7 days of quests', check:function(u){return(u._stats&&u._stats.questDays||0)>=7;}},
-  {id:'three_stars',  icon:'&#x2B50;', name:'Dungeon Master',desc:'3-star any dungeon',        check:function(u){return anyThreeStars(u);}},
-  {id:'gauntlet_win', icon:'&#x1F409;',name:'Gauntlet Hero', desc:'Complete the Boss Gauntlet',check:function(u){return u._stats&&u._stats.gauntletWins>0;}},
-  {id:'lv10',         icon:'&#x1F9D9;',name:'Archmage',      desc:'Reach Level 10',            check:function(u){return(u.lv||1)>=10;}},
-  {id:'five_spells',  icon:'&#x1F52E;',name:'Spellcaster',   desc:'Use a spell 5 times',       check:function(u){return(u._stats&&u._stats.spellsUsed||0)>=5;}},
-];
-function anyDungeonCleared(u){
-  if(!u.chars)return false;
-  return Object.values(u.chars).some(function(c){return c.dungeons&&c.dungeons.some(function(d){return(d.bestScore||0)>=70;});});
-}
-function anyHardCleared(u){
-  if(!u.chars)return false;
-  return Object.values(u.chars).some(function(c){return c.dungeons&&c.dungeons.some(function(d){return d.scores&&d.scores.hard&&d.scores.hard.best>=70;});});
-}
-function anyThreeStars(u){
-  if(!u.chars)return false;
-  return Object.values(u.chars).some(function(c){return c.dungeons&&c.dungeons.some(function(d){return getMastery(d)>=3;});});
-}
-function getMastery(d){
-  if(!d.scores)return(d.bestScore||0)>=70?1:0;
-  var m=0;
-  if((d.scores.normal&&d.scores.normal.best||0)>=70)m=Math.max(m,1);
-  if((d.scores.hard&&d.scores.hard.best||0)>=70)m=Math.max(m,2);
-  if((d.scores.hard&&d.scores.hard.best||0)>=90)m=Math.max(m,3);
-  return m;
-}
-function masteryStars(d){
-  var m=getMastery(d);
-  var s='<div class="stars">';
-  for(var i=0;i<3;i++)s+='<span class="star'+(i<m?' earned':'')+'">&#x2B50;</span>';
-  s+='</div>';return s;
-}
-function checkAchievements(){
-  if(!U)return[];
-  if(!U.achievements)U.achievements=[];
-  var newOnes=[];
-  ACHIEVEMENTS.forEach(function(a){
-    if(U.achievements.indexOf(a.id)<0&&a.check(U)){
-      U.achievements.push(a.id);newOnes.push(a);
-    }
-  });
-  if(newOnes.length)saveUser();
-  return newOnes;
-}
-
-// ── TITLES ──
-const TITLES=[
-  {id:'apprentice',  name:'the Apprentice',   req:'streak7'},
-  {id:'iron_will',   name:'of Iron Will',     req:'hard_clear'},
-  {id:'perfectionist',name:'the Perfectionist',req:'perfect'},
-  {id:'unstoppable', name:'the Unstoppable',  req:'streak30'},
-  {id:'champion',    name:'the Champion',     req:'s_rank'},
-  {id:'combo_king',  name:'Combo King',       req:'combo10'},
-  {id:'dungeon_master',name:'Dungeon Master', req:'three_stars'},
-  {id:'gauntlet_hero',name:'Gauntlet Hero',   req:'gauntlet_win'},
-  {id:'archmage',    name:'the Archmage',     req:'lv10'},
-];
-function getUnlockedTitles(){
-  if(!U||!U.achievements)return[];
-  return TITLES.filter(function(t){return U.achievements.indexOf(t.req)>=0;});
-}
-function getActiveTitle(){
-  if(!U||!U.activeTitle)return null;
-  return TITLES.find(function(t){return t.id===U.activeTitle;})||null;
-}
-
-// ── DAILY QUESTS ──
-const QUEST_POOL=[
-  {id:'score_b',    icon:'&#x1F6E1;',title:'Warrior\'s Trial',  desc:'Score B rank or higher',  type:'score_rank',goal:80,xp:80},
-  {id:'score_a',    icon:'&#x2B50;', title:'Champion\'s Trial', desc:'Score A rank or higher',  type:'score_rank',goal:90,xp:120},
-  {id:'study_10',   icon:'&#x1F4D6;',title:'Scholar\'s Path',   desc:'Study 10 flashcards',     type:'study_cards',goal:10,xp:50},
-  {id:'study_20',   icon:'&#x1F4DA;',title:'Deep Study',        desc:'Study 20 flashcards',     type:'study_cards',goal:20,xp:80},
-  {id:'clear_hard', icon:'&#x1F525;',title:'Hard Mode Hero',    desc:'Clear a Hard quiz',       type:'clear_diff', goal:'hard',xp:100},
-  {id:'no_miss',    icon:'&#x1F3AF;',title:'Perfect Defense',   desc:'Finish a quiz with full HP',type:'full_hp',goal:1,xp:90},
-  {id:'combo5',     icon:'&#x26A1;', title:'Combo Seeker',      desc:'Get a 5-answer combo',    type:'combo',goal:5,xp:60},
-  {id:'use_spell',  icon:'&#x1F52E;',title:'Spellbinder',       desc:'Use a spell in a quiz',   type:'spell',goal:1,xp:40},
-  {id:'any_clear',  icon:'&#x2694;', title:'Dungeon Delver',    desc:'Clear any dungeon',        type:'any_clear',goal:1,xp:60},
-  {id:'win_streak', icon:'&#x1F525;',title:'On Fire',           desc:'Win 2 quizzes in a row',  type:'win_streak',goal:2,xp:70},
-];
-function today(){return new Date().toISOString().slice(0,10);}
-function getDailyQuests(){
-  if(!U)return[];
-  if(!U.dailyQuests||U.dailyQuests.date!==today()){
-    // Pick 3 random quests for today using date as seed
-    var seed=today().replace(/-/g,'');
-    var pool=QUEST_POOL.slice();
-    // Simple seeded shuffle
-    var s=parseInt(seed)%997;
-    for(var i=pool.length-1;i>0;i--){s=(s*31+17)%997;var j=s%( i+1);var tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;}
-    U.dailyQuests={date:today(),quests:pool.slice(0,3).map(function(q){return{id:q.id,progress:0,done:false};})};
-    saveUser();
-  }
-  return U.dailyQuests.quests.map(function(q){
-    var def=QUEST_POOL.find(function(p){return p.id===q.id;})||QUEST_POOL[0];
-    return Object.assign({},def,q);
-  });
-}
-function updateQuest(type,val){
-  var quests=getDailyQuests();var changed=false;
-  quests.forEach(function(q){
-    if(q.done)return;
-    var match=false;
-    if(q.type===type){
-      if(type==='score_rank'&&val>=q.goal)match=true;
-      else if(type==='study_cards'){q.progress=(q.progress||0)+val;if(q.progress>=q.goal)match=true;}
-      else if(type==='clear_diff'&&val===q.goal)match=true;
-      else if(type==='full_hp'&&val>=q.goal)match=true;
-      else if(type==='combo'){q.progress=Math.max(q.progress||0,val);if(q.progress>=q.goal)match=true;}
-      else if(type==='spell'&&val>=q.goal)match=true;
-      else if(type==='any_clear'&&val>=q.goal)match=true;
-      else if(type==='win_streak'){q.progress=(q.progress||0)+1;if(q.progress>=q.goal)match=true;}
-    }
-    if(match&&!q.done){
-      q.done=true;changed=true;
-      U.xp+=q.xp;U.lv=Math.floor(U.xp/XL)+1;
-      if(!U._stats)U._stats={};
-      U._stats.questDays=(U._stats.questDays||0);
-      // Check if all done
-      var allDone=quests.every(function(x){return x.done;});
-      if(allDone){U._stats.questDays=(U._stats.questDays||0)+1;U.xp+=100;U.lv=Math.floor(U.xp/XL)+1;}
-    }
-    // Sync back
-    U.dailyQuests.quests.forEach(function(dq){if(dq.id===q.id){dq.progress=q.progress;dq.done=q.done;}});
-  });
-  if(changed)saveUser();
-}
-
-// ── SPELLS ──
-const SPELLS=[
-  {id:'skip',   icon:'&#x23ED;', name:'SKIP',    desc:'Skip one question, no HP loss',  lvReq:5},
-  {id:'shield', icon:'&#x1F6E1;',name:'SHIELD',  desc:'Block the next HP loss',         lvReq:10},
-  {id:'double', icon:'&#x26A1;', name:'DOUBLE',  desc:'Next correct = double boss dmg', lvReq:15},
-];
-function getUnlockedSpells(){return SPELLS.filter(function(s){return(U&&U.lv||1)>=s.lvReq;});}
-
-// ── STUDY CALENDAR ──
-function getStudyDays(){
-  if(!U||!U.studyLog)return{};
-  return U.studyLog;
-}
-function logStudyDay(){
-  if(!U)return;
-  if(!U.studyLog)U.studyLog={};
-  var t=today();
-  U.studyLog[t]=(U.studyLog[t]||0)+1;
-  saveUser();
-}
-
-// ── HELPERS ──
 function sp(cls,gen,h){
-  var k=cls+'_'+gen,src=SPRITES[k]||SPRITES[cls+'_m']||'';
+  const k=cls+'_'+gen,src=SPRITES[k]||SPRITES[cls+'_m']||'';
   return '<img src="'+src+'" style="height:'+h+'px;image-rendering:pixelated;display:block;margin:0 auto;" alt="'+cls+'"/>';
 }
 function bossSprite(name,h){
-  var k='boss_'+name.toLowerCase().replace(/\s+/g,'_');
-  if(SPRITES[k])return'<img src="'+SPRITES[k]+'" style="height:'+h+'px;image-rendering:pixelated;" alt="'+name+'"/>';
-  var icons={'Shadow Drake':'&#x1F409;','Void Lich':'&#x1F480;','Iron Golem':'&#x1F5FF;','Storm Titan':'&#x26A1;','Plague Wraith':'&#x1F47B;','Frost Specter':'&#x2744;','Ember Demon':'&#x1F525;','Chaos Knight':'&#x1F9DF;'};
-  return'<div style="font-size:'+(h*.55)+'px;line-height:1">'+(icons[name]||'&#x1F9CC;')+'</div>';
+  const k='boss_'+name.toLowerCase().replace(/\s+/g,'_');
+  if(SPRITES[k])return '<img src="'+SPRITES[k]+'" style="height:'+h+'px;image-rendering:pixelated;" alt="'+name+'"/>';
+  const icons={'Shadow Drake':'&#x1F409;','Void Lich':'&#x1F480;','Iron Golem':'&#x1F5FF;','Bone Wyvern':'&#x1F4A8;','Storm Titan':'&#x26A1;','Plague Wraith':'&#x1F47B;','Frost Specter':'&#x2744;','Ember Demon':'&#x1F525;','Venom Hydra':'&#x1F40D;','Chaos Knight':'&#x1F9DF;','THE FINAL EXAM':'&#x1F451;','Arcane Examiner':'&#x1F4DC;'};
+  return '<div style="font-size:'+(h*.55)+'px;line-height:1">'+(icons[name]||'&#x1F9CC;')+'</div>';
 }
+function today(){return new Date().toISOString().slice(0,10);}
 function streakColor(n){return n>=30?'#ff4040':n>=14?'#ff7020':n>=7?'#ffaa20':'#ff7040';}
+
 function aC(){return U&&U.chars&&U.chars[U.activeCls]?U.chars[U.activeCls]:null;}
-function aD(){const c=aC();if(!c)return null;return S.isFinal?c.finalBoss:c.dungeons[S.di]||null;}
+function aD(){const c=aC();if(!c)return null;const d=S.isFinal?c.finalBoss:c.dungeons[S.di];return d||null;}
 function canAdd(){const c=aC();if(!c)return false;return U.isPro||c.dungeons.length<FREE_DUNGEONS;}
 function clsInfo(id){return CLASSES.find(function(c){return c.id===id;})||CLASSES[0];}
 function clearedCount(){const c=aC();if(!c)return 0;return c.dungeons.filter(function(d){return(d.bestScore||0)>=70;}).length;}
 function finalBossUnlocked(){return clearedCount()>=FINAL_BOSS_REQUIRED;}
 function curDiff(){return DIFF[S.difficulty]||DIFF.normal;}
 
-// ── NAV HELPERS (avoid quote conflicts) ──
-function gotoHome(){goTo('home');}
-function gotoHero(){goTo('hero');}
-function gotoUpload(){goTo('upload');}
-function gotoCharSelect(){goTo('char-select');}
-function gotoPaywall(){goTo('paywall');}
-function gotoApiKey(){goTo('apikey');}
-function gotoAuth(){goTo('auth');}
-
-async function testApiKey(){
-  S.testResult=null;draw();
-  var key=getApiKey();
-  if(!key){S.testResult={ok:false,msg:'No key saved yet.'};draw();return;}
-  try{
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'anthropic-dangerous-allow-browser':'true',
-        'x-api-key':key
-      },
-      body:JSON.stringify({
-        model:'claude-haiku-4-5-20251001',
-        max_tokens:10,
-        messages:[{role:'user',content:'Hi'}]
-      })
-    });
-    var data=await resp.json();
-    if(resp.ok&&data.content){
-      S.testResult={ok:true,msg:'&#x2713; Connection works! Key is valid and credits are active.'};
-    }else if(data.error){
-      S.testResult={ok:false,msg:'API error: '+data.error.message+' (type: '+data.error.type+')'};
-    }else{
-      S.testResult={ok:false,msg:'Unexpected response: '+JSON.stringify(data).slice(0,100)};
-    }
-  }catch(e){
-    S.testResult={ok:false,msg:'Fetch failed: '+e.message+' — Browser may be blocking the request.'};
-  }
-  draw();
-}
-
-function gotoQuests(){goTo('quests');}
-function gotoAchievements(){goTo('achievements');}
-function gotoCalendar(){goTo('calendar');}
-function gotoSpells(){S.spellScreen='pre-quiz';goTo('spells');}
-function gotoTitles(){goTo('titles');}
-function lvupContinue(){var ps=S.prevScreen||'home';if(ps==='quiz'){S.screen='quiz';draw();}else{goTo(ps);}}
-
 function setTab(t){S.authTab=t;S.err='';draw();}
 function pickGenCC(g){S.selGen=g;draw();}
-function pickCls(id){
-  var c=clsInfo(id);
-  if(c.pro&&!U.isPro){goTo('paywall');return;}
-  if(U.chars&&U.chars[id]&&U.chars[id].charName&&U.activeCls!==id){return;} // already claimed by another slot
-  S.selCls=id;draw();
-}
+function pickCls(id){var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}S.selCls=id;draw();}
 function obNext(){S.obSlide=(S.obSlide||0)+1;if(S.obSlide>=3){S.screen='auth';S.obSlide=0;}draw();}
 function claimCls(id){
   var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}
@@ -518,29 +246,108 @@ function claimCls(id){
   U.activeCls=id;S.selCls=id;S.selGen=U.chars[id].gender||'m';S.charName=U.chars[id].charName||'';
   S.screen='char-create';draw();
 }
-function switchCls(id){if(!U.chars||!U.chars[id])return;U.activeCls=id;saveUser();S.screen='hero';draw();}
+function switchCls(id){if(!U.chars||!U.chars[id])return;U.activeCls=id;saveUser();draw();}
 function enterDungeon(i,isFinal){S.di=i;S.isFinal=!!isFinal;goTo('dungeon');}
-function studyDungeon(i){S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;S.speedMode=false;goTo('fc');}
+function studyDungeon(i){S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;goTo('fc');}
+function quizGenH(){
+  var dv=DIFF[S.diffChosen||S.difficulty||'normal'];
+  var h=tb();
+  h+='<div class="la"><div class="spin">&#x2694;</div>';
+  h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:10px">PREPARING BATTLE...</div>';
+  h+='<div style="font-size:10px;color:'+dv.color+';margin-bottom:14px">'+dv.label+' MODE</div>';
+  h+='<div class="lm">Loading questions...<br>Almost ready...</div></div>';
+  return h;
+}
+
+async function generateQuizQuestions(dung,diffConfig,isFinal,char){
+  var isMath=char&&char.subject&&/math|algebra|calculus|geometry|statistics|trig|arithmetic/i.test(char.subject);
+  var qCount=diffConfig.qCount||'6-8';
+  var diffLabel=diffConfig.label||'NORMAL';
+  var diffPart='';
+  if(diffLabel==='EASY'){diffPart='EASY: Clear simple questions. Wrong answers obviously wrong. No trick questions.';}
+  else if(diffLabel==='NORMAL'){diffPart='NORMAL: Mix of straightforward and moderate. Plausible but clearly wrong distractors.';}
+  else{diffPart='HARD: Tricky, edge cases, very plausible wrong answers, requires deep knowledge.';}
+  var mathPart='';
+  if(isMath){
+    var r1=Math.floor(Math.random()*20)+2;
+    var r2=Math.floor(Math.random()*15)+3;
+    var r3=Math.floor(Math.random()*10)+1;
+    if(diffLabel==='EASY'){mathPart='MATH EASY: New one-step equations, e.g. x+'+r1+'='+(r1+r2)+'. Never copy from notes.';}
+    else if(diffLabel==='NORMAL'){mathPart='MATH NORMAL: New two-step equations e.g. '+r3+'x+'+r1+'='+(r3*r2+r1)+'. Never copy from notes.';}
+    else{mathPart='MATH HARD: New complex multi-step problems using seeds '+r1+','+r2+','+r3+'. Never copy from notes.';}
+  }
+  var source='';
+  if(dung.notes&&dung.notes.trim()){source=dung.notes.slice(0,3000);}
+  else if(dung.story){source=dung.story.title+'. '+(dung.story.intro||'');}
+  else{source='General study material.';}
+  var parts=['Generate '+qCount+' quiz questions. Each run must be different.',diffPart];
+  if(mathPart)parts.push(mathPart);
+  parts.push('Source material: '+source);
+  parts.push('Return ONLY raw JSON: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}');
+  parts.push('Generate exactly '+qCount+' questions. correct is 0-3.');
+  var prompt=parts.filter(function(p){return p.trim();}).join(' ');
+  var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:prompt}]})
+  });
+  if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
+  var data=await resp.json();
+  if(data.error)throw new Error(data.error.message||'API error');
+  var raw=data.content.map(function(b){return b.text||'';}).join('');
+  var si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
+  if(si<0||ei<0)throw new Error('No JSON in response');
+  var parsed=JSON.parse(raw.slice(si,ei+1));
+  if(!parsed.quiz||!parsed.quiz.length)throw new Error('Empty quiz response');
+  return parsed.quiz;
+}
+
+async function startQuiz(i,isFinal){
+  S.di=i;S.isFinal=!!isFinal;S.diffChosen=S.difficulty;
+  var d=curDiff();
+  S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];
+  S.heroHP=d.hp;S.heroMaxHP=d.hp;
+  S.bossMaxHP=100;S.bossHP=100;S.liveQuiz=null;
+  var char=aC();
+  if(!char){alert('No character found.');S.screen='home';draw();return;}
+  var dung=isFinal?char.finalBoss:char.dungeons[i];
+  if(!dung){alert('Dungeon '+i+' not found ('+char.dungeons.length+' total).');S.screen='home';draw();return;}
+  // Use stored questions immediately — shuffle for variety
+  if(dung.quiz&&dung.quiz.length){
+    var shuffled=dung.quiz.slice();
+    for(var ii=shuffled.length-1;ii>0;ii--){
+      var jj=Math.floor(Math.random()*(ii+1));
+      var tmp=shuffled[ii];shuffled[ii]=shuffled[jj];shuffled[jj]=tmp;
+    }
+    S.liveQuiz=shuffled;
+    S.screen='quiz';
+    draw();
+    return;
+  }
+  // No stored questions — call API
+  S.screen='quizgen';draw();
+  try{
+    var fresh=await generateQuizQuestions(dung,d,isFinal,char);
+    if(!fresh||!fresh.length)throw new Error('No questions returned');
+    S.liveQuiz=fresh;S.screen='quiz';
+  }catch(ex){
+    alert('Could not start quiz: '+ex.message);S.screen='dungeon';
+  }
+  draw();
+}
+
 function pickDiff(d){S.difficulty=d;draw();}
 function removeFile(i){if(S.uploadFiles)S.uploadFiles.splice(i,1);draw();}
-function pickSpell(id){S.chosenSpell=id;draw();}
-function pickTitle(id){U.activeTitle=id;saveUser();draw();}
 
-// ── STATE ──
 let U=null;
 let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
   selCls:'knight',selGen:'m',charName:'',obSlide:0,
   notes:'',uploadFiles:[],di:0,isFinal:false,liveQuiz:null,
   difficulty:'normal',diffChosen:'normal',
-  ci:0,fl:false,shuffled:null,againPile:null,speedTimer:null,speedLeft:0,speedMode:false,
+  ci:0,fl:false,shuffled:null,againPile:null,
   qi:0,sel:null,qs:0,streak:0,wrongAnswers:[],
-  heroHP:3,heroMaxHP:3,bossHP:100,bossMaxHP:100,
-  chosenSpell:null,spellUsed:false,shieldActive:false,doubleActive:false,
-  gauntlet:false,gauntletIdx:0,gauntletHP:3,gauntletMaxHP:3,
-  timedMode:false,timerLeft:15,timerInterval:null,
-  newAchievements:[],unlockPopup:null,
-  err:'',testResult:null,pop:false,pa:0,sxp:0,popMsg:'',prevScreen:null,lvupData:null,
-  spellScreen:'pre-quiz'};
+  heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
+  err:'',pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
 
 const lp=()=>U?Math.round((U.xp%XL)/XL*100):0;
 async function saveUser(){if(U)await stSet('rbUser',JSON.stringify(U));}
@@ -548,15 +355,14 @@ function mkKey(e){return'rbAcc_'+e.replace(/[^a-z0-9]/gi,'_').toLowerCase();}
 function get(id){return document.getElementById(id);}
 
 async function init(){
-  if(!getApiKey()){S.screen='apikey';draw();return;}
-  var seen=await stGet('rbSeen');
+  const seen=await stGet('rbSeen');
   if(!seen){S.screen='onboard';draw();return;}
-  var d=await stGet('rbUser');
+  const d=await stGet('rbUser');
   if(d){
     try{
       U=JSON.parse(d);
-      if(!U.chars)U.chars={};if(!U.activeCls)U.activeCls=U.cls||'knight';
-      if(!U._stats)U._stats={perfects:0,sRanks:0,maxCombo:0,questDays:0,gauntletWins:0,spellsUsed:0};
+      if(!U.chars)U.chars={};
+      if(!U.activeCls)U.activeCls=U.cls||'knight';
       updateStreak();
       if(!U.chars[U.activeCls]||!U.chars[U.activeCls].charName){
         S.selCls=U.activeCls;S.selGen=(U.gender||'m');S.charName=(U.charName||U.name+"'s Hero");
@@ -568,25 +374,28 @@ async function init(){
 }
 
 function updateStreak(){
-  if(!U)return;if(!U.streak)U.streak=0;if(!U.lastStudy)return;
-  var diff=Math.floor((new Date(today())-new Date(U.lastStudy))/(864e5));
+  if(!U)return;
+  if(!U.streak)U.streak=0;
+  if(!U.lastStudy)return;
+  const diff=Math.floor((new Date(today())-new Date(U.lastStudy))/(864e5));
   if(diff>1){U.streak=0;saveUser();}
 }
 function recordStudy(){
-  if(!U)return;var t=today();if(U.lastStudy===t)return;
-  var diff=U.lastStudy?Math.floor((new Date(t)-new Date(U.lastStudy))/(864e5)):1;
-  U.streak=diff===1?(U.streak||0)+1:1;U.lastStudy=t;
-  logStudyDay();saveUser();
+  if(!U)return;
+  const t=today();
+  if(U.lastStudy===t)return;
+  const diff=U.lastStudy?Math.floor((new Date(t)-new Date(U.lastStudy))/(864e5)):1;
+  U.streak=diff===1?(U.streak||0)+1:1;
+  U.lastStudy=t;saveUser();
 }
 
-// ── ONBOARD / AUTH ──
 function onboardH(){
-  var slides=[
-    {icon:'&#x1F4D6;',title:'Upload Your Notes',desc:'Upload photos, PDFs, or typed notes — up to 10 files. AI builds flashcards and a custom boss battle.'},
-    {icon:'&#x2694;',title:'Choose Your Hero',desc:'Pick a class, lock it to a subject, earn ranks and titles. Complete daily quests to grow stronger!'},
-    {icon:'&#x1F3C6;',title:'Battle & Progress',desc:'Hit S rank, earn achievements, complete gauntlets, unlock spells. New challenges every day.'},
+  const slides=[
+    {icon:'&#x1F4D6;',title:'Upload Your Notes',desc:'Upload photos, PDFs, or typed notes — up to 10 files at once. AI reads everything and builds a custom quest.'},
+    {icon:'&#x2694;',title:'Choose Your Hero',desc:'Each hero is permanently locked to one subject. Unlock all 8 classes and unlimited dungeons with PRO!'},
+    {icon:'&#x2B50;',title:'Battle & Level Up',desc:'Fight bosses in quizzes, earn combo XP, study flashcards, and unlock the Final Boss exam after 5 clear dungeons!'},
   ];
-  var n=S.obSlide||0,sl=slides[Math.min(n,2)];
+  const n=S.obSlide||0,sl=slides[Math.min(n,2)];
   var h='<div class="ob-slide fadein"><div class="ob-icon">'+sl.icon+'</div>';
   h+='<div class="pf ob-title">'+sl.title+'</div><div class="ob-desc">'+sl.desc+'</div>';
   h+='<div class="ob-dots">';
@@ -595,42 +404,8 @@ function onboardH(){
   return h;
 }
 
-function apiKeyH(){
-  var h='<div style="max-width:340px;margin:0 auto;padding:20px 0;text-align:center">';
-  h+='<div style="font-size:40px;margin-bottom:14px">&#x1F511;</div>';
-  h+='<div class="pf" style="font-size:10px;color:var(--gold);margin-bottom:10px">API KEY SETUP</div>';
-  h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:16px;line-height:1.9">Enter your Anthropic API key to power Runebook.<br>It\'s stored only in your browser — never uploaded anywhere.</div>';
-  var current=getApiKey();
-  if(current){
-    h+='<div style="background:#082818;border:2px solid #20a040;border-radius:8px;padding:10px;margin-bottom:12px;font-size:10px;color:#60ff90">&#x2713; Key saved: '+current.slice(0,12)+'...</div>';
-  }
-  h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." style="font-family:monospace;font-size:11px" value="'+current+'"/>';
-  if(S.err)h+='<div class="er">'+S.err+'</div>';
-  h+='<button class="btn gc pf" onclick="saveApiKey()" style="margin-bottom:10px">&#x2713; SAVE KEY</button>';
-  if(current)h+='<button class="btn gg pf" style="font-size:7px;margin-bottom:10px" onclick="testApiKey()">&#x26A1; TEST CONNECTION</button>';
-  if(S.testResult){
-    var tStyle=S.testResult.ok?'background:#082818;border:2px solid #30c060;border-radius:6px;padding:10px;color:#60ff90;margin-bottom:8px':'background:#280808;border:2px solid #cc2828;border-radius:6px;padding:10px;color:#ff9090;margin-bottom:8px';
-    h+='<div style="'+tStyle+'">'+S.testResult.msg+'</div>';
-  }
-  if(current)h+='<button class="btn gr pf" style="font-size:7px" onclick="gotoAuth()">CONTINUE &#x25BA;</button>';
-  h+='<div style="margin-top:16px;background:#140a38;border:2px solid #3a1e80;border-radius:8px;padding:12px;text-align:left">';
-  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:8px">HOW TO GET A KEY</div>';
-  h+='<div style="font-size:10px;color:var(--tx3);line-height:1.9">1. Go to console.anthropic.com<br>2. Click API Keys in the sidebar<br>3. Click Create Key<br>4. Copy and paste it above</div>';
-  h+='</div></div>';
-  return h;
-}
-function saveApiKey(){
-  var input=document.getElementById('apiKeyInput');
-  if(!input){return;}
-  var key=input.value.trim();
-  if(!key){S.err='Please enter your API key.';draw();return;}
-  if(!key.startsWith('sk-ant-')){S.err='That doesn\'t look like an Anthropic key. It should start with sk-ant-';draw();return;}
-  setApiKey(key);
-  S.err='';
-  goTo('auth');
-}
 function authH(){
-  var isL=S.authTab==='login';
+  const isL=S.authTab==='login';
   var h='<div style="max-width:320px;margin:0 auto;padding:14px 0">';
   h+='<div style="text-align:center;margin-bottom:22px"><div class="pf" style="font-size:14px;color:var(--gold);margin-bottom:8px">&#x1F4D6; RUNEBOOK &#x1F4D6;</div>';
   h+='<div style="font-size:12px;color:var(--tx3)">Your legend begins here</div></div>';
@@ -638,40 +413,40 @@ function authH(){
   h+='<button class="tab'+(!isL?' on':'')+'" onclick="setTab(\'signup\')">SIGN UP</button></div>';
   if(S.err)h+='<div class="er">'+S.err+'</div>';
   if(!isL)h+='<input id="an" placeholder="Your name" value="'+S.authName+'" oninput="S.authName=this.value"/>';
-  h+='<input id="ae" type="email" placeholder="Email" value="'+S.authEmail+'" oninput="S.authEmail=this.value"/>';
+  h+='<input id="ae" type="email" placeholder="Email address" value="'+S.authEmail+'" oninput="S.authEmail=this.value"/>';
   h+='<input id="ap" type="password" placeholder="Password" value="'+S.authPass+'" oninput="S.authPass=this.value"/>';
   h+='<button class="btn gc pf" onclick="doAuth()">'+(isL?'ENTER THE REALM':'BEGIN YOUR LEGEND')+'</button>';
   h+='<div class="tip" style="margin-top:10px">'+(isL?'No account? Click Sign Up':'Session saved in browser')+'</div></div>';
   return h;
 }
-
 async function doAuth(){
-  S.err='';var isL=S.authTab==='login';
-  var ae=get('ae'),ap=get('ap'),an=get('an');
+  S.err='';
+  const isL=S.authTab==='login';
+  const ae=get('ae'),ap=get('ap'),an=get('an');
   if(ae)S.authEmail=ae.value.trim();if(ap)S.authPass=ap.value;if(an)S.authName=an.value.trim();
   if(!S.authEmail){S.err='Please enter your email.';draw();return;}
   if(!S.authPass){S.err='Please enter a password.';draw();return;}
   if(!isL&&!S.authName){S.err='Please enter your name.';draw();return;}
-  var key=mkKey(S.authEmail);
+  const key=mkKey(S.authEmail);
   if(isL){
-    var rec=await stGet(key);
-    if(!rec){S.err='No account found — sign up first!';draw();return;}
-    var dd=JSON.parse(rec);if(dd.pw!==S.authPass){S.err='Incorrect password.';draw();return;}
-    U=dd.user;if(!U.chars)U.chars={};if(!U.activeCls)U.activeCls=U.cls||'knight';
-    if(!U._stats)U._stats={perfects:0,sRanks:0,maxCombo:0,questDays:0,gauntletWins:0,spellsUsed:0};
+    const rec=await stGet(key);
+    if(!rec){S.err='No account found \u2014 sign up first!';draw();return;}
+    const d=JSON.parse(rec);
+    if(d.pw!==S.authPass){S.err='Incorrect password.';draw();return;}
+    U=d.user;if(!U.chars)U.chars={};if(!U.activeCls)U.activeCls=U.cls||'knight';
     updateStreak();await saveUser();S.screen='home';draw();
   }else{
-    if(await stGet(key)){S.err='Email already registered — try logging in!';draw();return;}
-    var nu={name:S.authName,email:S.authEmail,xp:0,lv:1,isPro:false,activeCls:'knight',chars:{},streak:0,lastStudy:null,
-      _stats:{perfects:0,sRanks:0,maxCombo:0,questDays:0,gauntletWins:0,spellsUsed:0}};
+    if(await stGet(key)){S.err='Email already registered \u2014 try logging in!';draw();return;}
+    const nu={name:S.authName,email:S.authEmail,xp:0,lv:1,isPro:false,activeCls:'knight',chars:{},streak:0,lastStudy:null};
     await stSet(key,JSON.stringify({pw:S.authPass,user:nu}));
     U=nu;await saveUser();await stSet('rbSeen','1');
-    S.selCls='knight';S.selGen='m';S.charName=S.authName+"'s Hero";S.screen='char-create';draw();
+    S.selCls='knight';S.selGen='m';S.charName=S.authName+"'s Hero";
+    S.screen='char-create';draw();
   }
 }
 
 function charCreateH(){
-  var cls=clsInfo(S.selCls);
+  const cls=clsInfo(S.selCls);
   var h='<div><div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:16px">&#x2726; FORGE YOUR HERO &#x2726;</div>';
   h+='<div style="display:flex;gap:16px;flex-wrap:wrap">';
   h+='<div style="flex:0 0 120px;text-align:center"><div class="bob">'+sp(S.selCls,S.selGen,96)+'</div>';
@@ -681,28 +456,26 @@ function charCreateH(){
   h+='<button class="gt'+(S.selGen==='f'?' on':'')+'" onclick="pickGenCC(\'f\')">FEMALE</button></div>';
   h+='<span class="lbl">HERO NAME</span>';
   h+='<input id="cname" placeholder="Name your hero..." value="'+S.charName+'" oninput="S.charName=this.value"/>';
-  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.7;margin-top:4px">Your hero is locked to their subject after the first dungeon.</div>';
+  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.7;margin-top:4px">Once you start your first dungeon, this hero is locked to that subject forever.</div>';
   h+='</div></div><span class="lbl" style="margin-top:12px">CHOOSE CLASS</span><div class="cc-grid">';
   CLASSES.forEach(function(c){
-    var alreadyClaimed=!!(U.chars&&U.chars[c.id]&&U.chars[c.id].charName&&U.activeCls!==c.id);
-    var lk=(c.pro&&!U.isPro)||alreadyClaimed;
-    h+='<div class="cc'+(S.selCls===c.id?' on':'')+'" '+(lk?'':'onclick="pickCls(\''+c.id+'\')"')+' style="opacity:'+(lk?'.35':'1')+'">';
+    var lk=c.pro&&!U.isPro;
+    h+='<div class="cc'+(S.selCls===c.id?' on':'')+'" '+(lk?'':'onclick="pickCls(\''+c.id+'\')"')+' style="opacity:'+(lk?'.5':'1')+'">';
     h+=sp(c.id,S.selGen,52);h+='<span class="nm">'+c.name+'</span>';
-    if(alreadyClaimed)h+='<span class="pr-badge" style="border-color:#5030a0;color:#6040b0">TAKEN</span>';
-    else if(c.pro&&!U.isPro)h+='<span class="pr-badge">PRO</span>';
-    h+='</div>';
+    if(lk)h+='<span class="pr-badge">PRO</span>';h+='</div>';
   });
-  h+='</div>';if(S.err)h+='<div class="er">'+S.err+'</div>';
+  h+='</div>';
+  if(S.err)h+='<div class="er">'+S.err+'</div>';
   h+='<button class="btn gc pf" onclick="doCC()">&#x2694; CREATE HERO</button></div>';
   return h;
 }
 function doCC(){
-  var cn=get('cname');if(cn)S.charName=cn.value.trim();
+  const cn=get('cname');if(cn)S.charName=cn.value.trim();
   if(!S.charName){S.err='Give your hero a name!';draw();return;}
   if(!U.chars)U.chars={};
   if(!U.chars[S.selCls])U.chars[S.selCls]={charName:S.charName,gender:S.selGen,dungeons:[],finalBoss:null};
   else{U.chars[S.selCls].charName=S.charName;U.chars[S.selCls].gender=S.selGen;}
-  U.activeCls=S.selCls;saveUser();S.screen='hero';S.err='';draw();
+  U.activeCls=S.selCls;saveUser();S.screen='home';S.err='';draw();
 }
 
 function tb(){
@@ -716,356 +489,95 @@ function tb(){
   return h;
 }
 
-// ── HOME (main menu) ──
 function homeH(){
-  if(!U)return authH();
+  const char=aC();
+  if(!char){var nh=tb()+'<div style="text-align:center;padding:30px"><div style="font-size:12px;color:var(--tx3);margin-bottom:16px">No character found.</div><button class="btn gc pf" onclick="goTo(\'char-select\')">CREATE CHARACTER</button></div>';return nh;}
+  const cls=clsInfo(U.activeCls),dungeons=char.dungeons||[];
+  const cleared=clearedCount(),fbUnlocked=finalBossUnlocked();
   var h=tb();
   if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
-  var char=aC();
-  h+='<div style="text-align:center;padding:6px 0 14px">';
-  if(char&&char.charName){
-    h+='<div class="bob" style="display:inline-block;margin-bottom:6px">'+sp(U.activeCls,char.gender,80)+'</div>';
-    h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:2px">'+char.charName+'</div>';
-    var title=getActiveTitle();
-    if(title)h+='<div style="font-size:9px;color:#c080ff;margin-bottom:3px">'+title.name+'</div>';
-    h+='<div style="font-size:9px;color:var(--tx3);margin-bottom:10px">'+clsInfo(U.activeCls).name+(char.subject?' · &#x1F512; '+char.subject:'')+'</div>';
-  }
-  // Quest progress teaser
-  var quests=getDailyQuests();
-  var done=quests.filter(function(q){return q.done;}).length;
-  h+='<div style="background:#1a1008;border:2px solid #5a4010;border-radius:8px;padding:8px 12px;margin-bottom:10px;cursor:pointer" onclick="gotoQuests()">';
-  h+='<div style="display:flex;justify-content:space-between;align-items:center">';
-  h+='<div class="pf" style="font-size:7px;color:var(--bdg)">&#x1F4CB; DAILY QUESTS</div>';
-  h+='<div style="font-size:9px;color:'+(done===3?'#60ff90':'var(--gold)')+'">'+done+'/3 done</div></div>';
-  h+='<div style="display:flex;gap:4px;margin-top:6px">';
-  quests.forEach(function(q){h+='<div style="flex:1;height:5px;border-radius:2px;background:'+(q.done?'#30c060':'#2a1060')+'"></div>';});
-  h+='</div></div>';
-  h+=(char&&char.charName?
-    '<button class="btn gc pf" style="font-size:8px;margin-bottom:8px" onclick="gotoHero()">&#x2694; ENTER HALL</button>'+
-    '<button class="btn gp pf" style="font-size:7px;margin-bottom:8px" onclick="gotoCharSelect()">&#x21C4; SWITCH HERO</button>':
-    '<button class="btn gc pf" style="font-size:8px;margin-bottom:8px" onclick="gotoCharSelect()">&#x2694; CHOOSE HERO</button>');
-  h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="gotoAchievements()">&#x1F3C6; TROPHIES</button>';
-  h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="gotoCalendar()">&#x1F4C5; STUDY LOG</button>';
-  if(!U.isPro)h+='<button class="btn gg pf" style="font-size:7px;margin-bottom:8px" onclick="gotoPaywall()">&#x2605; GO PRO</button>';
-  h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="gotoApiKey()">&#x1F511; API KEY</button>';
-  h+='<button class="btn gr pf" style="font-size:7px" onclick="doLogout()">LEAVE REALM</button>';
-  h+='</div>';
-  return h;
-}
-
-// ── HERO HALL ──
-function heroH(){
-  var char=aC();
-  if(!char||!char.charName){gotoCharSelect();return'';}
-  var cls=clsInfo(U.activeCls),dungeons=char.dungeons||[];
-  var cleared=clearedCount(),fbUnlocked=finalBossUnlocked();
-  var h=tb();
-  if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
-  h+='<button class="back" onclick="gotoHome()">&#x25C4; Main Menu</button>';
-  // Unlock popup
-  if(S.unlockPopup){
-    var up=S.unlockPopup;
-    h+='<div class="unlock-pop" onclick="S.unlockPopup=null;draw()">';
-    h+='<div style="font-size:36px;margin-bottom:8px">'+up.icon+'</div>';
-    h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:5px">ACHIEVEMENT!</div>';
-    h+='<div class="pf" style="font-size:9px;color:#fff;margin-bottom:5px">'+up.name+'</div>';
-    h+='<div style="font-size:10px;color:var(--tx3)">'+up.desc+'</div>';
-    h+='<div style="font-size:9px;color:var(--tx3);margin-top:8px">tap to dismiss</div></div>';
-  }
-  h+='<div style="display:flex;gap:14px;align-items:flex-start">';
-  h+='<div style="flex:0 0 100px;text-align:center">';
-  h+='<div class="bob">'+sp(U.activeCls,char.gender,88)+'</div>';
+  h+='<div style="display:flex;gap:16px;align-items:flex-start">';
+  h+='<div style="flex:0 0 110px;text-align:center">';
+  h+='<div class="bob">'+sp(U.activeCls,char.gender,96)+'</div>';
   h+='<div class="pf" style="font-size:7px;color:var(--gold);margin-top:5px">'+char.charName+'</div>';
-  var title=getActiveTitle();
-  if(title)h+='<div style="font-size:8px;color:#c080ff;margin-top:2px">'+title.name+'</div>';
-  h+='<div style="font-size:8px;color:var(--tx3);margin-top:2px">'+cls.name+'</div>';
-  if(char.subject){
-    h+='<div style="font-size:7px;color:#c080ff;margin-top:2px">&#x1F512; '+char.subject+'</div>';
-    // Show reset option only if 1 dungeon or fewer and reset not yet used
-    if(canResetSubject()){
-      h+='<button onclick="resetSubject()" style="font-size:7px;background:#1a0808;border:1px solid #882018;border-radius:4px;color:#ff8070;cursor:pointer;padding:3px 7px;margin-top:4px;font-family:monospace">&#x21BA; RESET SUBJECT '+(U.isPro?'(Monthly)':'(One-Time)')+'</button>';
-    }
-  }
-  var unlockedSpells=getUnlockedSpells();
-  if(unlockedSpells.length)h+='<div style="font-size:8px;color:#a060ff;margin-top:4px">&#x1F52E; '+unlockedSpells.length+' spell'+(unlockedSpells.length!==1?'s':'')+'</div>';
-  if(U.isPro)h+='<div style="font-size:8px;color:#c080ff;margin-top:2px">&#x2605; PRO</div>';
+  h+='<div style="font-size:9px;color:var(--tx3);margin-top:3px">'+cls.name+'</div>';
+  if(char.subject)h+='<div style="font-size:7px;color:#c080ff;margin-top:3px">&#x1F512; '+char.subject+'</div>';
+  h+='<div class="pf" style="font-size:7px;color:#60ffaa;margin-top:3px">'+TNAME(U.lv)+'</div>';
+  if(U.isPro)h+='<div style="font-size:9px;color:#c080ff;margin-top:3px">&#x2605; PRO</div>';
+  h+='<div class="slot-bar">';
+  for(var si=0;si<(U.isPro?dungeons.length+1:FREE_DUNGEONS);si++){h+='<div class="slot'+(si<dungeons.length?' used':'')+'"></div>';}
+  h+='</div><div style="font-size:8px;color:var(--tx3)">'+dungeons.length+'/'+(U.isPro?'&#x221E;':FREE_DUNGEONS)+' dungeons</div>';
   h+='</div>';
   h+='<div style="flex:1">';
+  h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:10px">Hail, <span style="color:#fff">'+U.name+'</span>!</div>';
   if(U.streak>0){
-    h+='<div style="background:#1e0808;border:2px solid '+streakColor(U.streak)+';border-radius:8px;padding:7px 10px;margin-bottom:10px;display:flex;align-items:center;gap:8px">';
-    h+='<span style="font-size:16px">&#x1F525;</span>';
-    h+='<div><div class="pf" style="font-size:8px;color:'+streakColor(U.streak)+'">'+U.streak+' DAY STREAK!</div></div></div>';
+    h+='<div style="background:#1e0808;border:2px solid '+streakColor(U.streak)+';border-radius:8px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;gap:8px">';
+    h+='<span style="font-size:18px">&#x1F525;</span>';
+    h+='<div><div class="pf" style="font-size:8px;color:'+streakColor(U.streak)+'">'+U.streak+' DAY STREAK!</div>';
+    h+='<div style="font-size:9px;color:var(--tx3);margin-top:2px">Study today to keep it alive</div></div></div>';
   }
+  // Final boss unlock progress
   if(!fbUnlocked&&dungeons.length>0){
-    h+='<div style="background:#1a1008;border:2px solid #5a4010;border-radius:8px;padding:7px 10px;margin-bottom:10px">';
-    h+='<div style="font-size:9px;color:var(--bdg);margin-bottom:4px">&#x1F451; FINAL BOSS: '+cleared+'/'+FINAL_BOSS_REQUIRED+' cleared</div>';
-    h+='<div style="height:7px;background:#0a0620;border-radius:3px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,#c88020,#f0c030);width:'+Math.round(cleared/FINAL_BOSS_REQUIRED*100)+'%;border-radius:3px;transition:width .5s"></div></div>';
+    h+='<div style="background:#1a1008;border:2px solid #5a4010;border-radius:8px;padding:8px 12px;margin-bottom:12px">';
+    h+='<div style="font-size:9px;color:var(--bdg);margin-bottom:5px">&#x1F451; FINAL BOSS: '+cleared+'/'+FINAL_BOSS_REQUIRED+' dungeons cleared</div>';
+    h+='<div style="height:8px;background:#0a0620;border-radius:4px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,#c88020,#f0c030);border-radius:4px;width:'+Math.round(cleared/FINAL_BOSS_REQUIRED*100)+'%;transition:width .5s"></div></div>';
     h+='</div>';
   }
-  // Gauntlet button
-  if(dungeons.length>=2){
-    h+='<button class="btn gb2 pf" style="font-size:7px;margin-bottom:10px" onclick="startGauntlet()">&#x1F409; BOSS GAUNTLET</button>';
-  }
   if(dungeons.length===0){
-    h+='<div style="background:#140a38;border:2px dashed #5030a0;border-radius:10px;padding:20px;text-align:center;margin-bottom:10px">';
-    h+='<div style="font-size:26px;margin-bottom:8px">&#x2693;</div>';
-    h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:12px;line-height:1.7">No dungeons yet.</div>';
-    h+='<button class="btn gc pf" style="font-size:7px" onclick="gotoUpload()">&#x2726; FIRST DUNGEON</button></div>';
+    h+='<div style="background:#140a38;border:2px dashed #5030a0;border-radius:10px;padding:22px;text-align:center;margin-bottom:12px">';
+    h+='<div style="font-size:28px;margin-bottom:8px">&#x2693;</div>';
+    h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:14px;line-height:1.7">No dungeons yet.<br>Upload notes to begin your first quest!</div>';
+    h+='<button class="btn gc pf" style="font-size:7px" onclick="goTo(\'upload\')">&#x2726; FIRST DUNGEON</button></div>';
   }else{
     dungeons.forEach(function(d,i){
-      var best=d.bestScore||0;
-      var cleared2=best>=70;
-      if(d.scores){var _eb=Math.max(d.scores.easy&&d.scores.easy.best||0,d.scores.normal&&d.scores.normal.best||0,d.scores.hard&&d.scores.hard.best||0);cleared2=_eb>=70;best=_eb||best;}
-      var att=d.attempts||0;
+      const best=d.bestScore||0,cleared2=best>=70,att=d.attempts||0;
       h+='<div class="dcard" onclick="enterDungeon('+i+',false)" style="cursor:pointer">';
       h+='<div class="dnum">'+ROMAN[i]+'</div>';
       h+='<div class="dinfo"><div class="dtitle">'+d.title+(cleared2?'<span class="cleared-badge">&#x2B50;</span>':'')+'</div>';
       if(d.story&&d.story.setting)h+='<div class="dloc">'+d.story.setting+'</div>';
-      h+=masteryStars(d);
-      h+='<div class="dstat">';
-      if(d.scores){
-        ['easy','normal','hard'].forEach(function(dk){
-          var rec=d.scores[dk];
-          if(rec&&rec.attempts){var rk=getRank(rec.best);
-            h+='<span style="font-size:7px;color:'+DIFF[dk].color+';border:1px solid '+DIFF[dk].color+'60;border-radius:2px;padding:1px 4px;margin-right:3px">'+dk[0].toUpperCase()+':'+rk.label+'</span>';
-          }
-        });
-      }else if(best>0)h+='<span style="color:'+(cleared2?'#50e080':'var(--tx3)')+'">Best: '+best+'%</span>';
+      if(d.fileNames&&d.fileNames.length)h+='<div class="dloc" style="color:#a060ff">&#x1F4CE; '+d.fileNames.join(', ')+'</div>';
+      h+='<div class="dstat"><span style="color:'+(cleared2?'#50e080':'var(--tx3)')+'">Best: '+best+'%</span>';
+      if(att>0)h+=' <span style="color:var(--tx3)">&#x2022; '+att+' attempt'+(att!==1?'s':'')+'</span>';
       h+='</div></div>';
       h+='<div class="dbtns"><button class="dbtn dbtn-s" onclick="event.stopPropagation();studyDungeon('+i+')">STUDY</button>';
       h+='<button class="dbtn dbtn-q" onclick="event.stopPropagation();enterDungeon('+i+',false)">QUIZ</button></div></div>';
     });
+    // Final boss card
     if(fbUnlocked){
       h+='<div class="dcard final-boss">';
-      h+='<div style="font-size:22px;min-width:28px;text-align:center">&#x1F451;</div>';
+      h+='<div style="font-size:24px;min-width:28px;text-align:center">&#x1F451;</div>';
       h+='<div class="dinfo"><div class="dtitle" style="color:var(--gold)">FINAL BOSS</div>';
-      h+='<div class="dloc">The ultimate examination</div>';
-      if(char.finalBoss)h+='<div class="dstat" style="color:'+((char.finalBoss.bestScore||0)>=70?'#50e080':'#ff8070')+'">Best: '+(char.finalBoss.bestScore||0)+'%</div>';
-      h+='</div><div class="dbtns">';
-      if(!char.finalBoss)h+='<button class="dbtn" style="border-color:#c89020;color:#ffd040" onclick="genFinalBoss()">GENERATE</button>';
-      else h+='<button class="dbtn dbtn-q" onclick="enterDungeon(0,true)">ENTER</button>';
+      h+='<div class="dloc">The ultimate examination awaits...</div>';
+      if(char.finalBoss){const fb=char.finalBoss;h+='<div class="dstat" style="color:'+(( fb.bestScore||0)>=70?'#50e080':'#ff8070')+'">Best: '+(fb.bestScore||0)+'%</div>';}
+      h+='</div>';
+      h+='<div class="dbtns">';
+      if(!char.finalBoss){h+='<button class="dbtn" style="border-color:#c89020;color:#ffd040" onclick="genFinalBoss()">GENERATE</button>';}
+      else{h+='<button class="dbtn dbtn-q" onclick="enterDungeon(0,true)">ENTER</button>';}
       h+='</div></div>';
     }
-    if(canAdd())h+='<button class="btn gg pf" style="font-size:7px;margin-top:4px" onclick="gotoUpload()">+ NEW DUNGEON</button>';
+    if(canAdd()){h+='<button class="btn gg pf" style="font-size:7px;margin-top:4px" onclick="goTo(\'upload\')">+ NEW DUNGEON</button>';}
     else if(!fbUnlocked){
-      h+='<div style="background:#1e0840;border:2px solid #8040d0;border-radius:8px;padding:10px;margin-top:4px;text-align:center">';
-      h+='<div style="font-size:10px;color:#c080ff;margin-bottom:6px">Dungeon limit reached!</div>';
-      h+='<button class="btn gp pf" style="font-size:7px" onclick="gotoPaywall()">&#x2605; GO PRO</button></div>';
+      h+='<div style="background:#1e0840;border:2px solid #8040d0;border-radius:8px;padding:12px;margin-top:4px;text-align:center">';
+      h+='<div style="font-size:10px;color:#c080ff;margin-bottom:8px">Dungeon limit reached!</div>';
+      h+='<button class="btn gp pf" style="font-size:7px" onclick="goTo(\'paywall\')">&#x2605; GO PRO FOR MORE</button></div>';
     }
   }
+  h+='<div style="height:10px"></div>';
+  h+='<button class="btn gp pf" style="font-size:7px" onclick="goTo(\'char-select\')">&#x25C6; CHARACTERS</button>';
+  if(!U.isPro)h+='<button class="btn gg pf" style="font-size:7px;margin-top:8px" onclick="goTo(\'paywall\')">&#x2605; GO PRO</button>';
+  h+='<button class="btn gr pf" style="font-size:7px;margin-top:8px" onclick="doLogout()">LEAVE REALM</button>';
   h+='</div></div>';
   return h;
 }
 
-// ── DAILY QUESTS SCREEN ──
-function questsH(){
-  var h=tb();h+='<button class="back" onclick="gotoHome()">&#x25C4; Back</button>';
-  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:4px">&#x1F4CB; DAILY QUESTS</div>';
-  h+='<div style="font-size:10px;color:var(--tx3);margin-bottom:12px">Resets at midnight. Complete all 3 for +100 XP bonus!</div>';
-  var quests=getDailyQuests();
-  var allDone=quests.every(function(q){return q.done;});
-  if(allDone){
-    h+='<div class="perfect-banner" style="margin-bottom:14px">';
-    h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:6px">&#x2B50; ALL DONE! +100 XP BONUS &#x2B50;</div>';
-    h+='<div style="font-size:11px;color:#c0d0ff">Come back tomorrow for new quests!</div></div>';
-  }
-  quests.forEach(function(q){
-    var prog=typeof q.progress==='number'?q.progress:0;
-    var goalNum=typeof q.goal==='number'?q.goal:1;
-    var pct=q.type==='study_cards'?Math.min(100,Math.round(prog/goalNum*100)):(q.done?100:0);
-    h+='<div class="quest-card'+(q.done?' done':'')+'">';
-    h+='<div class="quest-icon">'+q.icon+'</div>';
-    h+='<div class="quest-info">';
-    h+='<div class="quest-title">'+q.title+'</div>';
-    h+='<div style="font-size:10px;color:var(--tx3)">'+q.desc+'</div>';
-    if(q.type==='study_cards'&&!q.done){
-      h+='<div class="quest-prog"><div class="quest-fill" style="width:'+pct+'%;background:#6030c0"></div></div>';
-      h+='<div style="font-size:9px;color:var(--tx3)">'+prog+'/'+goalNum+'</div>';
-    }
-    h+='<div class="quest-reward">&#x2B50; +'+q.xp+' XP</div>';
-    h+='</div>';
-    h+='<div style="font-size:24px">'+(q.done?'&#x2705;':'&#x26AA;')+'</div>';
-    h+='</div>';
-  });
-  h+='<div style="background:#140a38;border:2px solid #3a1e80;border-radius:8px;padding:12px;margin-top:8px">';
-  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:6px">QUEST DAYS COMPLETED</div>';
-  h+='<div style="font-size:20px;color:var(--gold)">'+(U._stats&&U._stats.questDays||0)+'</div></div>';
-  return h;
-}
-
-// ── ACHIEVEMENTS SCREEN ──
-function achievementsH(){
-  var h=tb();h+='<button class="back" onclick="gotoHome()">&#x25C4; Back</button>';
-  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:4px">&#x1F3C6; TROPHY ROOM</div>';
-  var earned=(U.achievements||[]).length;
-  h+='<div style="font-size:10px;color:var(--tx3);margin-bottom:12px">'+earned+' / '+ACHIEVEMENTS.length+' unlocked</div>';
-  h+='<div class="ach-grid">';
-  ACHIEVEMENTS.forEach(function(a){
-    var have=(U.achievements||[]).indexOf(a.id)>=0;
-    h+='<div class="ach'+(have?' earned':'')+'">';
-    h+='<div class="ach-icon" style="opacity:'+(have?1:.25)+'">'+a.icon+'</div>';
-    h+='<div class="ach-name">'+a.name+'</div>';
-    h+='<div class="ach-desc">'+(have?a.desc:'???')+'</div>';
-    h+='</div>';
-  });
-  h+='</div>';
-  // Titles section
-  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin:14px 0 8px">&#x1F393; HERO TITLES</div>';
-  var unlocked=getUnlockedTitles();
-  if(!unlocked.length){h+='<div style="font-size:11px;color:var(--tx3)">Earn achievements to unlock titles.</div>';}
-  else{
-    unlocked.forEach(function(t){
-      var active=U.activeTitle===t.id;
-      h+='<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:'+(active?'#2a1408':'#140a38')+';border:2px solid '+(active?'var(--gold)':'#5030a0')+';border-radius:8px;margin-bottom:6px;cursor:pointer" onclick="pickTitle(\''+t.id+'\')">';
-      h+='<div style="flex:1"><div style="font-size:11px;color:'+(active?'var(--gold)':'#fff')+'">'+t.name+'</div></div>';
-      h+='<div style="font-size:10px;color:'+(active?'var(--gold)':'var(--tx3)')+'"> '+(active?'&#x2713; ACTIVE':'EQUIP')+'</div></div>';
-    });
-  }
-  return h;
-}
-
-// ── CALENDAR SCREEN ──
-function calendarH(){
-  var h=tb();h+='<button class="back" onclick="gotoHome()">&#x25C4; Back</button>';
-  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:4px">&#x1F4C5; STUDY LOG</div>';
-  h+='<div style="font-size:10px;color:var(--tx3);margin-bottom:12px">Your study activity over the last 3 months</div>';
-  var log=getStudyDays();
-  var today2=today();
-  var days=90;
-  var cells=[];
-  for(var i=days-1;i>=0;i--){
-    var d=new Date();d.setDate(d.getDate()-i);
-    var ds=d.toISOString().slice(0,10);
-    var count=log[ds]||0;
-    cells.push({date:ds,count:count,isToday:ds===today2});
-  }
-  h+='<div class="cal-grid">';
-  cells.forEach(function(c){
-    var col=c.count===0?'#0a0620':c.count===1?'#1e0840':c.count===2?'#4020a0':'#8040ff';
-    h+='<div class="cal-day" style="background:'+col+';'+(c.isToday?'outline:2px solid var(--gold);':'')+'"></div>';
-  });
-  h+='</div>';
-  h+='<div style="display:flex;gap:8px;margin-top:10px;align-items:center">';
-  h+='<span style="font-size:10px;color:var(--tx3)">Less</span>';
-  ['#0a0620','#1e0840','#4020a0','#8040ff'].forEach(function(c){
-    h+='<div style="width:14px;height:14px;border-radius:2px;background:'+c+'"></div>';
-  });
-  h+='<span style="font-size:10px;color:var(--tx3)">More</span></div>';
-  // Stats
-  var totalDays=Object.keys(log).length;
-  var totalSessions=Object.values(log).reduce(function(a,b){return a+b;},0);
-  h+='<div class="sg" style="margin-top:14px">';
-  h+='<div class="sc"><div class="sv">'+totalDays+'</div><div class="sl">STUDY DAYS</div></div>';
-  h+='<div class="sc"><div class="sv">'+totalSessions+'</div><div class="sl">SESSIONS</div></div>';
-  h+='</div>';
-  return h;
-}
-
-// ── SPELL SELECTION ──
-function spellsH(){
-  var h=tb();
-  h+='<button class="back" onclick="goTo(S.spellScreen===\'pre-quiz\'?\'dungeon\':\'quiz\')">&#x25C4; Back</button>';
-  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:4px">&#x1F52E; CHOOSE YOUR SPELL</div>';
-  h+='<div style="font-size:10px;color:var(--tx3);margin-bottom:12px">One spell per quiz. Use wisely!</div>';
-  var unlocked=getUnlockedSpells();
-  if(!unlocked.length){
-    h+='<div style="background:#140a38;border:2px dashed #5030a0;border-radius:10px;padding:20px;text-align:center">';
-    h+='<div style="font-size:11px;color:var(--tx3);line-height:1.8">Reach <span style="color:var(--gold)">Level 5</span> to unlock your first spell!<br>You are Level '+U.lv+'.</div></div>';
-  }else{
-    h+='<div class="spell-grid">';
-    SPELLS.forEach(function(sp2){
-      var locked=(U.lv||1)<sp2.lvReq;
-      h+='<div class="spell-card'+(S.chosenSpell===sp2.id?' on':'')+(locked?' dis':'')+'" '+(locked?'':'onclick="pickSpell(\''+sp2.id+'\')"')+'">';
-      h+='<div class="spell-icon">'+sp2.icon+'</div>';
-      h+='<div class="pf" style="font-size:7px;color:var(--gold);margin-bottom:4px">'+sp2.name+'</div>';
-      h+='<div style="font-size:9px;color:var(--tx3);line-height:1.5">'+sp2.desc+'</div>';
-      if(locked)h+='<div style="font-size:8px;color:#5030a0;margin-top:4px">LV '+sp2.lvReq+'</div>';
-      h+='</div>';
-    });
-    h+='</div>';
-    h+='<button class="btn gc pf" style="margin-top:8px" onclick="confirmSpell()">&#x26A1; '+(S.chosenSpell?'START WITH SPELL':'START WITHOUT SPELL')+'</button>';
-    if(S.chosenSpell)h+='<button class="btn gr pf" style="margin-top:8px;font-size:7px" onclick="S.chosenSpell=null;draw()">&#x2715; CLEAR SPELL</button>';
-  }
-  return h;
-}
-function confirmSpell(){
-  S.spellUsed=false;S.shieldActive=false;S.doubleActive=false;
-  startQuiz(S.di,S.isFinal);
-}
-function useSpell(){
-  if(!S.chosenSpell||S.spellUsed)return;
-  S.spellUsed=true;
-  if(!U._stats)U._stats={};
-  U._stats.spellsUsed=(U._stats.spellsUsed||0)+1;
-  updateQuest('spell',1);
-  if(S.chosenSpell==='skip'){
-    // Skip current question — no damage either side
-    S.sel='skip';draw();
-  }else if(S.chosenSpell==='shield'){
-    S.shieldActive=true;draw();
-  }else if(S.chosenSpell==='double'){
-    S.doubleActive=true;draw();
-  }
-  saveUser();
-}
-
-// ── GAUNTLET ──
-function startGauntlet(){
-  var char=aC();if(!char||!char.dungeons.length)return;
-  S.gauntlet=true;S.gauntletIdx=0;
-  var d=curDiff();
-  S.heroHP=d.hp;S.heroMaxHP=d.hp;
-  S.gauntletHP=d.hp;S.gauntletMaxHP=d.hp;
-  // Set first dungeon
-  S.di=0;S.isFinal=false;
-  S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];
-  S.bossMaxHP=100;S.bossHP=100;S.liveQuiz=null;
-  S.chosenSpell=null;S.spellUsed=false;S.shieldActive=false;S.doubleActive=false;
-  S.screen='quizgen';draw();
-  var dung=char.dungeons[0];
-  generateQuizQuestions(dung,d,false,char).then(function(q){
-    S.liveQuiz=q;S.screen='quiz';draw();
-  }).catch(function(e){
-    if(dung.quiz&&dung.quiz.length){S.liveQuiz=dung.quiz.slice();S.screen='quiz';draw();}
-    else{S.gauntlet=false;S.err='Could not start gauntlet. Try again.';S.screen='hero';draw();}
-  });
-}
-function nextGauntletDungeon(){
-  var char=aC();if(!char)return;
-  S.gauntletIdx++;
-  if(S.gauntletIdx>=char.dungeons.length){
-    // Gauntlet complete!
-    S.gauntlet=false;
-    if(!U._stats)U._stats={};
-    U._stats.gauntletWins=(U._stats.gauntletWins||0)+1;
-    U.xp+=200;U.lv=Math.floor(U.xp/XL)+1;saveUser();
-    var newAch=checkAchievements();
-    if(newAch.length)S.unlockPopup=newAch[0];
-    S.screen='qd';draw();return;
-  }
-  S.di=S.gauntletIdx;S.qi=0;S.qs=0;S.sel=null;S.streak=0;S.wrongAnswers=[];
-  S.bossMaxHP=100;S.bossHP=100;S.liveQuiz=null;
-  S.screen='quizgen';draw();
-  var dung=char.dungeons[S.gauntletIdx];
-  var d=DIFF[S.diffChosen||'normal']||DIFF.normal;
-  generateQuizQuestions(dung,d,false,char).then(function(q){
-    S.liveQuiz=q;S.screen='quiz';draw();
-  }).catch(function(e){
-    if(dung.quiz)S.liveQuiz=dung.quiz.slice();
-    S.screen='quiz';draw();
-  });
-}
-
-// ── CHAR SELECT ──
 function charSelectH(){
-  var h=tb();h+='<button class="back" onclick="gotoHome()">&#x25C4; Main Menu</button>';
+  var h=tb();
+  h+='<button class="back" onclick="goTo(\'home\')">&#x25C4; Back</button>';
   h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:8px">&#x25C6; YOUR CHARACTERS</div>';
-  h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:14px;line-height:1.7">Free players get <span style="color:var(--gold)">1 hero</span>. Each hero locks to one subject. Upgrade to PRO for all 8.</div>';
+  h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:14px;line-height:1.7">Each hero is permanently locked to their subject after their first dungeon.</div>';
   h+='<div class="csgrid">';
   CLASSES.forEach(function(c){
-    var cd=U.chars[c.id],isCur=U.activeCls===c.id,claimed=!!(cd&&cd.charName);
-    var claimedCount=Object.values(U.chars).filter(function(x){return x&&x.charName;}).length;
-    var lk=(c.pro&&!U.isPro)||(!U.isPro&&!claimed&&!isCur&&claimedCount>=FREE_CHARS);
+    const cd=U.chars[c.id],isCur=U.activeCls===c.id,lk=c.pro&&!U.isPro,claimed=!!(cd&&cd.charName);
     h+='<div class="cscard'+(isCur?' active':claimed?' claimed':'')+'" ';
     if(claimed&&!isCur)h+='onclick="switchCls(\''+c.id+'\')"';
     else if(!claimed&&!lk)h+='onclick="claimCls(\''+c.id+'\')"';
@@ -1076,29 +588,27 @@ function charSelectH(){
     else if(isCur)h+='<div style="font-size:8px;color:#50ff90;margin-top:3px">&#x2713; ACTIVE</div>';
     else if(claimed){
       if(cd.subject)h+='<div style="font-size:7px;color:#c080ff;margin-top:2px">&#x1F512; '+cd.subject+'</div>';
-      h+='<div style="font-size:8px;color:#a060ff;margin-top:2px">TAP TO SWITCH</div>';
+      h+='<div style="font-size:8px;color:var(--tx3);margin-top:3px">'+cd.dungeons.length+' dungeon'+(cd.dungeons.length!==1?'s':'')+'</div>';
+      h+='<div style="font-size:7px;color:#a060ff;margin-top:2px">TAP TO SWITCH</div>';
     }else h+='<div style="font-size:8px;color:#60ffaa;margin-top:3px">TAP TO CLAIM</div>';
     h+='</div>';
   });
   h+='</div>';return h;
 }
 
-// ── DUNGEON SCREEN ──
 function dungeonH(){
-  var char=aC();if(!char)return heroH();
-  var d=aD();if(!d)return heroH();
-  var st=d.story;
+  const char=aC();if(!char)return homeH();
+  const d=aD();if(!d)return homeH();
+  const st=d.story;
   var h=tb();
-  h+='<button class="back" onclick="gotoHero()">&#x25C4; Hero Hall</button>';
-  if(S.err){h+='<div class="er">'+S.err+'</div>';S.err='';}
-  h+='<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">';
-  h+='<div style="flex:0 0 100px;text-align:center"><div class="bob">'+sp(U.activeCls,char.gender,88)+'</div>';
+  h+='<button class="back" onclick="goTo(\'home\')">&#x25C4; Back to Hall</button>';
+  h+='<div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">';
+  h+='<div style="flex:0 0 110px;text-align:center"><div class="bob">'+sp(U.activeCls,char.gender,96)+'</div>';
   h+='<div class="pf" style="font-size:7px;color:var(--gold);margin-top:5px">'+char.charName+'</div>';
-  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-top:2px">'+(S.isFinal?'FINAL BOSS':'Dungeon '+ROMAN[S.di])+'</div></div>';
-  h+='<div style="flex:1;min-width:200px">';
+  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-top:3px">'+(S.isFinal?'FINAL BOSS':'Dungeon '+ROMAN[S.di])+'</div></div>';
+  h+='<div style="flex:1;min-width:200px"><div class="scroll">';
   if(st){
-    h+='<div class="scroll">';
-    h+='<div class="sq-tag">&#x2726; '+(S.isFinal?'FINAL EXAM':'DUNGEON '+ROMAN[S.di])+'</div>';
+    h+='<div class="sq-tag">&#x2726; '+(S.isFinal?'FINAL EXAMINATION':'DUNGEON '+ROMAN[S.di])+'</div>';
     h+='<div class="pf sq-title">'+st.title+'</div>';
     if(st.setting)h+='<div class="sq-loc">&#x25BA; '+st.setting+'</div>';
     if(st.intro)h+='<div class="sq-story">'+st.intro+'</div>';
@@ -1107,56 +617,38 @@ function dungeonH(){
       h+='<div style="display:flex;align-items:center;gap:12px">'+bossSprite(st.boss,48);
       h+='<div class="sq-boss-nm">'+st.boss+'</div></div></div>';
     }
+  }
+  h+='</div>';
+  const best=d.bestScore||0;
+  if(best>0){
+    h+='<div style="background:#140a38;border:2px solid #5030a0;border-radius:8px;padding:10px 12px;margin-bottom:12px;display:flex;gap:14px">';
+    h+='<div><div class="pf" style="font-size:7px;color:var(--tx3)">BEST</div><div style="font-size:18px;color:'+(best>=90?'#ffd040':best>=70?'#60ff90':'#ff8070')+'">'+best+'%</div></div>';
+    h+='<div><div class="pf" style="font-size:7px;color:var(--tx3)">ATTEMPTS</div><div style="font-size:18px;color:var(--tx1)">'+(d.attempts||0)+'</div></div>';
+    h+='<div><div class="pf" style="font-size:7px;color:var(--tx3)">STATUS</div><div style="font-size:11px;color:'+(best>=70?'#60ff90':'#ff8070')+';margin-top:4px">'+(best>=70?'&#x2B50; CLEARED':'&#x2715; UNCLEARED')+'</div></div>';
     h+='</div>';
   }
-  // Mastery + records
-  if(!S.isFinal){
-    h+=masteryStars(d);
-    h+='<div style="font-size:9px;color:var(--tx3);margin:4px 0 10px">⭐ 70% Normal &nbsp;⭐⭐ 70% Hard &nbsp;⭐⭐⭐ 90% Hard</div>';
-    if(d.scores){
-      h+='<div style="background:#140a38;border:2px solid #3a1e80;border-radius:8px;padding:10px;margin-bottom:10px">';
-      ['easy','normal','hard'].forEach(function(dk){
-        var rec=getDiffRecord(d,dk),dv=DIFF[dk];
-        h+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #2a1060;opacity:'+(rec.attempts?'1':'.4')+'">';
-        h+='<span class="pf" style="font-size:7px;color:'+dv.color+';min-width:45px">'+dv.label+'</span>';
-        if(rec.attempts){var rk=getRank(rec.best);
-          h+='<span class="pf" style="font-size:6px;background:'+rk.bg+';color:'+rk.color+';border:1px solid '+rk.color+';border-radius:2px;padding:1px 4px">'+rk.label+'</span>';
-          h+='<span style="font-size:10px;color:#fff;margin-left:4px">'+rec.best+'%</span>';
-          h+='<span style="font-size:9px;color:var(--tx3);margin-left:auto">'+rec.attempts+'x</span>';
-        }else h+='<span style="font-size:9px;color:var(--tx3)">Not attempted</span>';
-        h+='</div>';
-      });
-      h+='</div>';
-    }
-  }
   if(!S.isFinal)h+='<button class="btn gg pf" style="font-size:7px;margin-bottom:10px" onclick="studyDungeon('+S.di+')">&#x25BA; STUDY FLASHCARDS</button>';
-  // Speed round button  
-  h+='<button class="btn gp pf" style="font-size:7px;margin-bottom:10px" onclick="startSpeedRound('+S.di+')">&#x23F1; FLASHCARD SPEED ROUND</button>';
+  // Difficulty picker
   h+='<div class="pf" style="font-size:8px;color:var(--tx3);margin-bottom:8px">CHOOSE DIFFICULTY</div>';
   h+='<div class="diff-grid">';
   ['easy','normal','hard'].forEach(function(dk){
-    var dv=DIFF[dk];
+    const dv=DIFF[dk];
     h+='<div class="diff-card diff-'+dk[0]+' '+(S.difficulty===dk?' on':'')+'" onclick="pickDiff(\''+dk+'\')">';
     h+='<div class="pf" style="font-size:7px;margin-bottom:5px">'+dv.label+'</div>';
-    h+='<div style="font-size:8px;color:'+dv.color+';line-height:1.7">'+dv.desc.replace(/\|/g,'<br>')+'</div></div>';
+    h+='<div style="font-size:9px;line-height:1.8;white-space:pre">'+dv.desc+'</div></div>';
   });
   h+='</div>';
-  var unlockedSpells=getUnlockedSpells();
-  if(unlockedSpells.length){
-    h+='<button class="btn gp pf" style="font-size:7px;margin-bottom:8px" onclick="gotoSpells()">&#x1F52E; CHOOSE SPELL</button>';
-  }
-  var isFin=S.isFinal;
+  const isFin=S.isFinal;
   h+='<button class="btn '+(isFin?'gb2':'gn')+' pf" onclick="startQuiz('+S.di+','+isFin+')">&#x26A1; '+(isFin?'FACE THE FINAL BOSS':'START QUIZ')+'</button>';
   h+='</div></div>';
   return h;
 }
 
-// ── UPLOAD ──
 function uploadH(){
-  var char=aC();if(!char)return heroH();
-  if(!canAdd()){gotoPaywall();return'';}
+  const char=aC();if(!char)return homeH();
+  if(!canAdd()){goTo('paywall');return'';}
   var h=tb();
-  h+='<button class="back" onclick="gotoHero()">&#x25C4; Back</button>';
+  h+='<button class="back" onclick="goTo(\'home\')">&#x25C4; Back</button>';
   h+='<div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">';
   h+=sp(U.activeCls,char.gender,64);
   h+='<div><div class="pf" style="font-size:8px;color:var(--gold)">NEW DUNGEON</div>';
@@ -1167,15 +659,17 @@ function uploadH(){
     h+='<span style="font-size:8px;color:#c080ff">&#x1F512; LOCKED: </span><span style="font-size:9px;color:#fff">'+char.subject+'</span></div>';
   }
   h+='</div></div>';
-  h+=(char.subject?'<div style="font-size:12px;color:var(--tx3);margin-bottom:12px;line-height:1.8">Bound to <span style="color:var(--gold)">'+char.subject+'</span>. New dungeons must cover this subject.</div>':
-    '<div style="font-size:12px;color:var(--tx3);margin-bottom:12px;line-height:1.8">Upload notes or photos. Subject is <span style="color:var(--gold)">permanently locked</span> after the first dungeon.</div>');
+  h+=(char.subject
+    ?'<div style="font-size:12px;color:var(--tx3);margin-bottom:12px;line-height:1.8">Bound to <span style="color:var(--gold)">'+char.subject+'</span>. New dungeons must cover the same subject.</div>'
+    :'<div style="font-size:12px;color:var(--tx3);margin-bottom:12px;line-height:1.8">Upload notes or photos. The subject will be <span style="color:var(--gold)">permanently locked</span> to this hero after the first dungeon.</div>');
   h+='<div class="dropzone" id="dropzone" onclick="document.getElementById(\'fileinput\').click()" ';
   h+='ondragover="event.preventDefault();this.style.borderColor=\'#a060ff\'" ';
   h+='ondragleave="this.style.borderColor=\'#5030a0\'" ondrop="handleDrop(event)">';
   h+='<div style="font-size:30px;margin-bottom:10px">&#x1F4C2;</div>';
   h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:8px">UPLOAD NOTES</div>';
   h+='<div style="font-size:11px;color:var(--tx3);line-height:1.9">Click or drag files here<br>PDF, JPG, PNG, WEBP &mdash; up to 10 files<br><span style="color:#a060ff">Photos of handwritten notes work!</span></div>';
-  h+='<input id="fileinput" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" multiple style="display:none" onchange="handleFiles(this.files)"/></div>';
+  h+='<input id="fileinput" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" multiple style="display:none" onchange="handleFiles(this.files)"/>';
+  h+='</div>';
   if(S.uploadFiles&&S.uploadFiles.length>0){
     h+='<div style="background:#0a2010;border:2px solid #20a040;border-radius:8px;padding:10px 12px;margin-bottom:10px">';
     h+='<div style="font-size:11px;color:#60ff90;margin-bottom:6px">&#x2713; '+S.uploadFiles.length+'/10 files ready:</div>';
@@ -1187,71 +681,92 @@ function uploadH(){
     h+='</div>';
   }
   h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:6px">Or paste typed notes (optional):</div>';
-  h+='<textarea id="nta" placeholder="Paste typed notes here..." style="min-height:80px">'+S.notes+'</textarea>';
+  h+='<textarea id="nta" placeholder="Paste typed notes here (optional if uploading files)..." style="min-height:80px">'+S.notes+'</textarea>';
   if(S.err)h+='<div class="er">'+S.err+'</div>';
   h+='<button class="btn gc pf" onclick="doGen()">&#x26A1; CONJURE DUNGEON</button>';
   return h;
 }
 
-function handleDrop(e){e.preventDefault();var dz=document.getElementById('dropzone');if(dz)dz.style.borderColor='#5030a0';handleFiles(e.dataTransfer.files);}
+function handleDrop(e){
+  e.preventDefault();
+  var dz=document.getElementById('dropzone');if(dz)dz.style.borderColor='#5030a0';
+  handleFiles(e.dataTransfer.files);
+}
 function handleFiles(files){
-  if(!files||!files.length)return;if(!S.uploadFiles)S.uploadFiles=[];
+  if(!files||!files.length)return;
+  if(!S.uploadFiles)S.uploadFiles=[];
   Array.from(files).slice(0,10-S.uploadFiles.length).forEach(function(file){
     var reader=new FileReader();
     reader.onload=function(ev){
-      var b64=ev.target.result.split(',')[1];var nm=file.name.toLowerCase(),mtype=file.type||'image/jpeg';
+      var b64=ev.target.result.split(',')[1];
+      var nm=file.name.toLowerCase(),mtype=file.type||'image/jpeg';
       if(nm.endsWith('.jpg')||nm.endsWith('.jpeg'))mtype='image/jpeg';
       else if(nm.endsWith('.png'))mtype='image/png';
       else if(nm.endsWith('.webp'))mtype='image/webp';
       else if(nm.endsWith('.pdf'))mtype='application/pdf';
-      S.uploadFiles.push({name:file.name,b64:b64,mtype:mtype});draw();
+      S.uploadFiles.push({name:file.name,b64:b64,mtype:mtype});
+      draw();
     };
     reader.readAsDataURL(file);
   });
 }
 
 function buildPrompt(isFirst,char,isMath){
-  var mathExtra=isMath?'\n\nIMPORTANT FOR MATH: Do NOT repeat equations from notes. Generate NEW practice problems of the same TYPE with different numbers. Show full working in flashcard answers.':'';
-  var subjectLine=isFirst?'  "subject": "Specific academic subject, max 3 words",\n':'';
-  var subjectGuard=isFirst?'Also identify the subject field.':('Hero LOCKED to: "'+char.subject+'". If content is NOT about this subject, return ONLY: {"error":"WRONG_SUBJECT","detected":"(actual)"}. Otherwise generate without subject field.');
-  return subjectGuard+mathExtra+'\n\nReturn ONLY raw JSON:\n{\n'+subjectLine+'  "story":{"title":"Quest title max 8 words","setting":"Fantasy location","intro":"2-3 sentences with real terms","boss":"Boss name"},\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\n4-8 flashcards, 3-6 quiz questions, correct is 0-3.';
+  const mathExtra=isMath?'\n\nIMPORTANT FOR MATH: Do NOT just repeat equations from the notes. Generate NEW practice problems of the same TYPE but with different numbers/variables. For example if notes show "x+2=5, x=3", create a new equation like "2x-4=8, x=6" or "3x+1=10, x=3". Make quiz options plausible near-misses (e.g., off by 1, wrong operation). Flashcard answers should show the full working, not just the answer.':'';
+  const diffInst=S.difficulty==='hard'?'\n\nDIFFICULTY: HARD. Make questions trickier, use edge cases, add plausible distractors, avoid obvious wrong answers. Generate 6-8 quiz questions.':S.difficulty==='easy'?'\n\nDIFFICULTY: EASY. Keep questions straightforward, clear language, obvious wrong answers. Generate 3-5 quiz questions.':'\n\nGenerate 4-6 quiz questions.';
+  const subjectLine=isFirst?'  "subject": "Specific academic subject, max 3 words (e.g. American History, Algebra, Cell Biology)",\n':'';
+  const subjectGuard=isFirst?'Also identify the subject field.':('Hero is LOCKED to subject: "'+char.subject+'". If content is NOT about "'+char.subject+'", return ONLY: {"error":"WRONG_SUBJECT","detected":"(actual subject)"}. Otherwise generate normally without a subject field.');
+  return subjectGuard+mathExtra+diffInst+'\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 4-8 flashcards. correct is 0-3.';
 }
 
-async function callAPI(blocks){
-  var resp=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true','x-api-key':getApiKey()},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:blocks}]})
+async function callAPI(contentBlocks){
+  const resp=await fetch('https://runebook-api.vercel.app/api/proxy',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})
   });
-  if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,120));}
-  var data=await resp.json();if(data.error)throw new Error(data.error.message||'API error');
-  var raw=data.content.map(function(b){return b.text||'';}).join('');
-  var si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
-  if(si<0||ei<0)throw new Error('No JSON in response');
+  if(!resp.ok){const t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,120));}
+  const data=await resp.json();
+  if(data.error)throw new Error(data.error.message||'API error');
+  const raw=data.content.map(function(b){return b.text||'';}).join('');
+  const si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
+  if(si<0||ei<0)throw new Error('No JSON found in response');
   return JSON.parse(raw.slice(si,ei+1));
 }
 
 async function doGen(){
-  var ta=get('nta');if(ta)S.notes=ta.value;
-  var hasFiles=S.uploadFiles&&S.uploadFiles.length>0,hasText=S.notes&&S.notes.trim().length>0;
+  const ta=get('nta');if(ta)S.notes=ta.value;
+  const hasFiles=S.uploadFiles&&S.uploadFiles.length>0;
+  const hasText=S.notes&&S.notes.trim().length>0;
   if(!hasFiles&&!hasText){S.err='Please upload files or paste some notes!';draw();return;}
-  var char=aC();if(!char){draw();return;}
-  if(!canAdd()){gotoPaywall();return;}
+  const char=aC();if(!char){draw();return;}
+  if(!canAdd()){goTo('paywall');return;}
   S.screen='gen';S.err='';draw();
-  var isFirst=char.dungeons.length===0;
-  var isMath=char.subject&&/math|algebra|calculus|geometry|statistics|trig/i.test(char.subject);
+  const isFirst=char.dungeons.length===0;
+  const isMath=char.subject&&/math|algebra|calculus|geometry|statistics|trig/i.test(char.subject);
   var blocks=[];
   if(hasFiles)S.uploadFiles.forEach(function(f){
-    blocks.push(f.mtype==='application/pdf'?{type:'document',source:{type:'base64',media_type:'application/pdf',data:f.b64}}:{type:'image',source:{type:'base64',media_type:f.mtype,data:f.b64}});
+    blocks.push(f.mtype==='application/pdf'
+      ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:f.b64}}
+      :{type:'image',source:{type:'base64',media_type:f.mtype,data:f.b64}});
   });
   if(hasText)blocks.push({type:'text',text:'Additional typed notes:\n'+S.notes});
-  blocks.push({type:'text',text:'Generate study materials from the notes/images above.\n\n'+buildPrompt(isFirst,char,isMath)});
+  blocks.push({type:'text',text:'Generate study materials from the notes/images/documents above.\n\n'+buildPrompt(isFirst,char,isMath)});
   try{
-    var parsed=await callAPI(blocks);
-    if(parsed.error==='WRONG_SUBJECT'){S.err='Wrong subject! Locked to "'+char.subject+'" but content is about "'+parsed.detected+'".';S.screen='upload';S.uploadFiles=[];draw();return;}
-    if(!parsed.flashcards||!parsed.quiz)throw new Error('Missing content');
+    const parsed=await callAPI(blocks);
+    if(parsed.error==='WRONG_SUBJECT'){
+      S.err='Wrong subject! Locked to "'+char.subject+'" but content is about "'+parsed.detected+'". Use a different hero.';
+      S.screen='upload';S.uploadFiles=[];draw();return;
+    }
+    if(!parsed.flashcards||!parsed.quiz)throw new Error('Missing content in response');
     if(isFirst&&parsed.subject)char.subject=parsed.subject;
-    char.dungeons.push({id:Date.now().toString(),title:parsed.story?parsed.story.title:('Dungeon '+(char.dungeons.length+1)),
-      story:parsed.story||null,cards:parsed.flashcards,quiz:parsed.quiz,notes:S.notes,bestScore:0,attempts:0});
+    char.dungeons.push({
+      id:Date.now().toString(),
+      title:parsed.story?parsed.story.title:('Dungeon '+(char.dungeons.length+1)),
+      story:parsed.story||null,cards:parsed.flashcards,quiz:parsed.quiz,
+      notes:S.notes,fileNames:(hasFiles?S.uploadFiles.map(function(f){return f.name;}):null),
+      bestScore:0,attempts:0
+    });
     S.di=char.dungeons.length-1;S.notes='';S.uploadFiles=[];
     await saveUser();S.screen='dungeon';S.isFinal=false;
   }catch(ex){S.err='Dungeon generation failed: '+friendlyApiError(ex);S.screen='upload';S.uploadFiles=[];}
@@ -1259,104 +774,36 @@ async function doGen(){
 }
 
 async function genFinalBoss(){
-  var char=aC();if(!char)return;if(!finalBossUnlocked())return;
+  const char=aC();if(!char)return;
+  if(!finalBossUnlocked())return;
   S.screen='gen';S.err='';draw();
-  var summary=char.dungeons.map(function(d,i){return'Dungeon '+ROMAN[i]+': '+d.title;}).join('\n');
-  var allNotes=char.dungeons.map(function(d,i){return'=== DUNGEON '+ROMAN[i]+' ===\n'+(d.notes||'');}).join('\n\n');
-  var blocks=[{type:'text',text:'Generate a comprehensive FINAL EXAM for subject: '+char.subject+'.\n\nDungeons:\n'+summary+'\n\nNotes:\n'+allNotes+'\n\nReturn ONLY raw JSON:\n{"story":{"title":"Epic final title","setting":"Ultimate dungeon","intro":"2-3 sentences","boss":"Final boss name"},"flashcards":[{"question":"...","answer":"..."}],"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}\n10-15 quiz questions, 8-12 flashcards.'}];
+  // Collect all dungeon titles and topics
+  const summary=char.dungeons.map(function(d,i){return 'Dungeon '+ROMAN[i]+': '+d.title+(d.story&&d.story.setting?' ('+d.story.setting+')':'');}).join('\n');
+  const allNotes=char.dungeons.map(function(d,i){return '=== DUNGEON '+ROMAN[i]+': '+d.title+' ===\n'+(d.notes||'');}).join('\n\n');
+  const blocks=[{type:'text',text:'Generate a comprehensive FINAL EXAM covering ALL of the following dungeons for the subject: '+char.subject+'.\n\nDungeons covered:\n'+summary+'\n\nSource material:\n'+allNotes+'\n\nThis is a FINAL BOSS exam. Make it challenging and comprehensive. Mix questions from all dungeons.\n\nReturn ONLY raw JSON:\n{\n  "story":{\n    "title":"Epic final examination title",\n    "setting":"The ultimate dungeon — where all knowledge converges",\n    "intro":"2-3 sentences: the hero faces the ultimate test drawing on everything they have learned across all dungeons.",\n    "boss":"The ultimate final boss name representing mastery of the entire subject"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 10-15 quiz questions spanning all dungeons. Generate 8-12 flashcards. correct is 0-3.'}];
   try{
-    var parsed=await callAPI(blocks);if(!parsed.flashcards||!parsed.quiz)throw new Error('Missing content');
-    char.finalBoss={id:'final',title:parsed.story?parsed.story.title:'The Final Examination',story:parsed.story||null,cards:parsed.flashcards,quiz:parsed.quiz,bestScore:0,attempts:0};
+    const parsed=await callAPI(blocks);
+    if(!parsed.flashcards||!parsed.quiz)throw new Error('Missing content');
+    char.finalBoss={
+      id:'final',title:parsed.story?parsed.story.title:'The Final Examination',
+      story:parsed.story||null,cards:parsed.flashcards,quiz:parsed.quiz,
+      bestScore:0,attempts:0
+    };
     await saveUser();S.isFinal=true;S.screen='dungeon';
-  }catch(ex){S.err='Final boss failed: '+friendlyApiError(ex);S.screen='hero';}
+  }catch(ex){S.err='Final boss generation failed: '+ex.message;S.screen='home';}
   draw();
 }
 
 function genH(){
-  var h=tb();h+='<div class="la"><div class="spin">&#x2726;</div>';
+  var h=tb();
+  h+='<div class="la"><div class="spin">&#x2726;</div>';
   h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:14px">CONJURING'+(S.isFinal?' FINAL BOSS':'')+'...</div>';
-  h+='<div class="lm">Reading the scroll...<br>Weaving your story...<br>Forging challenges...<br><br>~15-25 seconds</div></div>';
+  h+='<div class="lm">Reading the ancient scroll...<br>Weaving your story...<br>Forging challenges...<br>'+(S.isFinal?'Summoning the ultimate boss...<br>':'')+'<br>~15-25 seconds</div></div>';
   return h;
-}
-function quizGenH(){
-  var dv=DIFF[S.diffChosen||S.difficulty||'normal'];
-  var h=tb();h+='<div class="la"><div class="spin">&#x2694;</div>';
-  h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:10px">PREPARING BATTLE...</div>';
-  h+='<div style="font-size:10px;color:'+dv.color+';margin-bottom:14px">'+dv.label+' MODE</div>';
-  h+='<div class="lm">Generating fresh questions...<br>~10 seconds</div></div>';
-  return h;
-}
-
-async function generateQuizQuestions(dung,diffConfig,isFinal,char){
-  var isMath=char&&char.subject&&/math|algebra|calculus|geometry|statistics|trig|arithmetic/i.test(char.subject);
-  var qCount=diffConfig.qCount||7,diffLabel=diffConfig.label||'NORMAL';
-  var diffPart='Difficulty: NORMAL. Mix straightforward and moderate.';
-  if(diffLabel==='EASY')diffPart='Difficulty: EASY. Clear simple questions. Obviously wrong choices.';
-  if(diffLabel==='HARD')diffPart='Difficulty: HARD. Tricky, edge cases, very plausible distractors.';
-  var mathPart='';
-  if(isMath){
-    var r1=Math.floor(Math.random()*18)+3,r2=Math.floor(Math.random()*12)+2,r3=Math.floor(Math.random()*9)+1;
-    if(diffLabel==='EASY')mathPart='MATH EASY: New one-step equations e.g. x+'+r1+'='+(r1+r2)+'. Never copy from notes.';
-    else if(diffLabel==='NORMAL')mathPart='MATH NORMAL: New two-step equations e.g. '+r3+'x+'+r1+'='+(r3*r2+r1)+'. Never copy from notes.';
-    else mathPart='MATH HARD: New complex multi-step problems, seeds '+r1+','+r2+','+r3+'. Never copy from notes.';
-  }
-  var source='No notes.';
-  if(dung.notes&&dung.notes.trim())source=dung.notes.slice(0,2500);
-  else if(dung.story)source=dung.story.title+'. '+(dung.story.intro||'');
-  var sysMsg='You are a quiz generator. Respond with ONLY valid JSON. No markdown, no code fences.';
-  var lines=['Generate '+qCount+' quiz questions based on source material below.',diffPart];
-  if(mathPart)lines.push(mathPart);
-  lines.push('SOURCE:\n'+source);
-  lines.push('Return ONLY: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}');
-  lines.push('Exactly '+qCount+' questions. correct is 0-3.');
-  var resp=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true','x-api-key':getApiKey()},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,system:sysMsg,messages:[{role:'user',content:lines.join('\n\n')}]})
-  });
-  if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
-  var data=await resp.json();if(data.error)throw new Error(data.error.message||'API error');
-  var raw=data.content.map(function(b){return b.text||'';}).join('').trim();
-  raw=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-  var si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
-  if(si<0||ei<0)throw new Error('No JSON found');
-  var parsed;try{parsed=JSON.parse(raw.slice(si,ei+1));}
-  catch(e){var fixed=raw.slice(si,ei+1).replace(/,(\s*[}\]])/g,'$1');try{parsed=JSON.parse(fixed);}catch(e2){throw new Error('Response was not valid JSON. Try again.');}}
-  if(!parsed.quiz||!Array.isArray(parsed.quiz)||!parsed.quiz.length)throw new Error('No quiz in response');
-  return parsed.quiz;
-}
-
-async function startQuiz(i,isFinal){
-  S.di=i;S.isFinal=!!isFinal;S.diffChosen=S.difficulty;
-  var d=curDiff();
-  S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];
-  S.heroHP=d.hp;S.heroMaxHP=d.hp;
-  S.bossMaxHP=100;S.bossHP=100;S.liveQuiz=null;
-  S.spellUsed=false;S.shieldActive=false;S.doubleActive=false;
-  var char=aC();if(!char){S.screen='home';draw();return;}
-  var dung=isFinal?char.finalBoss:char.dungeons[i];
-  if(!dung){S.err='Dungeon not found. Please try again.';S.screen='dungeon';draw();return;}
-  S.screen='quizgen';draw();
-  try{
-    var fresh=await generateQuizQuestions(dung,d,isFinal,char);
-    if(!fresh||!fresh.length)throw new Error('No questions returned');
-    S.liveQuiz=fresh;S.screen='quiz';
-  }catch(ex){
-    console.warn('Fresh gen failed:',ex.message);S._lastQuizErr=friendlyApiError(ex);
-    if(dung.quiz&&dung.quiz.length){S.liveQuiz=dung.quiz.slice().sort(function(){return Math.random()-.5;}).slice(0,d.qCount||7);S.screen='quiz';}
-    else{S.err=(S._lastQuizErr||'Could not load questions.')+' Using your saved questions instead.';S.screen='dungeon';}
-  }
-  draw();
-}
-
-// ── FLASHCARDS (with speed round) ──
-function startSpeedRound(i){
-  S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;S.speedMode=true;S.speedLeft=5;
-  if(S.speedTimer)clearInterval(S.speedTimer);
-  goTo('fc');
 }
 
 function getCards(){
-  var d=aD();if(!d||!d.cards)return[];
+  const d=aD();if(!d||!d.cards)return[];
   if(!S.shuffled){
     S.shuffled=d.cards.map(function(_,i){return i;});
     for(var i=S.shuffled.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=S.shuffled[i];S.shuffled[i]=S.shuffled[j];S.shuffled[j]=tmp;}
@@ -1365,37 +812,22 @@ function getCards(){
 }
 
 function fcH(){
-  var cards=getCards();if(!cards.length)return heroH();
-  var d=aD();if(!S.againPile)S.againPile=[];
-  var isReview=S.ci>=cards.length;
-  var card=isReview?S.againPile[S.ci-cards.length]:cards[S.ci];
-  if(!card)return heroH();
-  // Speed round timer
-  if(S.speedMode&&!S.fl&&!isReview&&!S.speedTimer){
-    S.speedLeft=5;
-    S.speedTimer=setInterval(function(){
-      S.speedLeft--;
-      if(S.speedLeft<=0){clearInterval(S.speedTimer);S.speedTimer=null;cr(false);}
-      else draw();
-    },1000);
-  }
+  const cards=getCards();if(!cards.length)return homeH();
+  const d=aD();if(!S.againPile)S.againPile=[];
+  const isReview=S.ci>=cards.length;
+  const card=isReview?S.againPile[S.ci-cards.length]:cards[S.ci];
+  if(!card)return homeH();
   var dots='';
   cards.forEach(function(_,i){dots+='<div class="dot'+(i<S.ci?' dn':i===S.ci?' nw':'')+'"></div>';});
   var h=tb();
   if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
-  h+='<button class="back" onclick="endFC()">&#x25C4; Back</button>';
-  if(S.speedMode)h+='<div class="pf" style="font-size:8px;color:#ff8070;text-align:center;margin-bottom:6px">&#x23F1; SPEED ROUND</div>';
+  h+='<button class="back" onclick="endFC()">&#x25C4; Back to Quest</button>';
   if(d&&d.story)h+='<div style="font-size:10px;color:var(--tx3);margin-bottom:9px">&#x2726; <span style="color:#ffd060">'+d.story.title+'</span></div>';
   if(isReview)h+='<div style="background:#280a08;border:2px solid #c03020;border-radius:6px;padding:6px 12px;margin-bottom:9px;font-size:10px;color:#ff8070">&#x21BA; REVIEWING MISSED CARDS ('+S.againPile.length+' remaining)</div>';
   h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">';
-  h+='<div class="pf" style="font-size:7px;color:var(--tx3)">'+(isReview?'Review ':('Card '+(S.ci+1)+' / '))+cards.length+'</div>';
-  if(S.speedMode&&!S.fl&&!isReview)h+='<div class="timer-num" style="color:'+(S.speedLeft<=2?'#ff4040':'#ff9040')+'">'+S.speedLeft+'</div>';
-  if(S.againPile.length>0&&!isReview)h+='<div style="font-size:9px;color:#ff8070">&#x21BA; '+S.againPile.length+'</div>';
+  h+='<div class="pf" style="font-size:7px;color:var(--tx3)">'+(isReview?'Review':'Card ')+(isReview?'':S.ci+1)+' / '+cards.length+'</div>';
+  if(S.againPile.length>0&&!isReview)h+='<div style="font-size:9px;color:#ff8070">&#x21BA; '+S.againPile.length+' to review</div>';
   h+='</div>';
-  if(S.speedMode&&!S.fl&&!isReview){
-    var pct=Math.round(S.speedLeft/5*100);
-    h+='<div class="timer-bar"><div class="timer-fill" style="width:'+pct+'%;background:'+(pct>50?'#20b050':pct>20?'#d09020':'#c02020')+'"></div></div>';
-  }
   h+='<div class="dots">'+dots+'</div>';
   h+='<div class="fw" onclick="flip()"><div class="fi'+(S.fl?' fl':'')+'">';
   h+='<div class="cf"><div class="ctg">QUESTION</div><div class="cq">'+card.question+'</div><div class="ctp pf">[ tap to reveal ]</div></div>';
@@ -1403,96 +835,77 @@ function fcH(){
   h+='</div></div>';
   if(S.fl){
     h+='<div class="row"><button class="btn gx pf f1" style="font-size:7px" onclick="cr(false)">&#x2715; AGAIN</button>';
-    h+='<button class="btn gn pf f1" style="font-size:7px" onclick="cr(true)">&#x2713; GOT IT '+(S.speedMode?'+20':'+10')+' XP</button></div>';
-  }else if(!S.speedMode){
+    h+='<button class="btn gn pf f1" style="font-size:7px" onclick="cr(true)">&#x2713; GOT IT +10 XP</button></div>';
+  }else{
     h+='<div class="row">';
     if(S.ci>0&&!isReview)h+='<button class="btn gr pf" style="font-size:7px" onclick="prevC()">&#x25C4; PREV</button>';
     h+='<button class="btn gg pf f1" style="font-size:7px" onclick="flip()">REVEAL ANSWER</button></div>';
   }
   return h;
 }
-function endFC(){
-  if(S.speedTimer){clearInterval(S.speedTimer);S.speedTimer=null;}
-  S.againPile=null;S.shuffled=null;S.speedMode=false;
-  goTo('dungeon');
-}
+function endFC(){S.againPile=null;S.shuffled=null;goTo('dungeon');}
 
-// ── QUIZ ──
 function heartsH(){
-  var h='';for(var i=0;i<S.heroMaxHP;i++){h+='<span class="heart'+(i<S.heroHP?' ':' lost')+'">&#x2764;</span>';}return h;
+  var h='';
+  for(var i=0;i<S.heroMaxHP;i++){h+='<span class="heart'+(i<S.heroHP?'':' lost')+'">&#x2764;</span>';}
+  return h;
 }
 function calcXP(base){
-  var d=curDiff(),mult=1;
+  const d=curDiff();
+  var mult=1;
   if(S.streak>=4)mult=3;else if(S.streak>=3)mult=2;else if(S.streak>=2)mult=1.5;
   return Math.round(base*mult*d.xpMult);
 }
 
 function quizH(){
-  var quiz=S.liveQuiz;
-  if(!quiz||!quiz.length){var _fd=aD();if(_fd&&_fd.quiz&&_fd.quiz.length){quiz=_fd.quiz;S.liveQuiz=quiz;}else return heroH();}
-  if(S.qi>=quiz.length)return qdH();
+  const d=aD();if(!d||!d.quiz||!d.quiz.length)return homeH();
+  if(S.qi>=d.quiz.length)return qdH();
   if(S.heroHP<=0)return gameOverH();
-  var d=aD();
-  var q=quiz[S.qi],ans=S.sel!==null;
-  var bPct=Math.min(100,Math.round(S.bossHP/(S.bossMaxHP||100)*100));
-  var bName=(d&&d.story&&d.story.boss)?d.story.boss:'The Boss';
-  var char=aC(),dv=DIFF[S.diffChosen||'normal'];
+  const q=d.quiz[S.qi],ans=S.sel!==null;
+  const bPct=Math.round(S.bossHP/S.bossMaxHP*100);
+  const hPct=Math.round(S.heroHP/S.heroMaxHP*100);
+  const bName=(d.story&&d.story.boss)?d.story.boss:'The Boss';
+  const char=aC();
   var h=tb();
   if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
   h+='<button class="back" onclick="goTo(\'dungeon\')">&#x25C4; Retreat</button>';
-  // Gauntlet progress
-  if(S.gauntlet){
-    var char2=aC();var total=char2?char2.dungeons.length:1;
-    h+='<div class="gauntlet-chain">';
-    for(var gi=0;gi<total;gi++){
-      h+='<div class="gc-node'+(gi<S.gauntletIdx?' done':gi===S.gauntletIdx?' active':'')+'"><div style="font-size:7px;color:'+(gi===S.gauntletIdx?'var(--gold)':gi<S.gauntletIdx?'#60ff90':'var(--tx3)')+'">'+ROMAN[gi]+'</div></div>';
-      if(gi<total-1)h+='<div style="font-size:12px;color:var(--tx3)">&#x25BA;</div>';
-    }
-    h+='</div>';
-  }
-  // Combat
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">';
-  h+='<div style="background:#08122a;border:2px solid #2060d0;border-radius:10px;padding:10px;text-align:center;">';
-  h+='<div class="pf" style="font-size:7px;color:#4080ff;margin-bottom:6px">HERO</div>';
-  h+='<div style="margin-bottom:6px;display:flex;justify-content:center;gap:3px;flex-wrap:wrap;">'+heartsH()+'</div>';
-  if(S.shieldActive)h+='<div style="font-size:9px;color:#60ffaa;margin-bottom:4px">&#x1F6E1; SHIELDED</div>';
-  if(S.doubleActive)h+='<div style="font-size:9px;color:#ffd040;margin-bottom:4px">&#x26A1; DOUBLE DMG</div>';
-  if(char)h+='<div style="display:inline-block;animation:bob 2.5s ease-in-out infinite;">'+sp(U.activeCls,char.gender,110)+'</div>';
-  h+='<div style="font-size:8px;color:var(--tx3);margin-top:4px">'+(char?char.charName:'Hero')+'</div>';
+  // Combat bars
+  h+='<div class="combat-bars">';
+  // Hero bar
+  h+='<div class="cbar cbar-hero">';
+  h+='<div class="cbar-label" style="color:#4080ff">HERO</div>';
+  h+='<div class="cbar-name">'+heartsH()+'</div>';
+  if(char)h+='<div style="margin-top:4px">'+sp(U.activeCls,char.gender,44)+'</div>';
   h+='</div>';
-  h+='<div style="background:#180808;border:2px solid #a02020;border-radius:10px;padding:10px;text-align:center;">';
-  h+='<div class="pf" style="font-size:7px;color:#ff4040;margin-bottom:4px">BOSS</div>';
-  h+='<div style="font-size:8px;color:#ffbbcc;margin-bottom:6px;word-break:break-word;">'+bName+'</div>';
-  h+=bossSprite(bName,90);
-  h+='<div style="height:14px;background:#0a0408;border-radius:7px;border:2px solid #5a1020;overflow:hidden;margin:8px 0 4px;">';
-  h+='<div style="height:100%;background:'+(bPct>60?'#dd2020':bPct>30?'#dd6020':'#dddd20')+';width:'+bPct+'%;transition:width .5s;border-radius:5px;"></div></div>';
-  h+='<div class="pf" style="font-size:7px;color:#ff8090;">'+Math.ceil(S.bossHP)+'/100 HP</div>';
+  // Boss bar
+  h+='<div class="cbar cbar-boss">';
+  h+='<div class="cbar-label" style="color:#ff4040">BOSS</div>';
+  h+='<div class="cbar-name" style="font-size:8px;color:#ffbbcc">'+bName+'</div>';
+  h+='<div>'+bossSprite(bName,44)+'</div>';
+  h+='<div class="hp-track"><div class="hp-fill" style="width:'+bPct+'%;background:'+(bPct>60?'#cc2020':bPct>30?'#cc6020':'#cccc20')+'"></div></div>';
+  h+='<div class="hp-text" style="color:#ff8090">'+S.bossHP+'/'+S.bossMaxHP+' HP</div>';
   h+='</div></div>';
+  // Streak bar
   if(S.streak>=2){
     h+='<div class="streak-bar"><span class="streak-fire">'+(S.streak>=4?'&#x1F525;&#x1F525;':S.streak>=3?'&#x1F525;':'&#x26A1;')+'</span>';
     h+='<span class="streak-text pf">'+(S.streak>=4?'x3 COMBO!':S.streak>=3?'x2 COMBO!':'x1.5 BONUS!')+'</span>';
-    h+='<span class="streak-bonus">+'+calcXP(20)+' XP next</span></div>';
+    h+='<span class="streak-bonus">'+(S.streak>=4?'+'+calcXP(20)+' XP next':S.streak>=3?'+'+calcXP(20)+' XP next':'+'+calcXP(20)+' XP next')+'</span></div>';
   }
-  h+='<div class="pf" style="font-size:7px;color:var(--tx3);text-align:center;margin-bottom:9px">TRIAL '+(S.qi+1)+' OF '+quiz.length+' &bull; <span style="color:'+dv.color+'">'+dv.label+'</span></div>';
+  h+='<div class="pf" style="font-size:7px;color:var(--tx3);text-align:center;margin-bottom:9px">TRIAL '+(S.qi+1)+' OF '+quiz.length+'</div>';
   h+='<div class="qbox">'+q.question+'</div>';
   h+='<div class="ops">';
   q.options.forEach(function(o,i){
-    var cls2='op';
-    if(ans){cls2+=' ds';if(i===q.correct)cls2+=' co';else if(i===S.sel)cls2+=' wr';}
-    h+='<button class="'+cls2+'" '+(ans?'':'onclick="pick('+i+')"')+'>'+String.fromCharCode(65+i)+'. '+o+'</button>';
+    var cls='op';
+    if(ans){cls+=' ds';if(i===q.correct)cls+=' co';else if(i===S.sel)cls+=' wr';}
+    h+='<button class="'+cls+'" '+(ans?'':'onclick="pick('+i+')"')+'>'+String.fromCharCode(65+i)+'. '+o+'</button>';
   });
   h+='</div>';
-  // Spell button (if chosen and not used)
-  if(S.chosenSpell&&!S.spellUsed){
-    var sp2=SPELLS.find(function(s){return s.id===S.chosenSpell;});
-    if(sp2)h+='<div class="spell-btn" onclick="useSpell()" title="Use '+sp2.name+'">'+sp2.icon+'</div>';
-  }
   if(ans){
-    var ok=S.sel===q.correct||S.sel==='skip';
-    var feedMsg=S.sel==='skip'?'&#x23ED; SKIPPED':ok?(S.streak>=3?'&#x1F525; COMBO! +'+S.pa+' XP':S.streak>=2?'&#x26A1; STREAK! +'+S.pa+' XP':'&#x2713; Correct! +'+S.pa+' XP'):'&#x2715; Wrong — -1 HP!';
-    h+='<div style="margin-top:14px;text-align:center;font-size:'+(ok?'12':'11')+'px;color:'+(ok?'#60ff90':'#ff8070')+'">'+feedMsg+'</div>';
+    const ok=S.sel===q.correct;
+    var msg=ok?(S.streak>=3?'&#x1F525; COMBO! +'+S.pa+' XP':S.streak>=2?'&#x26A1; STREAK! +'+S.pa+' XP':'&#x2713; Correct! +'+S.pa+' XP'):'&#x2715; Wrong \u2014 -1 HP!';
+    h+='<div style="margin-top:14px;text-align:center;font-size:'+(ok?'12':'11')+'px;color:'+(ok?'#60ff90':'#ff8070')+'">'+msg+'</div>';
     if(S.heroHP>0){
-      var btnTxt=S.qi<quiz.length-1?'NEXT TRIAL &#x25BA;':(S.gauntlet?'NEXT DUNGEON &#x25BA;':S.isFinal?'CLAIM DESTINY':'DEFEAT THE BOSS');
+      var btnTxt=S.qi<quiz.length-1?'NEXT TRIAL &#x25BA;':(S.isFinal?'CLAIM YOUR DESTINY':'DEFEAT THE BOSS');
       h+='<div style="text-align:center;margin-top:10px"><button class="btn '+(ok?'gn':'gr')+' pf" style="width:auto;padding:10px 20px;font-size:7px" onclick="nq()">'+btnTxt+'</button></div>';
     }
   }
@@ -1500,193 +913,111 @@ function quizH(){
 }
 
 function gameOverH(){
-  var d=aD();var bName=d&&d.story&&d.story.boss?d.story.boss:'The Boss';
+  const d=aD();
+  const bName=d&&d.story&&d.story.boss?d.story.boss:'The Boss';
   var h=tb();
   h+='<div style="text-align:center;padding:20px 0">';
   h+='<div style="font-size:48px;margin-bottom:12px">&#x1F480;</div>';
   h+='<div class="pf" style="font-size:12px;color:#ff4040;margin-bottom:8px">DEFEATED!</div>';
   h+='<div style="font-size:12px;color:var(--tx3);margin-bottom:16px;line-height:1.8">"'+bName+'" has defeated you!<br>Train harder and try again.</div>';
-  if(S.gauntlet){h+='<div style="font-size:11px;color:#ff8070;margin-bottom:12px">Gauntlet run ended at dungeon '+ROMAN[S.gauntletIdx]+'.</div>';S.gauntlet=false;}
   h+='<div class="rb">';
   h+='<button class="btn gx pf" style="width:auto;padding:10px 16px;font-size:7px" onclick="rq()">TRY AGAIN</button>';
-  h+='<button class="btn gr pf" style="width:auto;padding:10px 16px;font-size:7px" onclick="gotoHero()">RETREAT</button>';
+  h+='<button class="btn gr pf" style="width:auto;padding:10px 16px;font-size:7px" onclick="goTo(\'home\')">RETREAT</button>';
   h+='</div></div>';
   return h;
 }
 
 function qdH(){
-  var d=aD();if(!d)return heroH();
+  const d=aD();if(!d)return homeH();
   var quiz=S.liveQuiz||(d?d.quiz:[]);
-  var total=quiz&&quiz.length?quiz.length:1;
-  var p=Math.round(S.qs/total*100);
-  var won=p>=70,rank=getRank(p),dv=DIFF[S.diffChosen||'normal'],diffKey=S.diffChosen||'normal';
-
-  // Save per-diff record
-  if(!d.scores)d.scores={easy:{best:0,attempts:0},normal:{best:0,attempts:0},hard:{best:0,attempts:0}};
-  if(!d.scores[diffKey])d.scores[diffKey]={best:0,attempts:0};
-  if(p>d.scores[diffKey].best)d.scores[diffKey].best=p;
-  d.scores[diffKey].attempts=(d.scores[diffKey].attempts||0)+1;
-  var allBest=Math.max(d.scores.easy.best||0,d.scores.normal.best||0,d.scores.hard.best||0);
-  if(allBest>(d.bestScore||0))d.bestScore=allBest;
-  d.attempts=(d.attempts||0)+1;
-  // Track stats
-  if(!U._stats)U._stats={perfects:0,sRanks:0,maxCombo:0,questDays:0,gauntletWins:0,spellsUsed:0};
-  if(p>=100)U._stats.perfects=(U._stats.perfects||0)+1;
-  if(rank.label==='S')U._stats.sRanks=(U._stats.sRanks||0)+1;
-  U._stats.maxCombo=Math.max(U._stats.maxCombo||0,S.streak);
-  // Rank XP bonus
-  var rankXP=rank.xp;
-  if(rankXP>0){U.xp+=rankXP;U.lv=Math.floor(U.xp/XL)+1;}
-  if(p>=100){U.xp+=50;U.lv=Math.floor(U.xp/XL)+1;}
-  // Quest updates
-  if(won){updateQuest('score_rank',p);updateQuest('any_clear',1);}
-  if(won&&diffKey==='hard')updateQuest('clear_diff','hard');
-  if(S.heroHP===S.heroMaxHP&&won)updateQuest('full_hp',1);
-  updateQuest('win_streak',won?1:0);
-  // Mastery stars
-  var newMastery=getMastery(d);
-  saveUser();
-  // Check achievements
-  var newAch=checkAchievements();
-  if(newAch.length)S.unlockPopup=newAch[0];
-
-  var bName=d.story&&d.story.boss?d.story.boss:'The Boss';
+  const p=quiz&&quiz.length?Math.round(S.qs/quiz.length*100):0,won=p>=70,perfect=quiz&&S.qs===quiz.length;
+  const g=p>=90?'S RANK':p>=70?'A RANK':p>=50?'B RANK':'C RANK';
+  const bName=d.story&&d.story.boss?d.story.boss:'The Boss';
+  const dv=DIFF[S.diffChosen||'normal'];
+  if(p>(d.bestScore||0)){d.bestScore=p;saveUser();}
+  d.attempts=(d.attempts||0)+1;saveUser();
   var h=tb();
-  // Achievement popup
-  if(S.unlockPopup){
-    var up=S.unlockPopup;
-    h+='<div class="unlock-pop" onclick="S.unlockPopup=null;draw()">';
-    h+='<div style="font-size:36px;margin-bottom:8px">'+up.icon+'</div>';
-    h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:5px">ACHIEVEMENT UNLOCKED!</div>';
-    h+='<div class="pf" style="font-size:9px;color:#fff;margin-bottom:5px">'+up.name+'</div>';
-    h+='<div style="font-size:10px;color:var(--tx3)">'+up.desc+'</div>';
-    h+='<div style="font-size:9px;color:var(--tx3);margin-top:8px">tap to dismiss</div></div>';
+  h+='<div style="text-align:center;padding:14px 0 10px">';
+  h+='<div style="font-size:44px;margin-bottom:12px">'+(perfect?'&#x1F451;':won?'&#x2B50;':'&#x25C6;')+'</div>';
+  if(perfect){
+    h+='<div class="perfect-banner"><div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:6px">&#x2605; PERFECT SCORE! &#x2605;</div>';
+    h+='<div style="font-size:11px;color:#c0d0ff">Bonus <span style="color:var(--gold)">+50 XP</span> awarded!</div></div>';
   }
-  h+='<div style="text-align:center;padding:10px 0">';
-  // Rank banner
-  h+='<div style="background:'+rank.bg+';border:3px solid '+rank.color+';border-radius:12px;padding:16px;margin-bottom:12px">';
-  h+='<div style="font-size:44px;margin-bottom:6px">'+rank.icon+'</div>';
-  h+='<div class="pf" style="font-size:22px;color:'+rank.color+';margin-bottom:4px">'+rank.label+' RANK</div>';
-  h+='<div class="pf" style="font-size:9px;color:'+rank.color+';opacity:.8;margin-bottom:8px">'+rank.name+'</div>';
-  h+='<div class="pf" style="font-size:26px;color:#fff;margin-bottom:4px">'+p+'%</div>';
-  h+=(won?'<div style="font-size:11px;color:'+rank.color+'">&#x2694; "'+bName+'" slain!</div>':'<div style="font-size:11px;color:#ff8070">"'+bName+'" still lurks... (need 70%)</div>');
-  if(rankXP>0)h+='<div style="margin-top:8px;font-size:9px;color:var(--gold)">RANK BONUS +'+rankXP+' XP</div>';
-  // Mastery stars
-  h+='<div style="margin-top:10px">'+masteryStars(d)+'</div>';
+  h+='<div style="font-size:11px;color:'+(won?'#ffd060':'#ff8070')+';margin-bottom:10px;line-height:1.6">';
+  h+=won?'&#x2694; "'+bName+'" has been slain!':'"'+bName+'" still lurks...';
   h+='</div>';
-  h+='<div style="font-size:9px;color:'+dv.color+';margin-bottom:8px">'+dv.label+' MODE</div>';
-  h+='<div class="sg3" style="margin-bottom:12px">';
-  h+='<div class="sc"><div class="sv">'+S.qs+'/'+total+'</div><div class="sl">CORRECT</div></div>';
+  h+='<div style="font-size:9px;color:'+dv.color+';margin-bottom:12px">'+dv.label+' MODE</div>';
+  h+='<div class="pf" style="font-size:22px;color:var(--gold);margin-bottom:5px">'+p+'%</div>';
+  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:16px">'+g+'</div>';
+  h+='<div class="sg3">';
+  h+='<div class="sc"><div class="sv">'+S.qs+'/'+(quiz?quiz.length:0)+'</div><div class="sl">CORRECT</div></div>';
   h+='<div class="sc"><div class="sv">'+S.heroHP+'&#x2764;</div><div class="sl">HP LEFT</div></div>';
-  h+='<div class="sc"><div class="sv">'+(S.sxp+rankXP+(p>=100?50:0))+'</div><div class="sl">XP TOTAL</div></div>';
-  h+='</div>';
-  // Per-diff records
-  if(d.scores){
-    h+='<div style="background:#140a38;border:2px solid #5030a0;border-radius:9px;padding:10px;margin-bottom:12px;text-align:left">';
-    h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:6px">YOUR RECORDS</div>';
-    ['easy','normal','hard'].forEach(function(dk){
-      var rec=getDiffRecord(d,dk),dkv=DIFF[dk],isThis=dk===diffKey;
-      h+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #2a1060;opacity:'+(rec.attempts?'1':'.4')+'">';
-      h+='<div style="min-width:50px"><span class="pf" style="font-size:7px;color:'+dkv.color+'">'+dkv.label+'</span>'+(isThis?'<span style="color:var(--gold)"> &#x25C4;</span>':'')+'</div>';
-      if(rec.attempts){var rk=getRank(rec.best);
-        h+='<span class="pf" style="font-size:6px;background:'+rk.bg+';color:'+rk.color+';border:1px solid '+rk.color+';border-radius:2px;padding:1px 4px">'+rk.label+'</span>';
-        h+='<span style="font-size:10px;color:#fff;margin-left:4px">'+rec.best+'%</span>';
-        h+='<span style="font-size:9px;color:var(--tx3);margin-left:auto">'+rec.attempts+'x</span>';
-      }else h+='<span style="font-size:9px;color:var(--tx3)">Not attempted</span>';
-      h+='</div>';
-    });
-    h+='</div>';
-  }
-  // Share card
-  var shareText='[Runebook]\n'+rank.label+' Rank — '+p+'% — '+dv.label+'\n'+(d.story?d.story.title:'Quiz')+(won?'\n"'+bName+'" defeated!':'')+'\nLV'+U.lv+' '+clsInfo(U.activeCls).name;
-  h+='<div class="share-card" id="shareCard">'+shareText+'</div>';
-  h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:12px" onclick="copyShare()">&#x1F4CB; COPY RESULT CARD</button>';
-  h+='<div class="rb">';
+  h+='<div class="sc"><div class="sv">'+S.sxp+(perfect?'+50':'')+'</div><div class="sl">XP EARNED</div></div>';
+  h+='</div><div class="rb">';
   h+='<button class="btn gc pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="rq()">RETRY</button>';
   if(!S.isFinal)h+='<button class="btn gg pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="studyDungeon('+S.di+')">STUDY</button>';
   h+='<button class="btn gg pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="goTo(\'dungeon\')">QUEST</button>';
-  h+='<button class="btn gr pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="gotoHero()">HALL</button>';
+  h+='<button class="btn gr pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="goTo(\'home\')">HALL</button>';
   h+='</div>';
   if(S.wrongAnswers&&S.wrongAnswers.length>0){
     h+='<div style="margin-top:20px;text-align:left"><div class="pf" style="font-size:8px;color:#ff8070;margin-bottom:10px">&#x2715; REVIEW WRONG ANSWERS</div>';
     S.wrongAnswers.forEach(function(w){
-      h+='<div class="review-card fadein"><div class="review-q">Q: '+w.question+'</div><div class="review-a">&#x2713; '+w.correct+'</div></div>';
+      h+='<div class="review-card fadein"><div class="review-q">Q: '+w.question+'</div>';
+      h+='<div class="review-a">&#x2713; '+w.correct+'</div></div>';
     });
     h+='</div>';
   }
   h+='</div>';return h;
 }
-function copyShare(){
-  var el=document.getElementById('shareCard');
-  if(!el)return;
-  var txt=el.innerText;
-  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){alert('Result card copied!');});}
-  else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Copied!');}
-}
 
-function proWelcomeH(){
-  var h=tb();
-  h+='<div style="text-align:center;padding:20px 0">';
-  h+='<div style="font-size:52px;margin-bottom:14px">&#x2605;</div>';
-  h+='<div class="pf" style="font-size:12px;color:#c080ff;margin-bottom:10px">WELCOME TO PRO!</div>';
-  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.9;margin-bottom:20px">All 8 hero classes unlocked.<br>Unlimited dungeons.<br>Monthly subject resets.<br>Go build your legend!</div>';
-  h+='<button class="btn gp pf" onclick="gotoHome()">LET\'S GO &#x25BA;</button>';
-  h+='</div>';
-  return h;
-}
 function paywallH(){
-  var h=tb();h+='<button class="back" onclick="gotoHome()">&#x25C4; Back</button>';
+  var h=tb();h+='<button class="back" onclick="goTo(\'home\')">&#x25C4; Back</button>';
   h+='<div style="max-width:380px;margin:0 auto"><div class="pf" style="font-size:9px;color:var(--gold);text-align:center;margin-bottom:5px">&#x2605; UNLOCK PRO &#x2605;</div>';
-  h+='<div style="font-size:12px;color:var(--tx3);text-align:center;margin-bottom:15px">Unlock all heroes and unlimited dungeons.</div>';
+  h+='<div style="font-size:12px;color:var(--tx3);text-align:center;margin-bottom:15px">Unlock all heroes. Unlimited dungeons.</div>';
   h+='<div class="plans">';
   h+='<div class="plan"><div class="pf" style="font-size:8px;color:var(--tx2);margin-bottom:9px">FREE</div>';
   h+='<div class="pf" style="font-size:20px;color:#60ffaa;margin-bottom:3px">$0</div>';
   h+='<div style="font-size:9px;color:var(--tx3)">forever</div>';
-  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.9;text-align:left;margin-top:9px">1 hero<br>3 dungeons<br>One subject reset<br>Daily quests<br>Achievements</div></div>';
+  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.9;text-align:left;margin-top:9px">3 heroes<br>3 dungeons/hero<br>All difficulties<br>Final Boss exam<br>Daily streak</div></div>';
   h+='<div class="plan feat"><div class="pf" style="font-size:8px;color:#c080ff;margin-bottom:9px">PRO &#x2605;</div>';
   h+='<div class="pf" style="font-size:20px;color:var(--gold);margin-bottom:3px">$4.99</div>';
   h+='<div style="font-size:9px;color:var(--tx3)">/month</div>';
-  h+='<div style="font-size:11px;color:#9878c8;line-height:1.9;text-align:left;margin-top:9px">All 8 hero classes<br>Unlimited dungeons<br>Monthly subject reset<br>Priority support</div>';
+  h+='<div style="font-size:11px;color:#9878c8;line-height:1.9;text-align:left;margin-top:9px">All 8 hero classes<br>Unlimited dungeons<br>File uploads<br>All features<br>Priority support</div>';
   h+='<button class="btn gp pf" style="margin-top:13px;font-size:7px" onclick="mockSub()">SUBSCRIBE NOW</button></div></div>';
   h+='<div class="tip">In production: Stripe, Apple Pay, or Google Pay</div></div>';
   return h;
 }
-async function mockSub(){U.isPro=true;await saveUser();S.screen='pro-welcome';draw();}
+async function mockSub(){U.isPro=true;await saveUser();alert('Welcome to PRO!\nAll 8 heroes and unlimited dungeons unlocked!');goTo('home');}
 
 function lvupH(){
-  var char=aC();var h=tb();
-  h+='<div class="lvup-screen fadein"><div style="font-size:52px;margin-bottom:14px">&#x1F31F;</div>';
+  const char=aC();var h=tb();
+  h+='<div class="lvup-screen fadein">';
+  h+='<div style="font-size:52px;margin-bottom:14px">&#x1F31F;</div>';
   h+='<div class="pf" style="font-size:14px;color:var(--gold);margin-bottom:10px">LEVEL UP!</div>';
   h+='<div style="font-size:28px;color:#fff;margin-bottom:6px">Level '+U.lv+'</div>';
-  var unlockedNow=SPELLS.find(function(s){return s.lvReq===U.lv;});
-  if(unlockedNow)h+='<div style="background:#2a0850;border:2px solid #c080ff;border-radius:8px;padding:10px;margin-bottom:12px"><div class="pf" style="font-size:8px;color:#c080ff;margin-bottom:5px">&#x1F52E; SPELL UNLOCKED!</div><div style="font-size:22px">'+unlockedNow.icon+'</div><div class="pf" style="font-size:8px;color:var(--gold)">'+unlockedNow.name+'</div></div>';
   h+='<div class="pf" style="font-size:10px;color:#c080ff;margin-bottom:20px">'+TNAME(U.lv)+'</div>';
   if(char)h+='<div class="bob" style="margin:0 auto 18px;display:inline-block">'+sp(U.activeCls,char.gender,120)+'</div>';
-  h+='<button class="btn gc pf" onclick="lvupContinue()">CONTINUE &#x25BA;</button></div>';
+  h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:20px;line-height:1.8">'+(char?char.charName:'Your hero')+' grows stronger!</div>';
+  h+='<button class="btn gc pf" onclick="goTo(\'home\')">CONTINUE &#x25BA;</button></div>';
   return h;
 }
 
 function xpu(n,msg){
-  var prev=U.lv;U.xp+=n;S.sxp+=n;S.pa=n;S.pop=true;S.popMsg=msg||'+'+n+' XP';
+  const prev=U.lv;U.xp+=n;S.sxp+=n;S.pa=n;S.pop=true;S.popMsg=msg||'+'+n+' XP';
   U.lv=Math.floor(U.xp/XL)+1;saveUser();
-  if(U.lv>prev){setTimeout(function(){S.lvupData={};S.prevScreen=S.screen;S.screen='lvup';draw();},400);}
+  if(U.lv>prev){setTimeout(function(){S.lvupData={};S.screen='lvup';draw();},400);}
   else setTimeout(function(){S.pop=false;draw();},1800);
 }
-function flip(){
-  if(S.speedTimer){clearInterval(S.speedTimer);S.speedTimer=null;}
-  S.fl=!S.fl;draw();
-}
+function flip(){S.fl=!S.fl;draw();}
 function prevC(){if(S.ci>0){S.ci--;S.fl=false;draw();}}
 function cr(k){
-  if(S.speedTimer){clearInterval(S.speedTimer);S.speedTimer=null;}
-  var xpAmt=S.speedMode?20:10;
-  if(k){xpu(xpAmt);updateQuest('study_cards',1);}
-  else{if(!S.againPile)S.againPile=[];var cards=getCards();if(S.ci<cards.length)S.againPile.push(cards[S.ci]);}
+  if(k){xpu(10);}
+  else{if(!S.againPile)S.againPile=[];const cards=getCards();if(S.ci<cards.length)S.againPile.push(cards[S.ci]);}
   S.fl=false;
-  var cards=getCards();
-  if(S.ci<cards.length-1){S.ci++;S.speedLeft=5;draw();}
+  const cards=getCards();
+  if(S.ci<cards.length-1){S.ci++;draw();}
   else if(S.againPile&&S.againPile.length>0){S.ci=cards.length;draw();}
-  else{recordStudy();S.againPile=null;S.shuffled=null;if(S.speedMode){S.speedMode=false;}goTo('dungeon');}
+  else{recordStudy();S.againPile=null;S.shuffled=null;goTo('dungeon');}
 }
 function pick(i){
   S.sel=i;
@@ -1694,22 +1025,17 @@ function pick(i){
   var q=quiz[S.qi],ok=q&&i===q.correct;
   if(ok){
     S.streak++;
-    if(!U._stats)U._stats={};
-    U._stats.maxCombo=Math.max(U._stats.maxCombo||0,S.streak);
-    updateQuest('combo',S.streak);
-    var dmgMult=S.doubleActive?2:1;S.doubleActive=false;
-    var earned=calcXP(20);
-    var msg2=S.streak>=4?'&#x1F525;&#x1F525; x3! +'+earned+' XP':S.streak>=3?'&#x1F525; x2! +'+earned+' XP':S.streak>=2?'&#x26A1; STREAK! +'+earned+' XP':null;
+    const earned=calcXP(20);
+    var msg=S.streak>=4?'&#x1F525;&#x1F525; x3! +'+earned+' XP':S.streak>=3?'&#x1F525; x2! +'+earned+' XP':S.streak>=2?'&#x26A1; STREAK! +'+earned+' XP':null;
     S.qs++;
-    var qLen=(S.liveQuiz&&S.liveQuiz.length)||1;
-    var dmg=(100/qLen)*dmgMult;
-    if(S.streak>=4)dmg*=2;else if(S.streak>=3)dmg*=1.5;else if(S.streak>=2)dmg*=1.2;
+    // Boss takes damage
+    var dmg=Math.ceil(S.bossMaxHP/d.quiz.length);
+    if(S.streak>=3)dmg=Math.ceil(dmg*1.5);
     S.bossHP=Math.max(0,S.bossHP-dmg);
-    xpu(earned,msg2);
+    xpu(earned,msg);
   }else{
     S.streak=0;
-    if(S.shieldActive){S.shieldActive=false;}
-    else{S.heroHP=Math.max(0,S.heroHP-1);}
+    S.heroHP=Math.max(0,S.heroHP-1);
     if(!S.wrongAnswers)S.wrongAnswers=[];
     if(q)S.wrongAnswers.push({question:q.question,correct:q.options[q.correct]});
   }
@@ -1720,81 +1046,34 @@ function nq(){
   var quiz=S.liveQuiz;if(!quiz)return;
   if(S.qi===quiz.length-1&&S.qs===quiz.length){U.xp+=50;saveUser();}
   S.qi++;S.sel=null;
-  if(S.qi>=quiz.length){
-    recordStudy();
-    if(S.gauntlet){nextGauntletDungeon();return;}
-    S.screen='qd';
-  }
+  if(S.qi>=quiz.length){recordStudy();S.screen='qd';}
   draw();
 }
 function rq(){startQuiz(S.di,S.isFinal);}
-
 async function doLogout(){
   U=null;await stDel('rbUser');
-  S.screen='auth';S.authEmail='';S.authPass='';S.authName='';S.err='';S.notes='';S.uploadFiles=[];draw();
-}
-
-function canResetSubject(){
-  var char=aC();if(!char||!char.subject)return false;
-  if(U.isPro){
-    // PRO: 1 reset per calendar month per character
-    var now=new Date(),monthKey=now.getFullYear()+'-'+(now.getMonth()+1);
-    return(!char.lastResetMonth||char.lastResetMonth!==monthKey);
-  }else{
-    // Free: 1 lifetime reset, only if <=1 dungeon
-    return(!char.subjectResetUsed&&char.dungeons.length<=1);
-  }
-}
-function resetSubject(){
-  var char=aC();if(!char)return;
-  if(!char.subject){alert('No subject is locked to this hero yet.');return;}
-  if(!canResetSubject()){
-    if(U.isPro){alert('You have already used your subject reset this month.\nYour next reset is available on the 1st of next month.');}
-    else{alert('Free players get one lifetime reset per hero, and only before 2+ dungeons are created.\nUpgrade to PRO for a monthly reset!');}
-    return;
-  }
-  var msg=U.isPro
-    ?'Reset "'+char.subject+'" on '+char.charName+'? All dungeons for this hero will be deleted. You get one reset per month.'
-    :'Reset "'+char.subject+'" on '+char.charName+'? Their dungeon will be deleted. This is your one-time free reset.';
-  if(!confirm(msg))return;
-  var now=new Date(),monthKey=now.getFullYear()+'-'+(now.getMonth()+1);
-  char.subject=null;char.dungeons=[];char.finalBoss=null;
-  if(U.isPro){char.lastResetMonth=monthKey;}
-  else{char.subjectResetUsed=true;}
-  saveUser();S.screen='hero';draw();
+  S.screen='auth';S.authEmail='';S.authPass='';S.authName='';S.err='';S.notes='';S.uploadFiles=[];S.streak=0;draw();
 }
 function friendlyApiError(err){
   var msg=err&&err.message?err.message:'Unknown error';
-  if(msg.indexOf('529')>=0||msg.indexOf('overloaded')>=0){
-    return 'Anthropic servers are busy right now. Wait a minute and try again.';
-  }
-  if(msg.indexOf('rate')>=0||msg.indexOf('429')>=0||msg.indexOf('limit')>=0||msg.indexOf('quota')>=0){
-    return 'API limit reached. Please let Cade know the app hit its usage cap!';
-  }
-  if(msg.indexOf('401')>=0||msg.indexOf('auth')>=0||msg.indexOf('API key')>=0){
-    return 'API key issue. Let b know!';
-  }
-  if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0||msg.indexOf('Load failed')>=0||msg.indexOf('network')>=0){
-    return 'Connection error — could not reach Anthropic. Raw error: '+msg;
-  }
-  if(msg.indexOf('503')>=0||msg.indexOf('502')>=0||msg.indexOf('500')>=0){
-    return 'Anthropic is having issues right now. Try again in a few minutes.';
-  }
-  return 'API error: '+msg;
+  if(msg.indexOf('529')>=0||msg.indexOf('overloaded')>=0)return 'Anthropic servers are busy. Wait a minute and try again.';
+  if(msg.indexOf('401')>=0||msg.indexOf('authentication')>=0)return 'API error (401). Check your Vercel API key setting.';
+  if(msg.indexOf('429')>=0||msg.indexOf('quota')>=0)return 'API limit reached. Please let Cade know!';
+  if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0)return 'Connection error. Check your internet and try again.';
+  if(msg.indexOf('503')>=0||msg.indexOf('502')>=0||msg.indexOf('500')>=0)return 'Anthropic is having issues. Try again in a few minutes.';
+  return 'Error: '+msg;
 }
-
 function goTo(sc){
   if(sc==='quiz'){S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];}
   if(sc==='fc'){S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;}
   S.screen=sc;draw();
 }
 function draw(){
-  var el=document.getElementById('app');if(!el)return;
-  var screens={
-    apikey:apiKeyH,onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,hero:heroH,
+  const el=document.getElementById('app');if(!el)return;
+  const screens={
+    onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,
     'char-select':charSelectH,dungeon:dungeonH,upload:uploadH,gen:genH,
-    quizgen:quizGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH,
-    'pro-welcome':proWelcomeH,quests:questsH,achievements:achievementsH,calendar:calendarH,spells:spellsH,titles:achievementsH
+    fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH
   };
   el.innerHTML=(screens[S.screen]||authH)();
 }
