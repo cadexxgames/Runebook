@@ -247,6 +247,8 @@ const SPRITES={
 
 
 async function stGet(k){try{const r=await window.storage.get(k);return r?r.value:null;}catch(e){return null;}}
+function getApiKey(){return localStorage.getItem('rbApiKey')||'';}
+function setApiKey(k){localStorage.setItem('rbApiKey',k);}
 async function stSet(k,v){try{await window.storage.set(k,v);}catch(e){}}
 async function stDel(k){try{await window.storage.delete(k);}catch(e){}}
 
@@ -458,6 +460,8 @@ function gotoHero(){goTo('hero');}
 function gotoUpload(){goTo('upload');}
 function gotoCharSelect(){goTo('char-select');}
 function gotoPaywall(){goTo('paywall');}
+function gotoApiKey(){goTo('apikey');}
+function gotoAuth(){goTo('auth');}
 function gotoQuests(){goTo('quests');}
 function gotoAchievements(){goTo('achievements');}
 function gotoCalendar(){goTo('calendar');}
@@ -511,6 +515,7 @@ function mkKey(e){return'rbAcc_'+e.replace(/[^a-z0-9]/gi,'_').toLowerCase();}
 function get(id){return document.getElementById(id);}
 
 async function init(){
+  if(!getApiKey()){S.screen='apikey';draw();return;}
   var seen=await stGet('rbSeen');
   if(!seen){S.screen='onboard';draw();return;}
   var d=await stGet('rbUser');
@@ -557,6 +562,35 @@ function onboardH(){
   return h;
 }
 
+function apiKeyH(){
+  var h='<div style="max-width:340px;margin:0 auto;padding:20px 0;text-align:center">';
+  h+='<div style="font-size:40px;margin-bottom:14px">&#x1F511;</div>';
+  h+='<div class="pf" style="font-size:10px;color:var(--gold);margin-bottom:10px">API KEY SETUP</div>';
+  h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:16px;line-height:1.9">Enter your Anthropic API key to power Runebook.<br>It\'s stored only in your browser — never uploaded anywhere.</div>';
+  var current=getApiKey();
+  if(current){
+    h+='<div style="background:#082818;border:2px solid #20a040;border-radius:8px;padding:10px;margin-bottom:12px;font-size:10px;color:#60ff90">&#x2713; Key saved: '+current.slice(0,12)+'...</div>';
+  }
+  h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." style="font-family:monospace;font-size:11px" value="'+current+'"/>';
+  if(S.err)h+='<div class="er">'+S.err+'</div>';
+  h+='<button class="btn gc pf" onclick="saveApiKey()" style="margin-bottom:10px">&#x2713; SAVE KEY</button>';
+  if(current)h+='<button class="btn gr pf" style="font-size:7px" onclick="gotoAuth()">CONTINUE &#x25BA;</button>';
+  h+='<div style="margin-top:16px;background:#140a38;border:2px solid #3a1e80;border-radius:8px;padding:12px;text-align:left">';
+  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:8px">HOW TO GET A KEY</div>';
+  h+='<div style="font-size:10px;color:var(--tx3);line-height:1.9">1. Go to console.anthropic.com<br>2. Click API Keys in the sidebar<br>3. Click Create Key<br>4. Copy and paste it above</div>';
+  h+='</div></div>';
+  return h;
+}
+function saveApiKey(){
+  var input=document.getElementById('apiKeyInput');
+  if(!input){return;}
+  var key=input.value.trim();
+  if(!key){S.err='Please enter your API key.';draw();return;}
+  if(!key.startsWith('sk-ant-')){S.err='That doesn\'t look like an Anthropic key. It should start with sk-ant-';draw();return;}
+  setApiKey(key);
+  S.err='';
+  goTo('auth');
+}
 function authH(){
   var isL=S.authTab==='login';
   var h='<div style="max-width:320px;margin:0 auto;padding:14px 0">';
@@ -675,6 +709,7 @@ function homeH(){
   h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="gotoAchievements()">&#x1F3C6; TROPHIES</button>';
   h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="gotoCalendar()">&#x1F4C5; STUDY LOG</button>';
   if(!U.isPro)h+='<button class="btn gg pf" style="font-size:7px;margin-bottom:8px" onclick="gotoPaywall()">&#x2605; GO PRO</button>';
+  h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="gotoApiKey()">&#x1F511; API KEY</button>';
   h+='<button class="btn gr pf" style="font-size:7px" onclick="doLogout()">LEAVE REALM</button>';
   h+='</div>';
   return h;
@@ -1146,7 +1181,7 @@ function buildPrompt(isFirst,char,isMath){
 
 async function callAPI(blocks){
   var resp=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true','x-api-key':'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'},
+    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true','x-api-key':getApiKey()},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:blocks}]})
   });
   if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,120));}
@@ -1237,7 +1272,7 @@ async function generateQuizQuestions(dung,diffConfig,isFinal,char){
   lines.push('Return ONLY: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}');
   lines.push('Exactly '+qCount+' questions. correct is 0-3.');
   var resp=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true','x-api-key':'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'},
+    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true','x-api-key':getApiKey()},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,system:sysMsg,messages:[{role:'user',content:lines.join('\n\n')}]})
   });
   if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
@@ -1696,10 +1731,10 @@ function friendlyApiError(err){
     return 'Anthropic servers are busy right now. Wait a minute and try again.';
   }
   if(msg.indexOf('rate')>=0||msg.indexOf('429')>=0||msg.indexOf('limit')>=0||msg.indexOf('quota')>=0){
-    return 'API limit reached. Please Let Cade know the app hit its usage cap!';
+    return 'API limit reached. Please let Cade know the app hit its usage cap!';
   }
   if(msg.indexOf('401')>=0||msg.indexOf('auth')>=0||msg.indexOf('API key')>=0){
-    return 'API key issue. Let Cade know!';
+    return 'API key issue. Let b know!';
   }
   if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0||msg.indexOf('network')>=0){
     return 'No internet connection. Check your connection and try again.';
@@ -1718,7 +1753,7 @@ function goTo(sc){
 function draw(){
   var el=document.getElementById('app');if(!el)return;
   var screens={
-    onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,hero:heroH,
+    apikey:apiKeyH,onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,hero:heroH,
     'char-select':charSelectH,dungeon:dungeonH,upload:uploadH,gen:genH,
     quizgen:quizGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH,
     'pro-welcome':proWelcomeH,quests:questsH,achievements:achievementsH,calendar:calendarH,spells:spellsH,titles:achievementsH
