@@ -229,44 +229,37 @@ const HEART_SPRITE="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeIAAAHGCAYAAA
 
 
 
-// ── SUPABASE (pure fetch, no CDN needed) ──
-const SUPA_URL='https://ftonyklqynsnunlqmwvz.supabase.co';
-const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0b255a2xxeW5zbnVubHFtd3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MzcxMTUsImV4cCI6MjA5MjMxMzExNX0.0uG7ZnjL2gS1P7xN5ibKKRyftpgJN5t7fcA5P03pb6c';
-let _supaUser=null;
-let _supaToken=null;
+// ── SUPABASE (pure fetch) ──
+var SUPA_URL='https://ftonyklqynsnunlqmwvz.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0b255a2xxeW5zbnVubHFtd3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MzcxMTUsImV4cCI6MjA5MjMxMzExNX0.0uG7ZnjL2gS1P7xN5ibKKRyftpgJN5t7fcA5P03pb6c';
+var _supaUser=null;
+var _supaToken=null;
 
 async function supaAuth(email,password,isSignup){
   var endpoint=isSignup?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
   var res=await fetch(SUPA_URL+endpoint,{
     method:'POST',
     headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
-    body:JSON.stringify({email,password})
+    body:JSON.stringify({email:email,password:password})
   });
   return res.json();
 }
 async function supaGetSession(){
   var token=localStorage.getItem('sb_token');
-  var userId=localStorage.getItem('sb_uid');
-  if(!token||!userId)return null;
-  // Verify token still valid
+  if(!token)return null;
   var res=await fetch(SUPA_URL+'/auth/v1/user',{
     headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+token}
   });
-  if(!res.ok){localStorage.removeItem('sb_token');localStorage.removeItem('sb_uid');return null;}
-  var user=await res.json();
+  if(!res.ok){localStorage.removeItem('sb_token');return null;}
   _supaToken=token;
-  return user;
+  return res.json();
 }
 async function supaUpsert(data){
-  if(!_supaToken||!_supaUser)return;
+  if(!_supaToken)return;
   await fetch(SUPA_URL+'/rest/v1/users',{
     method:'POST',
-    headers:{
-      'apikey':SUPA_KEY,
-      'Authorization':'Bearer '+_supaToken,
-      'Content-Type':'application/json',
-      'Prefer':'resolution=merge-duplicates'
-    },
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+_supaToken,
+      'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
     body:JSON.stringify(data)
   });
 }
@@ -283,32 +276,484 @@ async function supaUpdatePro(){
   if(!_supaToken||!_supaUser)return;
   await fetch(SUPA_URL+'/rest/v1/users?id=eq.'+_supaUser.id,{
     method:'PATCH',
-    headers:{
-      'apikey':SUPA_KEY,
-      'Authorization':'Bearer '+_supaToken,
-      'Content-Type':'application/json'
-    },
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+_supaToken,'Content-Type':'application/json'},
     body:JSON.stringify({is_pro:true})
   });
 }
-
-// Lightweight localStorage helpers (onboarding flag only)
 async function stGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 async function stSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 async function stDel(k){try{localStorage.removeItem(k);}catch(e){}}
-
 async function sbSaveUser(){
   if(!U||!_supaUser||!_supaToken)return;
   await supaUpsert({id:_supaUser.id,email:U.email,is_pro:U.isPro||false,data:U});
 }
 async function sbLoadUser(){
-  if(!_supaUser||!_supaToken)return null;
   var row=await supaSelect();
   if(!row)return null;
   var u=row.data||{};
   u.isPro=row.is_pro||u.isPro||false;
   return u;
 }
+async function saveUser(){if(U)await sbSaveUser();}
+function mkKey(e){return'rbAcc_'+e.replace(/[^a-z0-9]/gi,'_').toLowerCase();}
+function get(id){return document.getElementById(id);}
+
+
+// ── SOUND EFFECTS (Web Audio API) ──
+var _ac=null;
+function getAC(){if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();return _ac;}
+function playTone(freq,type,dur,vol,delay){
+  try{
+    var ac=getAC();
+    var o=ac.createOscillator();
+    var g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type=type||'sine';o.frequency.value=freq||440;
+    g.gain.setValueAtTime(vol||0.15,ac.currentTime+(delay||0));
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+(delay||0)+(dur||0.2));
+    o.start(ac.currentTime+(delay||0));
+    o.stop(ac.currentTime+(delay||0)+(dur||0.2)+0.05);
+  }catch(e){}
+}
+function sfx(name){
+  try{
+    var ac=getAC();
+    if(name==='correct'){
+      // Happy ascending chime
+      playTone(523,  'sine',0.12,0.15,0);
+      playTone(659,  'sine',0.12,0.15,0.1);
+      playTone(784,  'sine',0.18,0.15,0.2);
+    }else if(name==='wrong'){
+      // Low thud
+      playTone(180,'square',0.15,0.12,0);
+      playTone(150,'square',0.2, 0.08,0.1);
+    }else if(name==='combo'){
+      // Rapid ascending fanfare
+      playTone(523,'sine',0.08,0.15,0);
+      playTone(659,'sine',0.08,0.15,0.07);
+      playTone(784,'sine',0.08,0.15,0.14);
+      playTone(1047,'sine',0.15,0.18,0.21);
+    }else if(name==='levelup'){
+      // Triumphant arpeggio
+      [523,659,784,880,1047].forEach(function(f,i){playTone(f,'sine',0.18,0.15,i*0.09);});
+    }else if(name==='damage'){
+      // Hit crunch
+      playTone(220,'sawtooth',0.08,0.12,0);
+      playTone(180,'sawtooth',0.12,0.08,0.05);
+    }else if(name==='flip'){
+      // Card flip click
+      playTone(800,'sine',0.05,0.08,0);
+    }else if(name==='victory'){
+      // Boss defeated fanfare
+      [392,523,659,784,659,784,1047].forEach(function(f,i){playTone(f,'sine',0.2,0.15,i*0.1);});
+    }else if(name==='achievement'){
+      // Achievement ding
+      playTone(880,'sine',0.1,0.15,0);
+      playTone(1108,'sine',0.15,0.18,0.12);
+      playTone(1319,'sine',0.2,0.15,0.24);
+    }
+  }catch(e){}
+}
+
+const FREE_DUNGEONS=3,FREE_CHARS=1,FINAL_BOSS_REQUIRED=5;
+function xpForLevel(lv){return Math.floor(100*Math.pow(1.25,lv-1));}
+function totalXpForLevel(lv){var t=0;for(var i=1;i<lv;i++)t+=xpForLevel(i);return t;}
+function lvFromXp(xp){var lv=1;while(xp>=totalXpForLevel(lv+1))lv++;return lv;}
+function xpInLevel(xp){var lv=lvFromXp(xp);return xp-totalXpForLevel(lv);}
+function xpForThisLevel(lv){return xpForLevel(lv);}
+const TNAME=lv=>lv<3?'Apprentice':lv<6?'Journeyman':lv<10?'Expert':'Legendary';
+const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+const CLASSES=[
+  {id:'knight',name:'Knight',pro:false},{id:'mage',name:'Mage',pro:false},{id:'druid',name:'Druid',pro:false},
+  {id:'bard',name:'Bard',pro:true},{id:'cleric',name:'Cleric',pro:true},{id:'monk',name:'Monk',pro:true},
+  {id:'ranger',name:'Ranger',pro:true},{id:'rogue',name:'Rogue',pro:true},
+];
+const DIFF={
+  easy:{label:'EASY',hp:4,qCount:4,xpMult:.8,color:'#20a050',bg:'#082818',desc:'4 hearts | 4 questions | +0.8x XP'},
+  normal:{label:'NORMAL',hp:3,qCount:7,xpMult:1,color:'#6030c0',bg:'#181030',desc:'3 hearts | 7 questions | +1x XP'},
+  hard:{label:'HARD',hp:2,qCount:12,xpMult:1.5,color:'#c02020',bg:'#280808',desc:'2 hearts | 12 questions | +1.5x XP'},
+};
+
+var HERO_ANIMS={
+  knight:'knight-idle 3.5s ease-in-out infinite',
+  mage:'mage-idle 3s ease-in-out infinite',
+  druid:'druid-idle 4s ease-in-out infinite',
+  bard:'bard-idle 1.6s ease-in-out infinite',
+  cleric:'cleric-idle 3.2s ease-in-out infinite',
+  monk:'monk-idle 2s ease-in-out infinite',
+  ranger:'ranger-idle 2.4s ease-in-out infinite',
+  rogue:'rogue-idle 2.8s ease-in-out infinite',
+};
+function sp(cls,gen,h,noAnim){
+  var k=cls+'_'+gen,src=SPRITES[k]||SPRITES[cls+'_m']||'';
+  var anim=(!noAnim&&HERO_ANIMS[cls])?'animation:'+HERO_ANIMS[cls]+';':'';
+  return '<img src="'+src+'" style="height:'+h+'px;image-rendering:pixelated;display:block;margin:0 auto;'+anim+'" alt="'+cls+'"/>';
+}
+function getBossSprite(name){
+  var n=(name||'').toLowerCase();
+  if(n.match(/wolf|hound|dog|beast|fang|claw|pack/))return MONSTER_SPRITES.dire_wolf;
+  if(n.match(/goblin|gremlin|imp|sprite|pixie|trickster/))return MONSTER_SPRITES.goblin;
+  if(n.match(/dragon|drake|wyvern|wyrm|fire|flame|inferno|blaze/))return MONSTER_SPRITES.dragon;
+  if(n.match(/lich|undead|necro|skull|wraith|specter|phantom|ghost|shade|void|professor|sorcerer|wizard|warlock/))return MONSTER_SPRITES.lich;
+  if(n.match(/orc|troll|ogre|brute|warrior|berserker|axe|savage/))return MONSTER_SPRITES.orc;
+  if(n.match(/bear|owl|fluffy|fuzzy|beast|creature|monster/))return MONSTER_SPRITES.owlbear;
+  if(n.match(/cyclops|giant|titan|golem|colossus|eye|siege/))return MONSTER_SPRITES.cyclops;
+  if(n.match(/cerberus|hydra|demon|devil|hellhound|chaos|shadow/))return MONSTER_SPRITES.cerberus;
+  // Default: pick based on hash of name so same boss always same sprite
+  var monsters=Object.values(MONSTER_SPRITES);
+  var hash=name.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0);
+  return monsters[hash%monsters.length];
+}
+function getBossAnim(name){
+  var n=(name||'').toLowerCase();
+  if(n.match(/wolf|hound|dog|beast|fang|claw|pack/))return'wolf-prowl 2.2s ease-in-out infinite';
+  if(n.match(/goblin|gremlin|imp|sprite|pixie|trickster/))return'goblin-jitter 1.4s ease-in-out infinite';
+  if(n.match(/dragon|drake|wyvern|wyrm|fire|flame|inferno|blaze/))return'dragon-breathe 3s ease-in-out infinite';
+  if(n.match(/lich|undead|necro|skull|wraith|specter|phantom|ghost|shade|void|professor|sorcerer|wizard|warlock/))return'lich-float 3.5s ease-in-out infinite';
+  if(n.match(/orc|troll|ogre|brute|warrior|berserker|axe|savage/))return'orc-stomp 2s ease-in-out infinite';
+  if(n.match(/bear|owl|fluffy|fuzzy/))return'owlbear-sway 2.5s ease-in-out infinite';
+  if(n.match(/cyclops|giant|titan|golem|colossus|eye|siege/))return'cyclops-lurch 3s ease-in-out infinite';
+  if(n.match(/cerberus|hydra|demon|devil|hellhound|chaos|shadow/))return'cerberus-heads 1.8s ease-in-out infinite';
+  return'orc-stomp 2.5s ease-in-out infinite';
+}
+function bossSprite(name,h){
+  var src=getBossSprite(name);
+  var anim=getBossAnim(name);
+  return'<img src="'+src+'" style="height:'+h+'px;image-rendering:pixelated;object-fit:contain;animation:'+anim+';" alt="'+name+'"/>';
+}
+
+function xpForLevel(lv){return Math.floor(100*Math.pow(1.25,lv-1));}
+function totalXpForLevel(lv){var t=0;for(var i=1;i<lv;i++)t+=xpForLevel(i);return t;}
+function lvFromXp(xp){var lv=1;while(xp>=totalXpForLevel(lv+1))lv++;return lv;}
+function xpInLevel(xp){var lv=lvFromXp(xp);return xp-totalXpForLevel(lv);}
+function xpForThisLevel(lv){return xpForLevel(lv);}
+
+
+
+function getBossAnim(name){
+  var n=(name||'').toLowerCase();
+  if(n.match(/wolf|hound|dog|beast|fang|claw|pack/))return'wolf-prowl 2.2s ease-in-out infinite';
+  if(n.match(/goblin|gremlin|imp|sprite|pixie|trickster/))return'goblin-jitter 1.4s ease-in-out infinite';
+  if(n.match(/dragon|drake|wyvern|wyrm|fire|flame|inferno|blaze/))return'dragon-breathe 3s ease-in-out infinite';
+  if(n.match(/lich|undead|necro|skull|wraith|specter|phantom|ghost|shade|void|professor|sorcerer|wizard|warlock/))return'lich-float 3.5s ease-in-out infinite';
+  if(n.match(/orc|troll|ogre|brute|warrior|berserker|axe|savage/))return'orc-stomp 2s ease-in-out infinite';
+  if(n.match(/bear|owl|fluffy|fuzzy/))return'owlbear-sway 2.5s ease-in-out infinite';
+  if(n.match(/cyclops|giant|titan|golem|colossus|eye|siege/))return'cyclops-lurch 3s ease-in-out infinite';
+  if(n.match(/cerberus|hydra|demon|devil|hellhound|chaos|shadow/))return'cerberus-heads 1.8s ease-in-out infinite';
+  return'orc-stomp 2.5s ease-in-out infinite';
+}
+function bossSprite(name,h){
+  var src=getBossSprite(name);
+  var anim=getBossAnim(name);
+  return'<img src="'+src+'" style="height:'+h+'px;image-rendering:pixelated;object-fit:contain;animation:'+anim+';" alt="'+name+'"/>';
+}
+
+function streakColor(n){return n>=30?'#ff4040':n>=14?'#ff7020':n>=7?'#ffaa20':'#ff7040';}
+
+function aC(){return U&&U.chars&&U.chars[U.activeCls]?U.chars[U.activeCls]:null;}
+function aD(){const c=aC();if(!c)return null;const d=S.isFinal?c.finalBoss:c.dungeons[S.di];return d||null;}
+function canAdd(){const c=aC();if(!c)return false;return U.isPro||c.dungeons.length<FREE_DUNGEONS;}
+function clsInfo(id){return CLASSES.find(function(c){return c.id===id;})||CLASSES[0];}
+function clearedCount(){const c=aC();if(!c)return 0;return c.dungeons.filter(function(d){return(d.bestScore||0)>=70;}).length;}
+function finalBossUnlocked(){return clearedCount()>=FINAL_BOSS_REQUIRED;}
+function curDiff(){return DIFF[S.difficulty]||DIFF.normal;}
+
+function setTab(t){S.authTab=t;S.err='';draw();}
+function pickGenCC(g){S.selGen=g;draw();}
+function pickCls(id){var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}if(U.chars&&U.chars[id]&&U.chars[id].charName&&U.activeCls!==id)return;S.selCls=id;draw();}
+function obNext(){S.obSlide=(S.obSlide||0)+1;if(S.obSlide>=4){S.screen='auth';S.obSlide=0;}draw();}
+function claimCls(id){
+  var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}
+  if(!U.chars)U.chars={};
+  if(!U.chars[id])U.chars[id]={charName:'',gender:'m',dungeons:[],finalBoss:null};
+  U.activeCls=id;S.selCls=id;S.selGen=U.chars[id].gender||'m';S.charName=U.chars[id].charName||'';
+  S.screen='char-create';draw();
+}
+
+function today(){return new Date().toISOString().slice(0,10);}
+function getRank(p){
+  if(p>=100)return{label:'S',color:'#ffd700',bg:'#2a1a00'};
+  if(p>=90)return{label:'A',color:'#60ff90',bg:'#002a10'};
+  if(p>=80)return{label:'B',color:'#60aaff',bg:'#001a2a'};
+  if(p>=70)return{label:'C',color:'#c0c0c0',bg:'#1a1a1a'};
+  if(p>=50)return{label:'D',color:'#ff8060',bg:'#2a0a00'};
+  return{label:'F',color:'#ff4040',bg:'#2a0000'};
+}
+
+// ── ACHIEVEMENTS ──
+const ACHIEVEMENTS=[
+  {id:'first_blood',icon:'⚔️',name:'First Blood',desc:'Complete your first quiz'},
+  {id:'dungeon_master',icon:'🏰',name:'Dungeon Master',desc:'Clear 3 dungeons with 70%+'},
+  {id:'perfectionist',icon:'💎',name:'Perfectionist',desc:'Score 100% on any quiz'},
+  {id:'on_fire',icon:'🔥',name:'On Fire',desc:'Reach a 3-day study streak'},
+  {id:'unstoppable',icon:'⚡',name:'Unstoppable',desc:'Reach a 7-day study streak'},
+  {id:'combo_king',icon:'👑',name:'Combo King',desc:'Get a 4x answer streak in one quiz'},
+  {id:'scholar',icon:'📚',name:'Scholar',desc:'Complete 10 quizzes total'},
+  {id:'final_boss',icon:'💀',name:'Boss Slayer',desc:'Defeat the Final Boss'},
+  {id:'hero_lv5',icon:'⭐',name:'Rising Star',desc:'Reach hero Level 5'},
+  {id:'hero_lv10',icon:'🌟',name:'Veteran',desc:'Reach hero Level 10'},
+  {id:'hard_mode',icon:'🩸',name:'Hardcore',desc:'Clear any dungeon on Hard'},
+  {id:'all_clear',icon:'🏆',name:'Completionist',desc:'Clear all 3 difficulties on one dungeon'},
+];
+
+function checkAchievements(trigger){
+  if(!U)return;
+  if(!U.achievements)U.achievements=[];
+  var newOnes=[];
+  var char=aC();
+  var totalQuizzes=U._quizCount||0;
+  var heroLv=char?(char.lv||1):1;
+
+  ACHIEVEMENTS.forEach(function(a){
+    if(U.achievements.indexOf(a.id)>=0)return; // already earned
+    var earned=false;
+    if(a.id==='first_blood'&&totalQuizzes>=1)earned=true;
+    if(a.id==='dungeon_master'&&char){
+      var cleared=char.dungeons.filter(function(d){return(d.bestScore||0)>=70;}).length;
+      if(cleared>=3)earned=true;
+    }
+    if(a.id==='perfectionist'&&trigger==='perfect')earned=true;
+    if(a.id==='on_fire'&&(U.streak||0)>=3)earned=true;
+    if(a.id==='unstoppable'&&(U.streak||0)>=7)earned=true;
+    if(a.id==='combo_king'&&trigger==='combo4')earned=true;
+    if(a.id==='scholar'&&totalQuizzes>=10)earned=true;
+    if(a.id==='final_boss'&&trigger==='final_boss_cleared')earned=true;
+    if(a.id==='hero_lv5'&&heroLv>=5)earned=true;
+    if(a.id==='hero_lv10'&&heroLv>=10)earned=true;
+    if(a.id==='hard_mode'&&trigger==='hard_cleared')earned=true;
+    if(a.id==='all_clear'&&char){
+      var allClear=char.dungeons.some(function(d){
+        return d.scores&&d.scores.easy&&d.scores.easy.attempts>0&&
+               d.scores.normal&&d.scores.normal.attempts>0&&
+               d.scores.hard&&d.scores.hard.attempts>0&&
+               d.scores.easy.best>=70&&d.scores.normal.best>=70&&d.scores.hard.best>=70;
+      });
+      if(allClear)earned=true;
+    }
+    if(earned){U.achievements.push(a.id);newOnes.push(a);}
+  });
+
+  if(newOnes.length){
+    saveUser();
+    // Show popup for first new achievement
+    var a=newOnes[0];
+    sfx('achievement');S.pop=true;S.pa=0;S.popMsg=a.icon+' Achievement! '+a.name;
+    setTimeout(function(){S.pop=false;draw();},3000);
+    draw();
+  }
+}
+
+// ── SPELLS ──
+const SPELLS=[
+  {id:'skip',name:'Skip',icon:'⏭',desc:'Skip this question — no damage',lv:5,color:'#6030c0'},
+  {id:'shield',name:'Shield',icon:'🛡',desc:'Block the next wrong answer',lv:10,color:'#2060a0'},
+  {id:'double',name:'Double XP',icon:'⚡',desc:'Double XP on next correct answer',lv:15,color:'#c08000'},
+];
+function getUnlockedSpells(char){
+  var lv=char?(char.lv||1):1;
+  return SPELLS.filter(function(s){return lv>=s.lv;});
+}
+function useSpell(id){
+  if(S.spellUsed)return;
+  if(!consumeSpellCharge(id)){
+    S.pop=true;S.pa=0;S.popMsg='No charges left! Earn more by clearing dungeons.';
+    setTimeout(function(){S.pop=false;draw();},2000);
+    draw();return;
+  }
+  S.spellUsed=id;
+  if(id==='skip'){
+    // Count as wrong for scoring but no HP loss
+    var quiz=S.liveQuiz;
+    if(quiz&&quiz[S.qi]){
+      S.wrongAnswers=S.wrongAnswers||[];
+      S.wrongAnswers.push({question:quiz[S.qi].question,correct:quiz[S.qi].options[quiz[S.qi].correct]});
+    }
+    S.sel=-1; // special skip marker
+    draw();
+    setTimeout(function(){nq();},800);
+  }else if(id==='shield'){
+    S.shieldActive=true;
+    draw();
+  }else if(id==='double'){
+    S.doubleActive=true;
+    draw();
+  }
+}
+
+function getSpellCharges(){
+  var char=aC();if(!char)return{};
+  if(!char.spellCharges)char.spellCharges={skip:1,shield:1,double:1};
+  return char.spellCharges;
+}
+function addSpellCharge(spellId,amount){
+  var char=aC();if(!char)return;
+  if(!char.spellCharges)char.spellCharges={skip:1,shield:1,double:1};
+  if(spellId==='all'){
+    SPELLS.forEach(function(s){
+      char.spellCharges[s.id]=Math.min(3,(char.spellCharges[s.id]||0)+1);
+    });
+  }else{
+    char.spellCharges[spellId]=Math.min(3,(char.spellCharges[spellId]||0)+(amount||1));
+  }
+  saveUser();
+}
+function consumeSpellCharge(spellId){
+  var char=aC();if(!char)return false;
+  if(!char.spellCharges)char.spellCharges={skip:1,shield:1,double:1};
+  var lv=char.lv||1;
+  var spell=SPELLS.find(function(s){return s.id===spellId;});
+  if(!spell||lv<spell.lv)return false;
+  if((char.spellCharges[spellId]||0)<=0)return false;
+  char.spellCharges[spellId]--;
+  saveUser();
+  return true;
+}
+
+// ── DAILY QUESTS ──
+function getDayQuests(){
+  var seed=today().replace(/-/g,'');
+  var rng=function(s){s=((s*9301+49297)%233280);return s/233280;};
+  var s=parseInt(seed)%99999;
+  var pool=[
+    {id:'study_fc',icon:'📖',desc:'Study flashcards in any dungeon',target:1,type:'flashcard'},
+    {id:'quiz_easy',icon:'🌿',desc:'Complete an Easy quiz',target:1,type:'easy_quiz'},
+    {id:'quiz_normal',icon:'⚔️',desc:'Complete a Normal quiz',target:1,type:'normal_quiz'},
+    {id:'quiz_hard',icon:'🩸',desc:'Complete a Hard quiz',target:1,type:'hard_quiz'},
+    {id:'score_70',icon:'⭐',desc:'Score 70%+ on any quiz',target:1,type:'score_70'},
+    {id:'score_90',icon:'💎',desc:'Score 90%+ on any quiz',target:1,type:'score_90'},
+    {id:'combo3',icon:'⚡',desc:'Get a 3+ answer streak',target:1,type:'combo3'},
+    {id:'perfect',icon:'👑',desc:'Get a perfect score',target:1,type:'perfect'},
+    {id:'two_quizzes',icon:'🏃',desc:'Complete 2 quizzes today',target:2,type:'daily_quiz_count'},
+  ];
+  // Pick 3 deterministically based on date
+  var idx1=Math.floor(rng(s)*pool.length);
+  s=Math.floor(rng(s*7+3)*99999);
+  var idx2=(idx1+1+Math.floor(rng(s)*( pool.length-1)))%pool.length;
+  s=Math.floor(rng(s*13+7)*99999);
+  var idx3=(idx2+1+Math.floor(rng(s)*(pool.length-2)))%pool.length;
+  return[pool[idx1],pool[idx2],pool[idx3]];
+}
+
+function getQuestProgress(){
+  if(!U)return{};
+  var p=U.questProgress||{};
+  var d=today();
+  if(p.date!==d)p={date:d}; // reset daily
+  return p;
+}
+
+function updateQuest(type,amount){
+  if(!U)return;
+  var p=getQuestProgress();
+  var quests=getDayQuests();
+  var wasComplete=quests.every(function(q){return(p[q.type]||0)>=q.target;});
+  p[type]=(p[type]||0)+(amount||1);
+  U.questProgress=p;
+  // Check if all 3 now complete
+  var nowComplete=quests.every(function(q){return(p[q.type]||0)>=q.target;});
+  if(nowComplete&&!wasComplete&&!p.bonusAwarded){
+    p.bonusAwarded=true;
+    addSpellCharge('all',1); // daily quest bonus charge
+    var char=aC();
+    if(char){char.xp=(char.xp||0)+100;char.lv=lvFromXp(char.xp);}
+    U.xp=(U.xp||0)+100;U.lv=calcAccountLevel();
+    S.pop=true;S.pa=100;S.popMsg='🎯 Daily Quests Complete! +100 XP';
+    setTimeout(function(){S.pop=false;draw();},3000);
+    checkAchievements('daily_complete');
+  }
+  saveUser();
+}
+
+function switchCls(id){if(!U.chars||!U.chars[id])return;U.activeCls=id;saveUser();S.screen='hero';draw();}
+function enterDungeon(i,isFinal){S.di=i;S.isFinal=!!isFinal;goTo('dungeon');}
+function studyDungeon(i){S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;goTo('fc');}
+function quizGenH(){
+  var dv=DIFF[S.diffChosen||S.difficulty||'normal'];
+  var h=tb();
+  h+='<div class="la"><div class="spin">&#x2694;</div>';
+  h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:10px">PREPARING BATTLE...</div>';
+  h+='<div style="font-size:10px;color:'+dv.color+';margin-bottom:14px">'+dv.label+' MODE</div>';
+  h+='<div class="lm">Loading questions...<br>Almost ready...</div></div>';
+  return h;
+}
+
+async function generateQuizQuestions(dung,diffConfig,isFinal,char){
+  var isMath=char&&char.subject&&/math|algebra|calculus|geometry|statistics|trig|arithmetic/i.test(char.subject);
+  var qCount=typeof diffConfig.qCount==='number'?diffConfig.qCount:7;
+  var diffLabel=diffConfig.label||'NORMAL';
+  var seed1=Math.floor(Math.random()*9000)+1000,seed2=Math.floor(Math.random()*900)+100,seed3=new Date().getTime()%10000;
+  var diffInstructions={'EASY':'Generate EXACTLY '+qCount+' simple, clear questions. Wrong answers obviously incorrect. No tricks.','NORMAL':'Generate EXACTLY '+qCount+' questions mixing easy and moderate difficulty. Plausible but clearly wrong distractors.','HARD':'Generate EXACTLY '+qCount+' challenging questions with tricky edge cases and highly plausible wrong answers.'};
+  var diffPart=diffInstructions[diffLabel]||diffInstructions['NORMAL'];
+  var mathPart='';
+  if(isMath){var r1=Math.floor(Math.random()*20)+2,r2=Math.floor(Math.random()*15)+3,r3=Math.floor(Math.random()*10)+1;
+    if(diffLabel==='EASY')mathPart='MATH: One-step problems. Seeds: '+r1+','+r2+'. Never copy notes.';
+    else if(diffLabel==='NORMAL')mathPart='MATH: Two-step problems. Seeds: '+r1+','+r2+','+r3+'. Never copy notes.';
+    else mathPart='MATH: Complex multi-step. Seeds: '+r1+','+r2+','+r3+'. Word problems ok. Never copy notes.';}
+  var source='';
+  if(dung.notes&&dung.notes.trim())source+=dung.notes.slice(0,2000);
+  if(dung.cards&&dung.cards.length){var cardText=dung.cards.map(function(c){return'Q: '+c.question+' A: '+c.answer;}).join('\n');source+=(source?'\n\nKEY CONCEPTS:\n':'')+cardText.slice(0,2000);}
+  if(!source&&dung.story)source=dung.story.title+'. '+(dung.story.intro||'');
+  if(!source)source='General study material.';
+  var sysPrompt=isMath?'You are a math quiz generator. Output ONLY valid JSON. Include step-by-step solutions. No markdown, no code fences.':'You are a quiz generator. Output ONLY valid JSON. No markdown, no code fences.';
+  var userPrompt=['VARIATION SEEDS: '+seed1+', '+seed2+', '+seed3,diffPart,mathPart,'SOURCE MATERIAL:\n'+source,(isMath?'Return ONLY: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0,"solution":"Step 1:..."}]}':'Return ONLY: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}'),'Generate EXACTLY '+qCount+' questions. correct is 0-3.'].filter(Boolean).join('\n\n');
+  var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:3000,system:sysPrompt,messages:[{role:'user',content:userPrompt}]})});
+  if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
+  var data=await resp.json();
+  if(data.error)throw new Error(data.error.message||'API error');
+  var raw=data.content.map(function(b){return b.text||'';}).join('').trim().replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+  var si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
+  if(si<0||ei<0)throw new Error('No JSON in response');
+  var parsed;try{parsed=JSON.parse(raw.slice(si,ei+1));}catch(e){var fixed=raw.slice(si,ei+1).replace(/,(\s*[}\]])/g,'$1');try{parsed=JSON.parse(fixed);}catch(e2){throw new Error('JSON parse failed: '+e2.message);}}
+  if(!parsed.quiz||!Array.isArray(parsed.quiz)||!parsed.quiz.length)throw new Error('No quiz array');
+  return parsed.quiz;
+}
+async function startQuiz(i,isFinal){
+  S.di=i;S.isFinal=!!isFinal;S.diffChosen=S.difficulty;
+  var d=curDiff();
+  S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];S.qdSaved=false;S._sfxPlayed=false;S._finalBossBonus=0;S._finalBossFirst=false;S.spellUsed=null;S.shieldActive=false;S.doubleActive=false;
+  S.heroHP=d.hp;S.heroMaxHP=d.hp;
+  S.bossMaxHP=100;S.bossHP=100;S.liveQuiz=null;
+  var char=aC();
+  if(!char){S.screen='home';draw();return;}
+  var dung=isFinal?char.finalBoss:char.dungeons[i];
+  if(!dung){S.err='Dungeon not found.';S.screen='hero';draw();return;}
+  // Always generate fresh questions from API based on chosen difficulty
+  S.screen='quizgen';draw();
+  try{
+    var fresh=await generateQuizQuestions(dung,d,isFinal,char);
+    if(!fresh||!fresh.length)throw new Error('No questions returned');
+    S.liveQuiz=fresh;S.screen='quiz';
+  }catch(ex){
+    console.warn('Fresh gen failed:',ex.message);
+    if(dung.quiz&&dung.quiz.length){
+      // Fallback to stored questions — shuffle for variety
+      var stored=dung.quiz.slice().sort(function(){return Math.random()-.5;});
+      S.liveQuiz=stored.slice(0,Math.min(stored.length,d.qCount||7));
+      S.screen='quiz';
+      S.err='';
+    }else{
+      S.err='Could not load questions: '+friendlyApiError(ex);
+      S.screen='dungeon';
+    }
+  }
+  draw();
+}
+
+function pickDiff(d){S.difficulty=d;draw();}
+function removeFile(i){if(S.uploadFiles)S.uploadFiles.splice(i,1);draw();}
+
+
+let U=null;
+let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
+  selCls:'knight',selGen:'m',charName:'',obSlide:0,
+  notes:'',uploadFiles:[],di:0,isFinal:false,liveQuiz:null,
+  difficulty:'normal',diffChosen:'normal',
+  ci:0,fl:false,shuffled:null,againPile:null,
+  qi:0,sel:null,qs:0,streak:0,wrongAnswers:[],
+  heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
+  err:'',proCodeErr:'',proCodeOk:'',authLoading:false,showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
+
+const lp=()=>{var c=aC();if(!c)return 0;return Math.min(100,Math.round(xpInLevel(c.xp||0)/xpForThisLevel(c.lv||1)*100));};
 async function saveUser(){if(U)await sbSaveUser();}
 function mkKey(e){return'rbAcc_'+e.replace(/[^a-z0-9]/gi,'_').toLowerCase();}
 function get(id){return document.getElementById(id);}
@@ -384,7 +829,6 @@ function migrateUser(){
   if(!U.activeCls)U.activeCls=U.cls||'knight';
 }
 async function init(){
-  // Try restore session from localStorage token
   try{
     var user=await supaGetSession();
     if(user){
@@ -395,8 +839,7 @@ async function init(){
         var seen=await stGet('rbSeen');
         if(!seen){S.screen='onboard';draw();return;}
         if(!U.chars[U.activeCls]||!U.chars[U.activeCls].charName){
-          S.selCls=U.activeCls;S.selGen='m';S.charName=U.name+"'s Hero";
-          S.screen='char-create';
+          S.selCls=U.activeCls;S.selGen='m';S.charName=U.name+"'s Hero";S.screen='char-create';
         }else{S.screen='home';}
         draw();return;
       }
@@ -406,7 +849,6 @@ async function init(){
   if(!seen){S.screen='onboard';}else{S.screen='auth';}
   draw();
 }
-
 function updateStreak(){
   if(!U)return;
   if(!U.streak)U.streak=0;
@@ -458,37 +900,31 @@ async function doAuth(){
   S.err='';S.authLoading=true;draw();
   const isL=S.authTab==='login';
   const ae=get('ae'),ap=get('ap'),an=get('an');
-  if(ae)S.authEmail=ae.value.trim();if(ap)S.authPass=ap.value;if(an)S.authName=an.value.trim();
+  if(ae)S.authEmail=ae.value.trim();
+  if(ap)S.authPass=ap.value;
+  if(an)S.authName=an.value.trim();
   if(!S.authEmail){S.err='Please enter your email.';S.authLoading=false;draw();return;}
   if(!S.authPass){S.err='Please enter a password.';S.authLoading=false;draw();return;}
   if(!isL&&!S.authName){S.err='Please enter your name.';S.authLoading=false;draw();return;}
   try{
     var authRes=await supaAuth(S.authEmail,S.authPass,!isL);
-    if(authRes.error||authRes.msg){
-      throw new Error(authRes.error_description||authRes.msg||authRes.error||'Auth failed');
-    }
+    if(authRes.error||authRes.msg)throw new Error(authRes.error_description||authRes.msg||authRes.error||'Auth failed');
     _supaToken=authRes.access_token;
     _supaUser={id:authRes.user?authRes.user.id:authRes.id};
-    // Save token for session persistence
     localStorage.setItem('sb_token',_supaToken);
-    localStorage.setItem('sb_uid',_supaUser.id);
     if(isL){
       var loaded=await sbLoadUser();
-      if(loaded){
-        U=loaded;migrateUser();updateStreak();S.screen='home';
-      }else{
+      if(loaded){U=loaded;migrateUser();updateStreak();S.screen='home';}
+      else{
         var nu={name:S.authEmail.split('@')[0],email:S.authEmail,xp:0,lv:1,isPro:false,activeCls:'knight',chars:{},streak:0,lastStudy:null,achievements:[],questProgress:{},_quizCount:0};
-        U=nu;await saveUser();
-        S.selCls='knight';S.selGen='m';S.charName=U.name+"'s Hero";S.screen='char-create';
+        U=nu;await saveUser();S.selCls='knight';S.selGen='m';S.charName=U.name+"'s Hero";S.screen='char-create';
       }
     }else{
       var nu2={name:S.authName,email:S.authEmail,xp:0,lv:1,isPro:false,activeCls:'knight',chars:{},streak:0,lastStudy:null,achievements:[],questProgress:{},_quizCount:0};
       U=nu2;await saveUser();await stSet('rbSeen','1');
       S.selCls='knight';S.selGen='m';S.charName=S.authName+"'s Hero";S.screen='char-create';
     }
-  }catch(err){
-    S.err=err.message||'Auth error. Please try again.';
-  }
+  }catch(err){S.err=err.message||'Auth error. Try again.';}
   S.authLoading=false;draw();
 }
 
@@ -858,20 +1294,15 @@ function buildPrompt(isFirst,char,isMath){
 }
 
 async function callAPI(contentBlocks){
-  const resp=await fetch('https://runebook-api.vercel.app/api/proxy',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})
-  });
-  if(!resp.ok){const t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,120));}
-  const data=await resp.json();
+  var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})});
+  if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,120));}
+  var data=await resp.json();
   if(data.error)throw new Error(data.error.message||'API error');
-  const raw=data.content.map(function(b){return b.text||'';}).join('');
-  const si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
-  if(si<0||ei<0)throw new Error('No JSON found in response');
+  var raw=data.content.map(function(b){return b.text||'';}).join('');
+  var si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
+  if(si<0||ei<0)throw new Error('No JSON found');
   return JSON.parse(raw.slice(si,ei+1));
 }
-
 async function doGen(){
   const ta=get('nta');if(ta)S.notes=ta.value;
   const hasFiles=S.uploadFiles&&S.uploadFiles.length>0;
@@ -1411,12 +1842,8 @@ function nq(){
 }
 function rq(){startQuiz(S.di,S.isFinal);}
 async function doLogout(){
-  // Invalidate token server-side
-  if(_supaToken){
-    fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+_supaToken}}).catch(function(){});
-  }
-  localStorage.removeItem('sb_token');localStorage.removeItem('sb_uid');
-  _supaUser=null;_supaToken=null;U=null;
+  if(_supaToken){fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+_supaToken}}).catch(function(){});}
+  localStorage.removeItem('sb_token');_supaUser=null;_supaToken=null;U=null;
   S.screen='auth';S.authEmail='';S.authPass='';S.authName='';S.err='';S.notes='';S.uploadFiles=[];S.streak=0;draw();
 }
 function friendlyApiError(err){
@@ -1540,6 +1967,26 @@ function draw(){
   };
   el.innerHTML=(screens[S.screen]||authH)();
 }
-window.addEventListener('DOMContentLoaded',function(){init().catch(function(e){console.error('Init error:',e);document.getElementById('app').innerHTML='<div style="color:red;padding:20px">Error: '+e.message+'</div>';});});</script>
+init();
+
+</script>
 </body>
-</html>
+</htmlasync function generateQuizQuestions(dung,diffConfig,isFinal,char){
+  await new Promise(function(r){setTimeout(r,800);});
+  var qCount=typeof diffConfig.qCount==='number'?diffConfig.qCount:7;
+  var allQ=[
+    {question:"Capital of France?",options:["Berlin","Paris","Rome","Madrid"],correct:1},
+    {question:"2 + 2?",options:["3","5","4","22"],correct:2},
+    {question:"Sky color?",options:["Green","Red","Blue","Purple"],correct:2},
+    {question:"Who wrote Hamlet?",options:["Dickens","Shakespeare","Tolstoy","Austen"],correct:1},
+    {question:"H2O is?",options:["Oxygen","Hydrogen","Water","Salt"],correct:2},
+    {question:"Closest planet to Sun?",options:["Venus","Earth","Mars","Mercury"],correct:3},
+    {question:"Hexagon sides?",options:["5","7","6","8"],correct:2},
+    {question:"Speed of light?",options:["300km/s","3,000km/s","300,000km/s","30km/s"],correct:2},
+    {question:"Mona Lisa painter?",options:["Picasso","Da Vinci","Monet","Raphael"],correct:1},
+    {question:"Largest planet?",options:["Saturn","Neptune","Jupiter","Uranus"],correct:2},
+    {question:"How many continents?",options:["5","6","8","7"],correct:3},
+    {question:"Gas plants absorb?",options:["Oxygen","Nitrogen","CO2","Hydrogen"],correct:2},
+  ];
+  return allQ.slice().sort(function(){return Math.random()-.5;}).slice(0,Math.min(qCount,allQ.length));
+}>
