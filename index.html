@@ -769,7 +769,7 @@ let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
   ci:0,fl:false,shuffled:null,againPile:null,
   qi:0,sel:null,qs:0,streak:0,wrongAnswers:[],
   heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
-  err:'',proCodeErr:'',proCodeOk:'',showProCode:false,authLoading:false,showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
+  err:'',proCodeErr:'',proCodeOk:'',showProCode:false,resetSent:false,showReset:false,authLoading:false,showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
 
 const lp=()=>{var c=aC();if(!c)return 0;return Math.min(100,Math.round(xpInLevel(c.xp||0)/xpForThisLevel(c.lv||1)*100));};
 async function saveUser(){if(U)await sbSaveUser();}
@@ -911,8 +911,44 @@ function authH(){
   h+='<input id="ae" type="email" placeholder="Email address" value="'+S.authEmail+'" oninput="S.authEmail=this.value"/>';
   h+='<input id="ap" type="password" placeholder="Password" value="'+S.authPass+'" oninput="S.authPass=this.value"/>';
   h+=S.authLoading?'<button class="btn gc pf" disabled style="opacity:.6">⏳ PLEASE WAIT...</button>':'<button class="btn gc pf" onclick="doAuth()">'+(isL?'ENTER THE REALM':'BEGIN YOUR LEGEND')+'</button>';
+  if(isL){
+    h+='<div style="text-align:center;margin-top:12px">';
+    h+='<button onclick="S.showReset=!S.showReset;S.resetSent=false;S.err=\'\';draw()" style="background:none;border:none;color:var(--tx3);font-size:9px;cursor:pointer;text-decoration:underline">Forgot password?</button>';
+    h+='</div>';
+    if(S.showReset){
+      if(S.resetSent){
+        h+='<div style="margin-top:10px;background:#0a1a0a;border:2px solid #30a050;border-radius:8px;padding:12px;text-align:center">';
+        h+='<div style="font-size:14px;margin-bottom:6px">📧</div>';
+        h+='<div style="font-size:10px;color:#60ff90;font-weight:500">Reset email sent!</div>';
+        h+='<div style="font-size:9px;color:var(--tx3);margin-top:4px">Check your inbox and follow the link to reset your password.</div>';
+        h+='</div>';
+      }else{
+        h+='<div style="margin-top:10px;background:#0e0818;border:2px solid #4020a0;border-radius:8px;padding:12px">';
+        h+='<div style="font-size:9px;color:var(--tx3);margin-bottom:8px">Enter your email above and click below to receive a reset link.</div>';
+        h+='<button class="btn gr pf" style="font-size:8px" onclick="doResetPassword()">📧 SEND RESET LINK</button>';
+        h+='</div>';
+      }
+    }
+  }
   h+='<div class="tip" style="margin-top:10px">'+(isL?'No account? Click Sign Up':'Session saved in browser')+'</div></div>';
   return h;
+}
+
+async function doResetPassword(){
+  S.err='';S.resetSent=false;
+  var ae=get('ae');
+  if(ae)S.authEmail=ae.value.trim();
+  if(!S.authEmail){S.err='Enter your email first.';draw();return;}
+  try{
+    var res=await fetch(SUPA_URL+'/auth/v1/recover',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
+      body:JSON.stringify({email:S.authEmail})
+    });
+    // Supabase always returns 200 for security (even if email not found)
+    S.resetSent=true;S.err='';
+  }catch(e){S.err='Could not send reset email. Try again.';}
+  draw();
 }
 async function doAuth(){
   S.err='';S.authLoading=true;draw();
@@ -2038,7 +2074,7 @@ function calendarH(){
 }
 function shopH(){
   var h=tb();
-  h+='<button class="back" onclick="goTo(\'paywall\')">&#x25C4; Back</button>';
+  h+='<button class="back" onclick="goTo(S.prevScreen||(\'home\'))">&#x25C4; Back</button>';
   h+='<div class="pf" style="font-size:10px;color:var(--gold);margin-bottom:4px">&#x26A1; BUY GENERATION CREDITS</div>';
   h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:16px">Credits never expire. Used for generating new dungeons.</div>';
   var gl=gensLeft();
