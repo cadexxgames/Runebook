@@ -334,27 +334,24 @@ async function startQuiz(i,isFinal){
   var char=aC();
   if(!char){S.screen='home';draw();return;}
   var dung=isFinal?char.finalBoss:char.dungeons[i];
-  if(!dung){alert('Dungeon '+i+' not found ('+char.dungeons.length+' total).');S.screen='home';draw();return;}
-  // Use stored questions immediately — shuffle for variety
-  if(dung.quiz&&dung.quiz.length){
-    var shuffled=dung.quiz.slice();
-    for(var ii=shuffled.length-1;ii>0;ii--){
-      var jj=Math.floor(Math.random()*(ii+1));
-      var tmp=shuffled[ii];shuffled[ii]=shuffled[jj];shuffled[jj]=tmp;
-    }
-    S.liveQuiz=shuffled;
-    S.screen='quiz';
-    draw();
-    return;
-  }
-  // No stored questions — call API
+  if(!dung){S.err='Dungeon not found.';S.screen='hero';draw();return;}
+  // Always generate fresh questions from API based on chosen difficulty
   S.screen='quizgen';draw();
   try{
     var fresh=await generateQuizQuestions(dung,d,isFinal,char);
     if(!fresh||!fresh.length)throw new Error('No questions returned');
     S.liveQuiz=fresh;S.screen='quiz';
   }catch(ex){
-    alert('Could not start quiz: '+ex.message);S.screen='dungeon';
+    console.warn('Fresh gen failed:',ex.message);
+    // Fallback to stored questions if API fails
+    if(dung.quiz&&dung.quiz.length){
+      var stored=dung.quiz.slice().sort(function(){return Math.random()-.5;});
+      S.liveQuiz=stored.slice(0,Math.min(stored.length,d.qCount||7));
+      S.screen='quiz';
+    }else{
+      S.err='Could not load questions: '+friendlyApiError(ex);
+      S.screen='dungeon';
+    }
   }
   draw();
 }
