@@ -1,12 +1,11 @@
-const CACHE = 'runebook-v2';
-const BASE = '/runebook/';
+const CACHE = 'runebook-v3';
 const ASSETS = [
-  BASE,
-  BASE + 'index.html',
-  BASE + 'favicon.ico',
-  BASE + 'icon-192.png',
-  BASE + 'icon-512.png',
-  BASE + 'manifest.json'
+  '/',
+  '/index.html',
+  '/favicon.ico',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', function(e) {
@@ -52,7 +51,7 @@ self.addEventListener('fetch', function(e) {
       })
       .catch(function() {
         return caches.match(e.request).then(function(cached) {
-          return cached || caches.match(BASE + 'index.html');
+          return cached || caches.match('/index.html');
         });
       })
   );

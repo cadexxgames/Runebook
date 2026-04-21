@@ -2,7 +2,7 @@
   "name": "Runebook",
   "short_name": "Runebook",
   "description": "Turn your notes into an RPG quest. Upload notes, battle bosses, level up heroes.",
-  "start_url": "/runebook/",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0518",
@@ -26,6 +26,6 @@
     "games"
   ],
   "screenshots": [],
-  "scope": "/runebook/",
-  "id": "/runebook/"
+  "scope": "/",
+  "id": "/"
 }
