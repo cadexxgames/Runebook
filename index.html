@@ -246,7 +246,7 @@ function claimCls(id){
   U.activeCls=id;S.selCls=id;S.selGen=U.chars[id].gender||'m';S.charName=U.chars[id].charName||'';
   S.screen='char-create';draw();
 }
-function switchCls(id){if(!U.chars||!U.chars[id])return;U.activeCls=id;saveUser();draw();}
+function switchCls(id){if(!U.chars||!U.chars[id])return;U.activeCls=id;saveUser();S.screen='hero';draw();}
 function enterDungeon(i,isFinal){S.di=i;S.isFinal=!!isFinal;goTo('dungeon');}
 function studyDungeon(i){S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;goTo('fc');}
 function quizGenH(){
@@ -475,7 +475,7 @@ function doCC(){
   if(!U.chars)U.chars={};
   if(!U.chars[S.selCls])U.chars[S.selCls]={charName:S.charName,gender:S.selGen,dungeons:[],finalBoss:null};
   else{U.chars[S.selCls].charName=S.charName;U.chars[S.selCls].gender=S.selGen;}
-  U.activeCls=S.selCls;saveUser();S.screen='home';S.err='';draw();
+  U.activeCls=S.selCls;saveUser();S.screen='hero';S.err='';draw();
 }
 
 function tb(){
@@ -490,85 +490,108 @@ function tb(){
 }
 
 function homeH(){
-  const char=aC();
-  if(!char){var nh=tb()+'<div style="text-align:center;padding:30px"><div style="font-size:12px;color:var(--tx3);margin-bottom:16px">No character found.</div><button class="btn gc pf" onclick="goTo(\'char-select\')">CREATE CHARACTER</button></div>';return nh;}
-  const cls=clsInfo(U.activeCls),dungeons=char.dungeons||[];
-  const cleared=clearedCount(),fbUnlocked=finalBossUnlocked();
+  if(!U)return authH();
   var h=tb();
   if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
-  h+='<div style="display:flex;gap:16px;align-items:flex-start">';
-  h+='<div style="flex:0 0 110px;text-align:center">';
-  h+='<div class="bob">'+sp(U.activeCls,char.gender,96)+'</div>';
+  var char=aC();
+  h+='<div style="text-align:center;padding:6px 0 14px">';
+  if(char&&char.charName){
+    h+='<div class="bob" style="display:inline-block;margin-bottom:6px">'+sp(U.activeCls,char.gender,80)+'</div>';
+    h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:2px">'+char.charName+'</div>';
+    h+='<div style="font-size:9px;color:var(--tx3);margin-bottom:10px">'+clsInfo(U.activeCls).name+(char.subject?' &middot; &#x1F512; '+char.subject:'')+'</div>';
+    h+='<button class="btn gc pf" style="font-size:8px;margin-bottom:8px" onclick="gotoHero()">&#x2694; ENTER HALL</button>';
+    h+='<button class="btn gp pf" style="font-size:7px;margin-bottom:8px" onclick="gotoCharSelect()">&#x21C4; SWITCH HERO</button>';
+  }else{
+    h+='<div style="font-size:40px;margin-bottom:14px">&#x2694;</div>';
+    h+='<div class="pf" style="font-size:10px;color:var(--gold);margin-bottom:10px">CHOOSE YOUR HERO</div>';
+    h+='<button class="btn gc pf" style="font-size:8px;margin-bottom:8px" onclick="gotoCharSelect()">&#x2694; CHOOSE HERO</button>';
+  }
+  h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="goToAchievements()">&#x1F3C6; TROPHIES</button>';
+  h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="goToCalendar()">&#x1F4C5; STUDY LOG</button>';
+  if(!U.isPro)h+='<button class="btn gg pf" style="font-size:7px;margin-bottom:8px" onclick="gotoPaywall()">&#x2605; GO PRO</button>';
+  h+='<button class="btn gr pf" style="font-size:7px" onclick="doLogout()">LEAVE REALM</button>';
+  h+='</div>';
+  return h;
+}
+
+function heroH(){
+  var char=aC();
+  if(!char||!char.charName){goTo('char-select');return'';}
+  var cls=clsInfo(U.activeCls),dungeons=char.dungeons||[];
+  var cleared=clearedCount(),fbUnlocked=finalBossUnlocked();
+  var h=tb();
+  if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
+  h+='<button class="back" onclick="gotoHome()">&#x25C4; Main Menu</button>';
+  h+='<div style="display:flex;gap:14px;align-items:flex-start">';
+  h+='<div style="flex:0 0 100px;text-align:center">';
+  h+='<div class="bob">'+sp(U.activeCls,char.gender,88)+'</div>';
   h+='<div class="pf" style="font-size:7px;color:var(--gold);margin-top:5px">'+char.charName+'</div>';
-  h+='<div style="font-size:9px;color:var(--tx3);margin-top:3px">'+cls.name+'</div>';
-  if(char.subject)h+='<div style="font-size:7px;color:#c080ff;margin-top:3px">&#x1F512; '+char.subject+'</div>';
-  h+='<div class="pf" style="font-size:7px;color:#60ffaa;margin-top:3px">'+TNAME(U.lv)+'</div>';
-  if(U.isPro)h+='<div style="font-size:9px;color:#c080ff;margin-top:3px">&#x2605; PRO</div>';
-  h+='<div class="slot-bar">';
-  for(var si=0;si<(U.isPro?dungeons.length+1:FREE_DUNGEONS);si++){h+='<div class="slot'+(si<dungeons.length?' used':'')+'"></div>';}
-  h+='</div><div style="font-size:8px;color:var(--tx3)">'+dungeons.length+'/'+(U.isPro?'&#x221E;':FREE_DUNGEONS)+' dungeons</div>';
+  h+='<div style="font-size:8px;color:var(--tx3);margin-top:2px">'+cls.name+'</div>';
+  if(char.subject)h+='<div style="font-size:7px;color:#c080ff;margin-top:2px">&#x1F512; '+char.subject+'</div>';
+  h+='<div class="pf" style="font-size:7px;color:#60ffaa;margin-top:2px">'+TNAME(U.lv)+'</div>';
+  if(U.isPro)h+='<div style="font-size:8px;color:#c080ff;margin-top:2px">&#x2605; PRO</div>';
   h+='</div>';
   h+='<div style="flex:1">';
-  h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:10px">Hail, <span style="color:#fff">'+U.name+'</span>!</div>';
   if(U.streak>0){
-    h+='<div style="background:#1e0808;border:2px solid '+streakColor(U.streak)+';border-radius:8px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;gap:8px">';
-    h+='<span style="font-size:18px">&#x1F525;</span>';
-    h+='<div><div class="pf" style="font-size:8px;color:'+streakColor(U.streak)+'">'+U.streak+' DAY STREAK!</div>';
-    h+='<div style="font-size:9px;color:var(--tx3);margin-top:2px">Study today to keep it alive</div></div></div>';
+    h+='<div style="background:#1e0808;border:2px solid '+streakColor(U.streak)+';border-radius:8px;padding:7px 10px;margin-bottom:10px;display:flex;align-items:center;gap:8px">';
+    h+='<span style="font-size:16px">&#x1F525;</span>';
+    h+='<div class="pf" style="font-size:8px;color:'+streakColor(U.streak)+'">'+U.streak+' DAY STREAK!</div></div>';
   }
-  // Final boss unlock progress
   if(!fbUnlocked&&dungeons.length>0){
-    h+='<div style="background:#1a1008;border:2px solid #5a4010;border-radius:8px;padding:8px 12px;margin-bottom:12px">';
-    h+='<div style="font-size:9px;color:var(--bdg);margin-bottom:5px">&#x1F451; FINAL BOSS: '+cleared+'/'+FINAL_BOSS_REQUIRED+' dungeons cleared</div>';
-    h+='<div style="height:8px;background:#0a0620;border-radius:4px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,#c88020,#f0c030);border-radius:4px;width:'+Math.round(cleared/FINAL_BOSS_REQUIRED*100)+'%;transition:width .5s"></div></div>';
+    h+='<div style="background:#1a1008;border:2px solid #5a4010;border-radius:8px;padding:7px 10px;margin-bottom:10px">';
+    h+='<div style="font-size:9px;color:var(--bdg);margin-bottom:4px">&#x1F451; FINAL BOSS: '+cleared+'/'+FINAL_BOSS_REQUIRED+' cleared</div>';
+    h+='<div style="height:7px;background:#0a0620;border-radius:3px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,#c88020,#f0c030);width:'+Math.round(cleared/FINAL_BOSS_REQUIRED*100)+'%;border-radius:3px;"></div></div>';
     h+='</div>';
   }
+  if(dungeons.length>=2)h+='<button class="btn gb2 pf" style="font-size:7px;margin-bottom:10px" onclick="startGauntlet()">&#x1F409; BOSS GAUNTLET</button>';
   if(dungeons.length===0){
-    h+='<div style="background:#140a38;border:2px dashed #5030a0;border-radius:10px;padding:22px;text-align:center;margin-bottom:12px">';
-    h+='<div style="font-size:28px;margin-bottom:8px">&#x2693;</div>';
-    h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:14px;line-height:1.7">No dungeons yet.<br>Upload notes to begin your first quest!</div>';
-    h+='<button class="btn gc pf" style="font-size:7px" onclick="goTo(\'upload\')">&#x2726; FIRST DUNGEON</button></div>';
+    h+='<div style="background:#140a38;border:2px dashed #5030a0;border-radius:10px;padding:20px;text-align:center;margin-bottom:10px">';
+    h+='<div style="font-size:26px;margin-bottom:8px">&#x2693;</div>';
+    h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:12px;line-height:1.7">No dungeons yet.</div>';
+    h+='<button class="btn gc pf" style="font-size:7px" onclick="gotoUpload()">&#x2726; FIRST DUNGEON</button></div>';
   }else{
     dungeons.forEach(function(d,i){
-      const best=d.bestScore||0,cleared2=best>=70,att=d.attempts||0;
+      var best=d.bestScore||0,cleared2=best>=70,att=d.attempts||0;
+      if(d.scores){var eb=Math.max(d.scores.easy&&d.scores.easy.best||0,d.scores.normal&&d.scores.normal.best||0,d.scores.hard&&d.scores.hard.best||0);cleared2=eb>=70;best=eb||best;}
       h+='<div class="dcard" onclick="enterDungeon('+i+',false)" style="cursor:pointer">';
       h+='<div class="dnum">'+ROMAN[i]+'</div>';
       h+='<div class="dinfo"><div class="dtitle">'+d.title+(cleared2?'<span class="cleared-badge">&#x2B50;</span>':'')+'</div>';
       if(d.story&&d.story.setting)h+='<div class="dloc">'+d.story.setting+'</div>';
-      if(d.fileNames&&d.fileNames.length)h+='<div class="dloc" style="color:#a060ff">&#x1F4CE; '+d.fileNames.join(', ')+'</div>';
-      h+='<div class="dstat"><span style="color:'+(cleared2?'#50e080':'var(--tx3)')+'">Best: '+best+'%</span>';
-      if(att>0)h+=' <span style="color:var(--tx3)">&#x2022; '+att+' attempt'+(att!==1?'s':'')+'</span>';
+      h+='<div class="dstat">';
+      if(d.scores){
+        ['easy','normal','hard'].forEach(function(dk){
+          var rec=d.scores[dk];
+          if(rec&&rec.attempts){var rk=getRank(rec.best);
+            h+='<span style="font-size:7px;color:'+DIFF[dk].color+';border:1px solid '+DIFF[dk].color+'60;border-radius:2px;padding:1px 4px;margin-right:3px">'+dk[0].toUpperCase()+':'+rk.label+'</span>';
+          }
+        });
+      }else if(best>0)h+='<span style="color:'+(cleared2?'#50e080':'var(--tx3)')+'">Best: '+best+'%</span>';
       h+='</div></div>';
       h+='<div class="dbtns"><button class="dbtn dbtn-s" onclick="event.stopPropagation();studyDungeon('+i+')">STUDY</button>';
       h+='<button class="dbtn dbtn-q" onclick="event.stopPropagation();enterDungeon('+i+',false)">QUIZ</button></div></div>';
     });
-    // Final boss card
     if(fbUnlocked){
       h+='<div class="dcard final-boss">';
-      h+='<div style="font-size:24px;min-width:28px;text-align:center">&#x1F451;</div>';
+      h+='<div style="font-size:22px;min-width:28px;text-align:center">&#x1F451;</div>';
       h+='<div class="dinfo"><div class="dtitle" style="color:var(--gold)">FINAL BOSS</div>';
-      h+='<div class="dloc">The ultimate examination awaits...</div>';
-      if(char.finalBoss){const fb=char.finalBoss;h+='<div class="dstat" style="color:'+(( fb.bestScore||0)>=70?'#50e080':'#ff8070')+'">Best: '+(fb.bestScore||0)+'%</div>';}
-      h+='</div>';
-      h+='<div class="dbtns">';
-      if(!char.finalBoss){h+='<button class="dbtn" style="border-color:#c89020;color:#ffd040" onclick="genFinalBoss()">GENERATE</button>';}
-      else{h+='<button class="dbtn dbtn-q" onclick="enterDungeon(0,true)">ENTER</button>';}
+      h+='<div class="dloc">The ultimate examination</div>';
+      if(char.finalBoss)h+='<div class="dstat" style="color:'+((char.finalBoss.bestScore||0)>=70?'#50e080':'#ff8070')+'">Best: '+(char.finalBoss.bestScore||0)+'%</div>';
+      h+='</div><div class="dbtns">';
+      if(!char.finalBoss)h+='<button class="dbtn" style="border-color:#c89020;color:#ffd040" onclick="genFinalBoss()">GENERATE</button>';
+      else h+='<button class="dbtn dbtn-q" onclick="enterDungeon(0,true)">ENTER</button>';
       h+='</div></div>';
     }
-    if(canAdd()){h+='<button class="btn gg pf" style="font-size:7px;margin-top:4px" onclick="goTo(\'upload\')">+ NEW DUNGEON</button>';}
+    if(canAdd())h+='<button class="btn gg pf" style="font-size:7px;margin-top:4px" onclick="gotoUpload()">+ NEW DUNGEON</button>';
     else if(!fbUnlocked){
-      h+='<div style="background:#1e0840;border:2px solid #8040d0;border-radius:8px;padding:12px;margin-top:4px;text-align:center">';
-      h+='<div style="font-size:10px;color:#c080ff;margin-bottom:8px">Dungeon limit reached!</div>';
-      h+='<button class="btn gp pf" style="font-size:7px" onclick="goTo(\'paywall\')">&#x2605; GO PRO FOR MORE</button></div>';
+      h+='<div style="background:#1e0840;border:2px solid #8040d0;border-radius:8px;padding:10px;margin-top:4px;text-align:center">';
+      h+='<div style="font-size:10px;color:#c080ff;margin-bottom:6px">Dungeon limit reached!</div>';
+      h+='<button class="btn gp pf" style="font-size:7px" onclick="gotoPaywall()">&#x2605; GO PRO</button></div>';
     }
   }
-  h+='<div style="height:10px"></div>';
-  h+='<button class="btn gp pf" style="font-size:7px" onclick="goTo(\'char-select\')">&#x25C6; CHARACTERS</button>';
-  if(!U.isPro)h+='<button class="btn gg pf" style="font-size:7px;margin-top:8px" onclick="goTo(\'paywall\')">&#x2605; GO PRO</button>';
-  h+='<button class="btn gr pf" style="font-size:7px;margin-top:8px" onclick="doLogout()">LEAVE REALM</button>';
   h+='</div></div>';
   return h;
 }
+
 
 function charSelectH(){
   var h=tb();
@@ -1063,6 +1086,13 @@ function friendlyApiError(err){
   if(msg.indexOf('503')>=0||msg.indexOf('502')>=0||msg.indexOf('500')>=0)return 'Anthropic is having issues. Try again in a few minutes.';
   return 'Error: '+msg;
 }
+function gotoHome(){goTo('home');}
+function gotoHero(){goTo('hero');}
+function gotoUpload(){goTo('upload');}
+function gotoCharSelect(){goTo('char-select');}
+function gotoPaywall(){goTo('paywall');}
+function goToAchievements(){goTo('achievements');}
+function goToCalendar(){goTo('calendar');}
 function goTo(sc){
   if(sc==='quiz'){S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];}
   if(sc==='fc'){S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;}
@@ -1071,7 +1101,7 @@ function goTo(sc){
 function draw(){
   const el=document.getElementById('app');if(!el)return;
   const screens={
-    onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,
+    onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,hero:heroH,
     'char-select':charSelectH,dungeon:dungeonH,upload:uploadH,gen:genH,
     fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH
   };
