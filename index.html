@@ -1146,7 +1146,7 @@ function buildPrompt(isFirst,char,isMath){
 
 async function callAPI(blocks){
   var resp=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true'},
+    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true','x-api-key':'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'},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:blocks}]})
   });
   if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,120));}
@@ -1237,7 +1237,7 @@ async function generateQuizQuestions(dung,diffConfig,isFinal,char){
   lines.push('Return ONLY: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}');
   lines.push('Exactly '+qCount+' questions. correct is 0-3.');
   var resp=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true'},
+    method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-allow-browser':'true','x-api-key':'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'},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,system:sysMsg,messages:[{role:'user',content:lines.join('\n\n')}]})
   });
   if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
