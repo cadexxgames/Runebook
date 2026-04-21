@@ -200,7 +200,7 @@ async function stGet(k){try{const r=await window.storage.get(k);return r?r.value
 async function stSet(k,v){try{await window.storage.set(k,v);}catch(e){}}
 async function stDel(k){try{await window.storage.delete(k);}catch(e){}}
 
-const XL=100,FREE_DUNGEONS=3,FINAL_BOSS_REQUIRED=5;
+const XL=100,FREE_DUNGEONS=3,FREE_CHARS=1,FINAL_BOSS_REQUIRED=5;
 const TNAME=lv=>lv<3?'Apprentice':lv<6?'Journeyman':lv<10?'Expert':'Legendary';
 const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
 const CLASSES=[
@@ -237,7 +237,7 @@ function curDiff(){return DIFF[S.difficulty]||DIFF.normal;}
 
 function setTab(t){S.authTab=t;S.err='';draw();}
 function pickGenCC(g){S.selGen=g;draw();}
-function pickCls(id){var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}S.selCls=id;draw();}
+function pickCls(id){var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}if(U.chars&&U.chars[id]&&U.chars[id].charName&&U.activeCls!==id)return;S.selCls=id;draw();}
 function obNext(){S.obSlide=(S.obSlide||0)+1;if(S.obSlide>=3){S.screen='auth';S.obSlide=0;}draw();}
 function claimCls(id){
   var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}
@@ -309,7 +309,7 @@ async function startQuiz(i,isFinal){
   S.heroHP=d.hp;S.heroMaxHP=d.hp;
   S.bossMaxHP=100;S.bossHP=100;S.liveQuiz=null;
   var char=aC();
-  if(!char){alert('No character found.');S.screen='home';draw();return;}
+  if(!char){S.screen='home';draw();return;}
   var dung=isFinal?char.finalBoss:char.dungeons[i];
   if(!dung){alert('Dungeon '+i+' not found ('+char.dungeons.length+' total).');S.screen='home';draw();return;}
   // Use stored questions immediately — shuffle for variety
@@ -459,10 +459,13 @@ function charCreateH(){
   h+='<div style="font-size:11px;color:var(--tx3);line-height:1.7;margin-top:4px">Once you start your first dungeon, this hero is locked to that subject forever.</div>';
   h+='</div></div><span class="lbl" style="margin-top:12px">CHOOSE CLASS</span><div class="cc-grid">';
   CLASSES.forEach(function(c){
-    var lk=c.pro&&!U.isPro;
-    h+='<div class="cc'+(S.selCls===c.id?' on':'')+'" '+(lk?'':'onclick="pickCls(\''+c.id+'\')"')+' style="opacity:'+(lk?'.5':'1')+'">';
+    var alreadyClaimed=!!(U.chars&&U.chars[c.id]&&U.chars[c.id].charName&&U.activeCls!==c.id);
+    var lk=(c.pro&&!U.isPro)||alreadyClaimed;
+    h+='<div class="cc'+(S.selCls===c.id?' on':'')+'" '+(lk?'':'onclick="pickCls(\''+c.id+'\')"')+' style="opacity:'+(lk?'.35':'1')+'">';
     h+=sp(c.id,S.selGen,52);h+='<span class="nm">'+c.name+'</span>';
-    if(lk)h+='<span class="pr-badge">PRO</span>';h+='</div>';
+    if(alreadyClaimed)h+='<span class="pr-badge" style="border-color:#5030a0;color:#6040b0">TAKEN</span>';
+    else if(c.pro&&!U.isPro)h+='<span class="pr-badge">PRO</span>';
+    h+='</div>';
   });
   h+='</div>';
   if(S.err)h+='<div class="er">'+S.err+'</div>';
@@ -600,7 +603,9 @@ function charSelectH(){
   h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:14px;line-height:1.7">Each hero is permanently locked to their subject after their first dungeon.</div>';
   h+='<div class="csgrid">';
   CLASSES.forEach(function(c){
-    const cd=U.chars[c.id],isCur=U.activeCls===c.id,lk=c.pro&&!U.isPro,claimed=!!(cd&&cd.charName);
+    var cd=U.chars[c.id],isCur=U.activeCls===c.id,claimed=!!(cd&&cd.charName);
+    var claimedCount=Object.values(U.chars||{}).filter(function(x){return x&&x.charName;}).length;
+    var lk=(c.pro&&!U.isPro)||(!U.isPro&&!claimed&&!isCur&&claimedCount>=FREE_CHARS);
     h+='<div class="cscard'+(isCur?' active':claimed?' claimed':'')+'" ';
     if(claimed&&!isCur)h+='onclick="switchCls(\''+c.id+'\')"';
     else if(!claimed&&!lk)h+='onclick="claimCls(\''+c.id+'\')"';
@@ -1120,7 +1125,7 @@ function draw(){
   const screens={
     onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,hero:heroH,
     'char-select':charSelectH,dungeon:dungeonH,upload:uploadH,gen:genH,
-    fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH
+    quizgen:quizGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH
   };
   el.innerHTML=(screens[S.screen]||authH)();
 }
