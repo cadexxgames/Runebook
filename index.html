@@ -903,13 +903,14 @@ function calcXP(base){
 }
 
 function quizH(){
-  const d=aD();if(!d||!d.quiz||!d.quiz.length)return homeH();
-  if(S.qi>=d.quiz.length)return qdH();
+  var quiz=S.liveQuiz;
+  if(!quiz||!quiz.length){var _d2=aD();if(_d2&&_d2.quiz&&_d2.quiz.length){quiz=_d2.quiz;S.liveQuiz=quiz;}else return homeH();}
+  if(S.qi>=quiz.length)return qdH();
   if(S.heroHP<=0)return gameOverH();
-  const q=d.quiz[S.qi],ans=S.sel!==null;
-  const bPct=Math.round(S.bossHP/S.bossMaxHP*100);
-  const hPct=Math.round(S.heroHP/S.heroMaxHP*100);
-  const bName=(d.story&&d.story.boss)?d.story.boss:'The Boss';
+  const d=aD();
+  var q=quiz[S.qi],ans=S.sel!==null;
+  const bPct=Math.min(100,Math.round(S.bossHP/(S.bossMaxHP||100)*100));
+  const bName=(d&&d.story&&d.story.boss)?d.story.boss:'The Boss';
   const char=aC();
   var h=tb();
   if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
@@ -928,7 +929,7 @@ function quizH(){
   h+='<div class="cbar-name" style="font-size:8px;color:#ffbbcc">'+bName+'</div>';
   h+='<div>'+bossSprite(bName,44)+'</div>';
   h+='<div class="hp-track"><div class="hp-fill" style="width:'+bPct+'%;background:'+(bPct>60?'#cc2020':bPct>30?'#cc6020':'#cccc20')+'"></div></div>';
-  h+='<div class="hp-text" style="color:#ff8090">'+S.bossHP+'/'+S.bossMaxHP+' HP</div>';
+  h+='<div class="hp-text" style="color:#ff8090">'+Math.ceil(S.bossHP)+'/100 HP</div>';
   h+='</div></div>';
   // Streak bar
   if(S.streak>=2){
@@ -950,7 +951,7 @@ function quizH(){
     var msg=ok?(S.streak>=3?'&#x1F525; COMBO! +'+S.pa+' XP':S.streak>=2?'&#x26A1; STREAK! +'+S.pa+' XP':'&#x2713; Correct! +'+S.pa+' XP'):'&#x2715; Wrong \u2014 -1 HP!';
     h+='<div style="margin-top:14px;text-align:center;font-size:'+(ok?'12':'11')+'px;color:'+(ok?'#60ff90':'#ff8070')+'">'+msg+'</div>';
     if(S.heroHP>0){
-      var btnTxt=S.qi<quiz.length-1?'NEXT TRIAL &#x25BA;':(S.isFinal?'CLAIM YOUR DESTINY':'DEFEAT THE BOSS');
+      var btnTxt=S.qi<(S.liveQuiz?S.liveQuiz.length:1)-1?'NEXT TRIAL &#x25BA;':(S.isFinal?'CLAIM YOUR DESTINY':'DEFEAT THE BOSS');
       h+='<div style="text-align:center;margin-top:10px"><button class="btn '+(ok?'gn':'gr')+' pf" style="width:auto;padding:10px 20px;font-size:7px" onclick="nq()">'+btnTxt+'</button></div>';
     }
   }
@@ -1073,9 +1074,9 @@ function pick(i){
     const earned=calcXP(20);
     var msg=S.streak>=4?'&#x1F525;&#x1F525; x3! +'+earned+' XP':S.streak>=3?'&#x1F525; x2! +'+earned+' XP':S.streak>=2?'&#x26A1; STREAK! +'+earned+' XP':null;
     S.qs++;
-    // Boss takes damage
-    var dmg=Math.ceil(S.bossMaxHP/d.quiz.length);
-    if(S.streak>=3)dmg=Math.ceil(dmg*1.5);
+    var _qlen=(S.liveQuiz&&S.liveQuiz.length)||1;
+    var dmg=S.bossMaxHP/_qlen;
+    if(S.streak>=4)dmg*=2;else if(S.streak>=3)dmg*=1.5;else if(S.streak>=2)dmg*=1.2;
     S.bossHP=Math.max(0,S.bossHP-dmg);
     xpu(earned,msg);
   }else{
@@ -1088,10 +1089,10 @@ function pick(i){
 }
 function nq(){
   if(S.heroHP<=0){S.screen='quiz';draw();return;}
-  var quiz=S.liveQuiz;if(!quiz)return;
-  if(S.qi===quiz.length-1&&S.qs===quiz.length){U.xp+=50;saveUser();}
+  var _nqQuiz=S.liveQuiz;if(!_nqQuiz)return;
+  if(S.qi===_nqQuiz.length-1&&S.qs===_nqQuiz.length){U.xp+=50;saveUser();}
   S.qi++;S.sel=null;
-  if(S.qi>=quiz.length){recordStudy();S.screen='qd';}
+  if(S.qi>=(_nqQuiz?_nqQuiz.length:0)){recordStudy();S.screen='qd';}
   draw();
 }
 function rq(){startQuiz(S.di,S.isFinal);}
