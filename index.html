@@ -289,7 +289,7 @@ async function generateQuizQuestions(dung,diffConfig,isFinal,char){
   var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:prompt}]})
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:prompt}]})
   });
   if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
   var data=await resp.json();
@@ -746,7 +746,7 @@ async function callAPI(contentBlocks){
   const resp=await fetch('https://runebook-api.vercel.app/api/proxy',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})
   });
   if(!resp.ok){const t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,120));}
   const data=await resp.json();
