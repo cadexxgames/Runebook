@@ -196,7 +196,6 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 </head>
 <body>
 <div class="app"><div class="panel" id="app">Loading...</div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 const SPRITES={
   "bard_m":"data:image/png;base64,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",
@@ -230,447 +229,86 @@ const HEART_SPRITE="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeIAAAHGCAYAAA
 
 
 
-// ── SUPABASE ──
-const _supa=window.supabase.createClient('https://ftonyklqynsnunlqmwvz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0b255a2xxeW5zbnVubHFtd3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MzcxMTUsImV4cCI6MjA5MjMxMzExNX0.0uG7ZnjL2gS1P7xN5ibKKRyftpgJN5t7fcA5P03pb6c');
-let _supaUser=null; // current Supabase auth user
+// ── SUPABASE (pure fetch, no CDN needed) ──
+const SUPA_URL='https://ftonyklqynsnunlqmwvz.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0b255a2xxeW5zbnVubHFtd3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MzcxMTUsImV4cCI6MjA5MjMxMzExNX0.0uG7ZnjL2gS1P7xN5ibKKRyftpgJN5t7fcA5P03pb6c';
+let _supaUser=null;
+let _supaToken=null;
 
-// Lightweight localStorage helpers (just for onboarding flag)
+async function supaAuth(email,password,isSignup){
+  var endpoint=isSignup?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
+  var res=await fetch(SUPA_URL+endpoint,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
+    body:JSON.stringify({email,password})
+  });
+  return res.json();
+}
+async function supaGetSession(){
+  var token=localStorage.getItem('sb_token');
+  var userId=localStorage.getItem('sb_uid');
+  if(!token||!userId)return null;
+  // Verify token still valid
+  var res=await fetch(SUPA_URL+'/auth/v1/user',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+token}
+  });
+  if(!res.ok){localStorage.removeItem('sb_token');localStorage.removeItem('sb_uid');return null;}
+  var user=await res.json();
+  _supaToken=token;
+  return user;
+}
+async function supaUpsert(data){
+  if(!_supaToken||!_supaUser)return;
+  await fetch(SUPA_URL+'/rest/v1/users',{
+    method:'POST',
+    headers:{
+      'apikey':SUPA_KEY,
+      'Authorization':'Bearer '+_supaToken,
+      'Content-Type':'application/json',
+      'Prefer':'resolution=merge-duplicates'
+    },
+    body:JSON.stringify(data)
+  });
+}
+async function supaSelect(){
+  if(!_supaToken||!_supaUser)return null;
+  var res=await fetch(SUPA_URL+'/rest/v1/users?id=eq.'+_supaUser.id+'&select=*',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+_supaToken}
+  });
+  if(!res.ok)return null;
+  var rows=await res.json();
+  return rows&&rows.length?rows[0]:null;
+}
+async function supaUpdatePro(){
+  if(!_supaToken||!_supaUser)return;
+  await fetch(SUPA_URL+'/rest/v1/users?id=eq.'+_supaUser.id,{
+    method:'PATCH',
+    headers:{
+      'apikey':SUPA_KEY,
+      'Authorization':'Bearer '+_supaToken,
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({is_pro:true})
+  });
+}
+
+// Lightweight localStorage helpers (onboarding flag only)
 async function stGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 async function stSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 async function stDel(k){try{localStorage.removeItem(k);}catch(e){}}
 
 async function sbSaveUser(){
-  if(!U||!_supaUser)return;
-  await _supa.from('users').upsert({
-    id:_supaUser.id,
-    email:U.email,
-    is_pro:U.isPro||false,
-    data:U
-  },{onConflict:'id'});
+  if(!U||!_supaUser||!_supaToken)return;
+  await supaUpsert({id:_supaUser.id,email:U.email,is_pro:U.isPro||false,data:U});
 }
 async function sbLoadUser(){
-  if(!_supaUser)return null;
-  const {data,error}=await _supa.from('users').select('*').eq('id',_supaUser.id).single();
-  if(error||!data)return null;
-  var u=data.data||{};
-  u.isPro=data.is_pro||u.isPro||false; // always trust DB for pro status
+  if(!_supaUser||!_supaToken)return null;
+  var row=await supaSelect();
+  if(!row)return null;
+  var u=row.data||{};
+  u.isPro=row.is_pro||u.isPro||false;
   return u;
 }
-
-const FREE_DUNGEONS=3,FREE_CHARS=1,FINAL_BOSS_REQUIRED=5;
-function xpForLevel(lv){return Math.floor(100*Math.pow(1.25,lv-1));}
-function totalXpForLevel(lv){var t=0;for(var i=1;i<lv;i++)t+=xpForLevel(i);return t;}
-function lvFromXp(xp){var lv=1;while(xp>=totalXpForLevel(lv+1))lv++;return lv;}
-function xpInLevel(xp){var lv=lvFromXp(xp);return xp-totalXpForLevel(lv);}
-function xpForThisLevel(lv){return xpForLevel(lv);}
-const TNAME=lv=>lv<3?'Apprentice':lv<6?'Journeyman':lv<10?'Expert':'Legendary';
-const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
-const CLASSES=[
-  {id:'knight',name:'Knight',pro:false},{id:'mage',name:'Mage',pro:false},{id:'druid',name:'Druid',pro:false},
-  {id:'bard',name:'Bard',pro:true},{id:'cleric',name:'Cleric',pro:true},{id:'monk',name:'Monk',pro:true},
-  {id:'ranger',name:'Ranger',pro:true},{id:'rogue',name:'Rogue',pro:true},
-];
-const DIFF={
-  easy:{label:'EASY',hp:4,qCount:4,xpMult:.8,color:'#20a050',bg:'#082818',desc:'4 hearts | 4 questions | +0.8x XP'},
-  normal:{label:'NORMAL',hp:3,qCount:7,xpMult:1,color:'#6030c0',bg:'#181030',desc:'3 hearts | 7 questions | +1x XP'},
-  hard:{label:'HARD',hp:2,qCount:12,xpMult:1.5,color:'#c02020',bg:'#280808',desc:'2 hearts | 12 questions | +1.5x XP'},
-};
-
-var HERO_ANIMS={
-  knight:'knight-idle 3.5s ease-in-out infinite',
-  mage:'mage-idle 3s ease-in-out infinite',
-  druid:'druid-idle 4s ease-in-out infinite',
-  bard:'bard-idle 1.6s ease-in-out infinite',
-  cleric:'cleric-idle 3.2s ease-in-out infinite',
-  monk:'monk-idle 2s ease-in-out infinite',
-  ranger:'ranger-idle 2.4s ease-in-out infinite',
-  rogue:'rogue-idle 2.8s ease-in-out infinite',
-};
-function sp(cls,gen,h,noAnim){
-  var k=cls+'_'+gen,src=SPRITES[k]||SPRITES[cls+'_m']||'';
-  var anim=(!noAnim&&HERO_ANIMS[cls])?'animation:'+HERO_ANIMS[cls]+';':'';
-  return '<img src="'+src+'" style="height:'+h+'px;image-rendering:pixelated;display:block;margin:0 auto;'+anim+'" alt="'+cls+'"/>';
-}
-function getBossSprite(name){
-  var n=(name||'').toLowerCase();
-  if(n.match(/wolf|hound|dog|beast|fang|claw|pack/))return MONSTER_SPRITES.dire_wolf;
-  if(n.match(/goblin|gremlin|imp|sprite|pixie|trickster/))return MONSTER_SPRITES.goblin;
-  if(n.match(/dragon|drake|wyvern|wyrm|fire|flame|inferno|blaze/))return MONSTER_SPRITES.dragon;
-  if(n.match(/lich|undead|necro|skull|wraith|specter|phantom|ghost|shade|void|professor|sorcerer|wizard|warlock/))return MONSTER_SPRITES.lich;
-  if(n.match(/orc|troll|ogre|brute|warrior|berserker|axe|savage/))return MONSTER_SPRITES.orc;
-  if(n.match(/bear|owl|fluffy|fuzzy|beast|creature|monster/))return MONSTER_SPRITES.owlbear;
-  if(n.match(/cyclops|giant|titan|golem|colossus|eye|siege/))return MONSTER_SPRITES.cyclops;
-  if(n.match(/cerberus|hydra|demon|devil|hellhound|chaos|shadow/))return MONSTER_SPRITES.cerberus;
-  // Default: pick based on hash of name so same boss always same sprite
-  var monsters=Object.values(MONSTER_SPRITES);
-  var hash=name.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0);
-  return monsters[hash%monsters.length];
-}
-function getBossAnim(name){
-  var n=(name||'').toLowerCase();
-  if(n.match(/wolf|hound|dog|beast|fang|claw|pack/))return'wolf-prowl 2.2s ease-in-out infinite';
-  if(n.match(/goblin|gremlin|imp|sprite|pixie|trickster/))return'goblin-jitter 1.4s ease-in-out infinite';
-  if(n.match(/dragon|drake|wyvern|wyrm|fire|flame|inferno|blaze/))return'dragon-breathe 3s ease-in-out infinite';
-  if(n.match(/lich|undead|necro|skull|wraith|specter|phantom|ghost|shade|void|professor|sorcerer|wizard|warlock/))return'lich-float 3.5s ease-in-out infinite';
-  if(n.match(/orc|troll|ogre|brute|warrior|berserker|axe|savage/))return'orc-stomp 2s ease-in-out infinite';
-  if(n.match(/bear|owl|fluffy|fuzzy/))return'owlbear-sway 2.5s ease-in-out infinite';
-  if(n.match(/cyclops|giant|titan|golem|colossus|eye|siege/))return'cyclops-lurch 3s ease-in-out infinite';
-  if(n.match(/cerberus|hydra|demon|devil|hellhound|chaos|shadow/))return'cerberus-heads 1.8s ease-in-out infinite';
-  return'orc-stomp 2.5s ease-in-out infinite';
-}
-function bossSprite(name,h){
-  var src=getBossSprite(name);
-  var anim=getBossAnim(name);
-  return'<img src="'+src+'" style="height:'+h+'px;image-rendering:pixelated;object-fit:contain;animation:'+anim+';" alt="'+name+'"/>';
-}
-
-function streakColor(n){return n>=30?'#ff4040':n>=14?'#ff7020':n>=7?'#ffaa20':'#ff7040';}
-
-function aC(){return U&&U.chars&&U.chars[U.activeCls]?U.chars[U.activeCls]:null;}
-function aD(){const c=aC();if(!c)return null;const d=S.isFinal?c.finalBoss:c.dungeons[S.di];return d||null;}
-function canAdd(){const c=aC();if(!c)return false;return U.isPro||c.dungeons.length<FREE_DUNGEONS;}
-function clsInfo(id){return CLASSES.find(function(c){return c.id===id;})||CLASSES[0];}
-function clearedCount(){const c=aC();if(!c)return 0;return c.dungeons.filter(function(d){return(d.bestScore||0)>=70;}).length;}
-function finalBossUnlocked(){return clearedCount()>=FINAL_BOSS_REQUIRED;}
-function curDiff(){return DIFF[S.difficulty]||DIFF.normal;}
-
-function setTab(t){S.authTab=t;S.err='';draw();}
-function pickGenCC(g){S.selGen=g;draw();}
-function pickCls(id){var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}if(U.chars&&U.chars[id]&&U.chars[id].charName&&U.activeCls!==id)return;S.selCls=id;draw();}
-function obNext(){S.obSlide=(S.obSlide||0)+1;if(S.obSlide>=4){S.screen='auth';S.obSlide=0;}draw();}
-function claimCls(id){
-  var c=clsInfo(id);if(c.pro&&!U.isPro){goTo('paywall');return;}
-  if(!U.chars)U.chars={};
-  if(!U.chars[id])U.chars[id]={charName:'',gender:'m',dungeons:[],finalBoss:null};
-  U.activeCls=id;S.selCls=id;S.selGen=U.chars[id].gender||'m';S.charName=U.chars[id].charName||'';
-  S.screen='char-create';draw();
-}
-
-function today(){return new Date().toISOString().slice(0,10);}
-function getRank(p){
-  if(p>=100)return{label:'S',color:'#ffd700',bg:'#2a1a00'};
-  if(p>=90)return{label:'A',color:'#60ff90',bg:'#002a10'};
-  if(p>=80)return{label:'B',color:'#60aaff',bg:'#001a2a'};
-  if(p>=70)return{label:'C',color:'#c0c0c0',bg:'#1a1a1a'};
-  if(p>=50)return{label:'D',color:'#ff8060',bg:'#2a0a00'};
-  return{label:'F',color:'#ff4040',bg:'#2a0000'};
-}
-
-// ── ACHIEVEMENTS ──
-const ACHIEVEMENTS=[
-  {id:'first_blood',icon:'⚔️',name:'First Blood',desc:'Complete your first quiz'},
-  {id:'dungeon_master',icon:'🏰',name:'Dungeon Master',desc:'Clear 3 dungeons with 70%+'},
-  {id:'perfectionist',icon:'💎',name:'Perfectionist',desc:'Score 100% on any quiz'},
-  {id:'on_fire',icon:'🔥',name:'On Fire',desc:'Reach a 3-day study streak'},
-  {id:'unstoppable',icon:'⚡',name:'Unstoppable',desc:'Reach a 7-day study streak'},
-  {id:'combo_king',icon:'👑',name:'Combo King',desc:'Get a 4x answer streak in one quiz'},
-  {id:'scholar',icon:'📚',name:'Scholar',desc:'Complete 10 quizzes total'},
-  {id:'final_boss',icon:'💀',name:'Boss Slayer',desc:'Defeat the Final Boss'},
-  {id:'hero_lv5',icon:'⭐',name:'Rising Star',desc:'Reach hero Level 5'},
-  {id:'hero_lv10',icon:'🌟',name:'Veteran',desc:'Reach hero Level 10'},
-  {id:'hard_mode',icon:'🩸',name:'Hardcore',desc:'Clear any dungeon on Hard'},
-  {id:'all_clear',icon:'🏆',name:'Completionist',desc:'Clear all 3 difficulties on one dungeon'},
-];
-
-function checkAchievements(trigger){
-  if(!U)return;
-  if(!U.achievements)U.achievements=[];
-  var newOnes=[];
-  var char=aC();
-  var totalQuizzes=U._quizCount||0;
-  var heroLv=char?(char.lv||1):1;
-
-  ACHIEVEMENTS.forEach(function(a){
-    if(U.achievements.indexOf(a.id)>=0)return; // already earned
-    var earned=false;
-    if(a.id==='first_blood'&&totalQuizzes>=1)earned=true;
-    if(a.id==='dungeon_master'&&char){
-      var cleared=char.dungeons.filter(function(d){return(d.bestScore||0)>=70;}).length;
-      if(cleared>=3)earned=true;
-    }
-    if(a.id==='perfectionist'&&trigger==='perfect')earned=true;
-    if(a.id==='on_fire'&&(U.streak||0)>=3)earned=true;
-    if(a.id==='unstoppable'&&(U.streak||0)>=7)earned=true;
-    if(a.id==='combo_king'&&trigger==='combo4')earned=true;
-    if(a.id==='scholar'&&totalQuizzes>=10)earned=true;
-    if(a.id==='final_boss'&&trigger==='final_boss_cleared')earned=true;
-    if(a.id==='hero_lv5'&&heroLv>=5)earned=true;
-    if(a.id==='hero_lv10'&&heroLv>=10)earned=true;
-    if(a.id==='hard_mode'&&trigger==='hard_cleared')earned=true;
-    if(a.id==='all_clear'&&char){
-      var allClear=char.dungeons.some(function(d){
-        return d.scores&&d.scores.easy&&d.scores.easy.attempts>0&&
-               d.scores.normal&&d.scores.normal.attempts>0&&
-               d.scores.hard&&d.scores.hard.attempts>0&&
-               d.scores.easy.best>=70&&d.scores.normal.best>=70&&d.scores.hard.best>=70;
-      });
-      if(allClear)earned=true;
-    }
-    if(earned){U.achievements.push(a.id);newOnes.push(a);}
-  });
-
-  if(newOnes.length){
-    saveUser();
-    // Show popup for first new achievement
-    var a=newOnes[0];
-    sfx('achievement');S.pop=true;S.pa=0;S.popMsg=a.icon+' Achievement! '+a.name;
-    setTimeout(function(){S.pop=false;draw();},3000);
-    draw();
-  }
-}
-
-// ── SPELLS ──
-const SPELLS=[
-  {id:'skip',name:'Skip',icon:'⏭',desc:'Skip this question — no damage',lv:5,color:'#6030c0'},
-  {id:'shield',name:'Shield',icon:'🛡',desc:'Block the next wrong answer',lv:10,color:'#2060a0'},
-  {id:'double',name:'Double XP',icon:'⚡',desc:'Double XP on next correct answer',lv:15,color:'#c08000'},
-];
-function getUnlockedSpells(char){
-  var lv=char?(char.lv||1):1;
-  return SPELLS.filter(function(s){return lv>=s.lv;});
-}
-function useSpell(id){
-  if(S.spellUsed)return;
-  if(!consumeSpellCharge(id)){
-    S.pop=true;S.pa=0;S.popMsg='No charges left! Earn more by clearing dungeons.';
-    setTimeout(function(){S.pop=false;draw();},2000);
-    draw();return;
-  }
-  S.spellUsed=id;
-  if(id==='skip'){
-    // Count as wrong for scoring but no HP loss
-    var quiz=S.liveQuiz;
-    if(quiz&&quiz[S.qi]){
-      S.wrongAnswers=S.wrongAnswers||[];
-      S.wrongAnswers.push({question:quiz[S.qi].question,correct:quiz[S.qi].options[quiz[S.qi].correct]});
-    }
-    S.sel=-1; // special skip marker
-    draw();
-    setTimeout(function(){nq();},800);
-  }else if(id==='shield'){
-    S.shieldActive=true;
-    draw();
-  }else if(id==='double'){
-    S.doubleActive=true;
-    draw();
-  }
-}
-
-function getSpellCharges(){
-  var char=aC();if(!char)return{};
-  if(!char.spellCharges)char.spellCharges={skip:1,shield:1,double:1};
-  return char.spellCharges;
-}
-function addSpellCharge(spellId,amount){
-  var char=aC();if(!char)return;
-  if(!char.spellCharges)char.spellCharges={skip:1,shield:1,double:1};
-  if(spellId==='all'){
-    SPELLS.forEach(function(s){
-      char.spellCharges[s.id]=Math.min(3,(char.spellCharges[s.id]||0)+1);
-    });
-  }else{
-    char.spellCharges[spellId]=Math.min(3,(char.spellCharges[spellId]||0)+(amount||1));
-  }
-  saveUser();
-}
-function consumeSpellCharge(spellId){
-  var char=aC();if(!char)return false;
-  if(!char.spellCharges)char.spellCharges={skip:1,shield:1,double:1};
-  var lv=char.lv||1;
-  var spell=SPELLS.find(function(s){return s.id===spellId;});
-  if(!spell||lv<spell.lv)return false;
-  if((char.spellCharges[spellId]||0)<=0)return false;
-  char.spellCharges[spellId]--;
-  saveUser();
-  return true;
-}
-
-// ── DAILY QUESTS ──
-function getDayQuests(){
-  var seed=today().replace(/-/g,'');
-  var rng=function(s){s=((s*9301+49297)%233280);return s/233280;};
-  var s=parseInt(seed)%99999;
-  var pool=[
-    {id:'study_fc',icon:'📖',desc:'Study flashcards in any dungeon',target:1,type:'flashcard'},
-    {id:'quiz_easy',icon:'🌿',desc:'Complete an Easy quiz',target:1,type:'easy_quiz'},
-    {id:'quiz_normal',icon:'⚔️',desc:'Complete a Normal quiz',target:1,type:'normal_quiz'},
-    {id:'quiz_hard',icon:'🩸',desc:'Complete a Hard quiz',target:1,type:'hard_quiz'},
-    {id:'score_70',icon:'⭐',desc:'Score 70%+ on any quiz',target:1,type:'score_70'},
-    {id:'score_90',icon:'💎',desc:'Score 90%+ on any quiz',target:1,type:'score_90'},
-    {id:'combo3',icon:'⚡',desc:'Get a 3+ answer streak',target:1,type:'combo3'},
-    {id:'perfect',icon:'👑',desc:'Get a perfect score',target:1,type:'perfect'},
-    {id:'two_quizzes',icon:'🏃',desc:'Complete 2 quizzes today',target:2,type:'daily_quiz_count'},
-  ];
-  // Pick 3 deterministically based on date
-  var idx1=Math.floor(rng(s)*pool.length);
-  s=Math.floor(rng(s*7+3)*99999);
-  var idx2=(idx1+1+Math.floor(rng(s)*( pool.length-1)))%pool.length;
-  s=Math.floor(rng(s*13+7)*99999);
-  var idx3=(idx2+1+Math.floor(rng(s)*(pool.length-2)))%pool.length;
-  return[pool[idx1],pool[idx2],pool[idx3]];
-}
-
-function getQuestProgress(){
-  if(!U)return{};
-  var p=U.questProgress||{};
-  var d=today();
-  if(p.date!==d)p={date:d}; // reset daily
-  return p;
-}
-
-function updateQuest(type,amount){
-  if(!U)return;
-  var p=getQuestProgress();
-  var quests=getDayQuests();
-  var wasComplete=quests.every(function(q){return(p[q.type]||0)>=q.target;});
-  p[type]=(p[type]||0)+(amount||1);
-  U.questProgress=p;
-  // Check if all 3 now complete
-  var nowComplete=quests.every(function(q){return(p[q.type]||0)>=q.target;});
-  if(nowComplete&&!wasComplete&&!p.bonusAwarded){
-    p.bonusAwarded=true;
-    addSpellCharge('all',1); // daily quest bonus charge
-    var char=aC();
-    if(char){char.xp=(char.xp||0)+100;char.lv=lvFromXp(char.xp);}
-    U.xp=(U.xp||0)+100;U.lv=calcAccountLevel();
-    S.pop=true;S.pa=100;S.popMsg='🎯 Daily Quests Complete! +100 XP';
-    setTimeout(function(){S.pop=false;draw();},3000);
-    checkAchievements('daily_complete');
-  }
-  saveUser();
-}
-
-function switchCls(id){if(!U.chars||!U.chars[id])return;U.activeCls=id;saveUser();S.screen='hero';draw();}
-function enterDungeon(i,isFinal){S.di=i;S.isFinal=!!isFinal;goTo('dungeon');}
-function studyDungeon(i){S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;goTo('fc');}
-function quizGenH(){
-  var dv=DIFF[S.diffChosen||S.difficulty||'normal'];
-  var h=tb();
-  h+='<div class="la"><div class="spin">&#x2694;</div>';
-  h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:10px">PREPARING BATTLE...</div>';
-  h+='<div style="font-size:10px;color:'+dv.color+';margin-bottom:14px">'+dv.label+' MODE</div>';
-  h+='<div class="lm">Loading questions...<br>Almost ready...</div></div>';
-  return h;
-}
-
-async function generateQuizQuestions(dung,diffConfig,isFinal,char){
-  var isMath=char&&char.subject&&/math|algebra|calculus|geometry|statistics|trig|arithmetic/i.test(char.subject);
-  var qCount=typeof diffConfig.qCount==='number'?diffConfig.qCount:7;
-  var diffLabel=diffConfig.label||'NORMAL';
-
-  // Randomization seeds so questions vary each run
-  var seed1=Math.floor(Math.random()*9000)+1000;
-  var seed2=Math.floor(Math.random()*900)+100;
-  var seed3=new Date().getTime()%10000;
-
-  var diffInstructions={
-    'EASY':'Generate EXACTLY '+qCount+' simple, clear questions. Wrong answers should be obviously incorrect. No trick questions. Short answers.',
-    'NORMAL':'Generate EXACTLY '+qCount+' questions mixing easy and moderate difficulty. Wrong answers plausible but clearly incorrect on reflection.',
-    'HARD':'Generate EXACTLY '+qCount+' challenging questions with tricky edge cases and highly plausible wrong answers. Requires deep understanding.'
-  };
-  var diffPart=diffInstructions[diffLabel]||diffInstructions['NORMAL'];
-
-  var mathPart='';
-  if(isMath){
-    var r1=Math.floor(Math.random()*20)+2,r2=Math.floor(Math.random()*15)+3,r3=Math.floor(Math.random()*10)+1;
-    if(diffLabel==='EASY')mathPart='MATH: Create new one-step problems. Example style (use DIFFERENT numbers '+r1+','+r2+'): x+'+r1+'='+(r1+r2)+'. Never copy from notes.';
-    else if(diffLabel==='NORMAL')mathPart='MATH: Create new two-step problems with seeds '+r1+','+r2+','+r3+'. Example: '+r3+'x+'+r1+'='+(r3*r2+r1)+'. Never copy from notes.';
-    else mathPart='MATH: Create complex multi-step problems. Use seeds '+r1+','+r2+','+r3+' to randomize. Word problems encouraged. Never copy from notes.';
-  }
-
-  // Build source from notes + flashcards (flashcards contain content extracted from images)
-  var source='';
-  if(dung.notes&&dung.notes.trim())source+=dung.notes.slice(0,2000);
-  if(dung.cards&&dung.cards.length){
-    var cardText=dung.cards.map(function(c){return 'Q: '+c.question+' A: '+c.answer;}).join('\n');
-    source+=(source?'\n\nKEY CONCEPTS FROM NOTES:\n':'')+cardText.slice(0,2000);
-  }
-  if(!source&&dung.story)source=dung.story.title+'. '+(dung.story.intro||'');
-  if(!source)source='General study material.';
-
-  var sysPrompt=isMath?'You are a math quiz generator. Output ONLY valid JSON. For each question include a clear step-by-step solution showing full working. No markdown, no code fences. Start with { end with }.':'You are a quiz generator. Output ONLY valid JSON. No markdown, no explanation, no code fences. Start with { end with }.';
-  var userPrompt=[
-    'VARIATION SEEDS (use these to make questions unique this run): '+seed1+', '+seed2+', '+seed3,
-    diffPart,
-    mathPart,
-    'SOURCE MATERIAL:\n'+source,
-    (isMath?'Return ONLY this JSON format with step-by-step solution for each question:\n{"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0,"solution":"Step 1: ... Step 2: ... Answer: ..."}]}':'Return ONLY this JSON format:\n{"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}'),
-    'The correct field is 0-3 (index of correct answer). Generate EXACTLY '+qCount+' questions — no more, no less.'
-  ].filter(Boolean).join('\n\n');
-
-  var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-5',
-      max_tokens:3000,
-      system:sysPrompt,
-      messages:[{role:'user',content:userPrompt}]
-    })
-  });
-  if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
-  var data=await resp.json();
-  if(data.error)throw new Error(data.error.message||'API error');
-  var raw=data.content.map(function(b){return b.text||'';}).join('').trim();
-  raw=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-  var si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
-  if(si<0||ei<0)throw new Error('No JSON in response. Got: '+raw.slice(0,80));
-  var parsed;
-  try{parsed=JSON.parse(raw.slice(si,ei+1));}
-  catch(e){
-    var fixed=raw.slice(si,ei+1).replace(/,(\s*[}\]])/g,'$1');
-    try{parsed=JSON.parse(fixed);}catch(e2){throw new Error('JSON parse failed: '+e2.message);}
-  }
-  if(!parsed.quiz||!Array.isArray(parsed.quiz)||!parsed.quiz.length)throw new Error('No quiz array in response');
-  return parsed.quiz;
-}
-
-async function startQuiz(i,isFinal){
-  S.di=i;S.isFinal=!!isFinal;S.diffChosen=S.difficulty;
-  var d=curDiff();
-  S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];S.qdSaved=false;S._sfxPlayed=false;S._finalBossBonus=0;S._finalBossFirst=false;S.spellUsed=null;S.shieldActive=false;S.doubleActive=false;
-  S.heroHP=d.hp;S.heroMaxHP=d.hp;
-  S.bossMaxHP=100;S.bossHP=100;S.liveQuiz=null;
-  var char=aC();
-  if(!char){S.screen='home';draw();return;}
-  var dung=isFinal?char.finalBoss:char.dungeons[i];
-  if(!dung){S.err='Dungeon not found.';S.screen='hero';draw();return;}
-  // Always generate fresh questions from API based on chosen difficulty
-  S.screen='quizgen';draw();
-  try{
-    var fresh=await generateQuizQuestions(dung,d,isFinal,char);
-    if(!fresh||!fresh.length)throw new Error('No questions returned');
-    S.liveQuiz=fresh;S.screen='quiz';
-  }catch(ex){
-    console.warn('Fresh gen failed:',ex.message);
-    if(dung.quiz&&dung.quiz.length){
-      // Fallback to stored questions — shuffle for variety
-      var stored=dung.quiz.slice().sort(function(){return Math.random()-.5;});
-      S.liveQuiz=stored.slice(0,Math.min(stored.length,d.qCount||7));
-      S.screen='quiz';
-      S.err='';
-    }else{
-      S.err='Could not load questions: '+friendlyApiError(ex);
-      S.screen='dungeon';
-    }
-  }
-  draw();
-}
-
-function pickDiff(d){S.difficulty=d;draw();}
-function removeFile(i){if(S.uploadFiles)S.uploadFiles.splice(i,1);draw();}
-
-let U=null;
-let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
-  selCls:'knight',selGen:'m',charName:'',obSlide:0,
-  notes:'',uploadFiles:[],di:0,isFinal:false,liveQuiz:null,
-  difficulty:'normal',diffChosen:'normal',
-  ci:0,fl:false,shuffled:null,againPile:null,
-  qi:0,sel:null,qs:0,streak:0,wrongAnswers:[],
-  heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
-  err:'',proCodeErr:'',proCodeOk:'',authLoading:false,showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
-
-const lp=()=>{var c=aC();if(!c)return 0;return Math.min(100,Math.round(xpInLevel(c.xp||0)/xpForThisLevel(c.lv||1)*100));};
 async function saveUser(){if(U)await sbSaveUser();}
 function mkKey(e){return'rbAcc_'+e.replace(/[^a-z0-9]/gi,'_').toLowerCase();}
 function get(id){return document.getElementById(id);}
@@ -746,29 +384,26 @@ function migrateUser(){
   if(!U.activeCls)U.activeCls=U.cls||'knight';
 }
 async function init(){
-  S.screen='loading';draw();
-  // Check for existing Supabase session
-  var sessRes=await _supa.auth.getSession();
-  var session=sessRes.data&&sessRes.data.session;
-  if(session&&session.user){
-    _supaUser=session.user;
-    var loaded=await sbLoadUser();
-    if(loaded){
-      U=loaded;migrateUser();updateStreak();
-      var seen=await stGet('rbSeen');
-      if(!seen){S.screen='onboard';draw();return;}
-      if(!U.chars[U.activeCls]||!U.chars[U.activeCls].charName){
-        S.selCls=U.activeCls;S.selGen='m';S.charName=U.name+"'s Hero";
-        S.screen='char-create';
-      }else S.screen='home';
-    }else{
-      S.screen='auth';
+  // Try restore session from localStorage token
+  try{
+    var user=await supaGetSession();
+    if(user){
+      _supaUser=user;
+      var loaded=await sbLoadUser();
+      if(loaded){
+        U=loaded;migrateUser();updateStreak();
+        var seen=await stGet('rbSeen');
+        if(!seen){S.screen='onboard';draw();return;}
+        if(!U.chars[U.activeCls]||!U.chars[U.activeCls].charName){
+          S.selCls=U.activeCls;S.selGen='m';S.charName=U.name+"'s Hero";
+          S.screen='char-create';
+        }else{S.screen='home';}
+        draw();return;
+      }
     }
-  }else{
-    var seen2=await stGet('rbSeen');
-    if(!seen2){S.screen='onboard';}
-    else S.screen='auth';
-  }
+  }catch(e){console.warn('Session restore failed:',e);}
+  var seen=await stGet('rbSeen');
+  if(!seen){S.screen='onboard';}else{S.screen='auth';}
   draw();
 }
 
@@ -828,31 +463,28 @@ async function doAuth(){
   if(!S.authPass){S.err='Please enter a password.';S.authLoading=false;draw();return;}
   if(!isL&&!S.authName){S.err='Please enter your name.';S.authLoading=false;draw();return;}
   try{
+    var authRes=await supaAuth(S.authEmail,S.authPass,!isL);
+    if(authRes.error||authRes.msg){
+      throw new Error(authRes.error_description||authRes.msg||authRes.error||'Auth failed');
+    }
+    _supaToken=authRes.access_token;
+    _supaUser={id:authRes.user?authRes.user.id:authRes.id};
+    // Save token for session persistence
+    localStorage.setItem('sb_token',_supaToken);
+    localStorage.setItem('sb_uid',_supaUser.id);
     if(isL){
-      var res=await _supa.auth.signInWithPassword({email:S.authEmail,password:S.authPass});
-      if(res.error)throw res.error;
-      _supaUser=res.data.user;
       var loaded=await sbLoadUser();
       if(loaded){
-        U=loaded;
-        migrateUser();
-        updateStreak();
-        S.screen='home';
+        U=loaded;migrateUser();updateStreak();S.screen='home';
       }else{
-        // First login but no data yet — create profile
         var nu={name:S.authEmail.split('@')[0],email:S.authEmail,xp:0,lv:1,isPro:false,activeCls:'knight',chars:{},streak:0,lastStudy:null,achievements:[],questProgress:{},_quizCount:0};
         U=nu;await saveUser();
-        S.selCls='knight';S.selGen='m';S.charName=U.name+"'s Hero";
-        S.screen='char-create';
+        S.selCls='knight';S.selGen='m';S.charName=U.name+"'s Hero";S.screen='char-create';
       }
     }else{
-      var res2=await _supa.auth.signUp({email:S.authEmail,password:S.authPass});
-      if(res2.error)throw res2.error;
-      _supaUser=res2.data.user;
       var nu2={name:S.authName,email:S.authEmail,xp:0,lv:1,isPro:false,activeCls:'knight',chars:{},streak:0,lastStudy:null,achievements:[],questProgress:{},_quizCount:0};
       U=nu2;await saveUser();await stSet('rbSeen','1');
-      S.selCls='knight';S.selGen='m';S.charName=S.authName+"'s Hero";
-      S.screen='char-create';
+      S.selCls='knight';S.selGen='m';S.charName=S.authName+"'s Hero";S.screen='char-create';
     }
   }catch(err){
     S.err=err.message||'Auth error. Please try again.';
@@ -1652,7 +1284,7 @@ function goToPay(){
   S.proCodeOk='After payment, Stripe will email you a PRO code to enter above!';
   draw();
 }
-function redeemCode(){
+async function redeemCode(){
   var inp=document.getElementById('procode');
   var code=inp?inp.value.trim().toUpperCase():'';
   if(!code){S.proCodeErr='Enter a code first.';S.proCodeOk='';draw();return;}
@@ -1662,8 +1294,7 @@ function redeemCode(){
   if(validCodes[code]){
     U.isPro=true;
     // Also update is_pro in Supabase
-    if(_supaUser)await _supa.from('users').update({is_pro:true}).eq('id',_supaUser.id);
-    saveUser();
+    await supaUpdatePro();saveUser();
     S.proCodeErr='';S.proCodeOk='';
     sfx('levelup');
     alert('🎉 Welcome to PRO!\nAll 8 heroes and unlimited dungeons unlocked!');
@@ -1780,8 +1411,12 @@ function nq(){
 }
 function rq(){startQuiz(S.di,S.isFinal);}
 async function doLogout(){
-  await _supa.auth.signOut();
-  _supaUser=null;U=null;
+  // Invalidate token server-side
+  if(_supaToken){
+    fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+_supaToken}}).catch(function(){});
+  }
+  localStorage.removeItem('sb_token');localStorage.removeItem('sb_uid');
+  _supaUser=null;_supaToken=null;U=null;
   S.screen='auth';S.authEmail='';S.authPass='';S.authName='';S.err='';S.notes='';S.uploadFiles=[];S.streak=0;draw();
 }
 function friendlyApiError(err){
