@@ -158,8 +158,8 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 .col{display:flex;flex-direction:column;gap:9px;}
 .f1{flex:1;}
 .bob{animation:bob 2.5s ease-in-out infinite;}
-.heart{display:inline-block;font-size:14px;}
-.heart.lost{opacity:.25;filter:grayscale(1);}
+.heart{display:inline-block;font-size:22px;color:#ff2020;filter:drop-shadow(0 0 5px #ff000099);line-height:1;}
+.heart.lost{color:#300808;filter:none;opacity:.3;}
 /* UPLOAD DROP ZONE */
 .dropzone{background:#0c0830;border:2px dashed #5030a0;border-radius:10px;padding:22px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s,background .2s;}
 .dropzone:hover{border-color:#a060ff;background:#100c38;}
@@ -209,9 +209,9 @@ const CLASSES=[
   {id:'ranger',name:'Ranger',pro:true},{id:'rogue',name:'Rogue',pro:true},
 ];
 const DIFF={
-  easy:{label:'EASY',hp:5,bossHpMult:1,xpMult:.8,color:'#20a050',bg:'#082818',hint:true,desc:'5 hero HP\nSimpler questions\nHints available'},
-  normal:{label:'NORMAL',hp:3,bossHpMult:1,xpMult:1,color:'#6030c0',bg:'#181030',hint:false,desc:'3 hero HP\nBalanced questions\nNo hints'},
-  hard:{label:'HARD',hp:2,bossHpMult:1.5,xpMult:1.5,color:'#c02020',bg:'#280808',hint:false,desc:'2 hero HP\nTricky questions\n+50% XP reward'},
+  easy:{label:'EASY',hp:4,qCount:4,xpMult:.8,color:'#20a050',bg:'#082818',desc:'4 hearts | 4 questions | +0.8x XP'},
+  normal:{label:'NORMAL',hp:3,qCount:7,xpMult:1,color:'#6030c0',bg:'#181030',desc:'3 hearts | 7 questions | +1x XP'},
+  hard:{label:'HARD',hp:2,qCount:12,xpMult:1.5,color:'#c02020',bg:'#280808',desc:'2 hearts | 12 questions | +1.5x XP'},
 };
 
 function sp(cls,gen,h){
@@ -261,44 +261,67 @@ function quizGenH(){
 
 async function generateQuizQuestions(dung,diffConfig,isFinal,char){
   var isMath=char&&char.subject&&/math|algebra|calculus|geometry|statistics|trig|arithmetic/i.test(char.subject);
-  var qCount=diffConfig.qCount||'6-8';
+  var qCount=typeof diffConfig.qCount==='number'?diffConfig.qCount:7;
   var diffLabel=diffConfig.label||'NORMAL';
-  var diffPart='';
-  if(diffLabel==='EASY'){diffPart='EASY: Clear simple questions. Wrong answers obviously wrong. No trick questions.';}
-  else if(diffLabel==='NORMAL'){diffPart='NORMAL: Mix of straightforward and moderate. Plausible but clearly wrong distractors.';}
-  else{diffPart='HARD: Tricky, edge cases, very plausible wrong answers, requires deep knowledge.';}
+
+  // Randomization seeds so questions vary each run
+  var seed1=Math.floor(Math.random()*9000)+1000;
+  var seed2=Math.floor(Math.random()*900)+100;
+  var seed3=new Date().getTime()%10000;
+
+  var diffInstructions={
+    'EASY':'Generate EXACTLY '+qCount+' simple, clear questions. Wrong answers should be obviously incorrect. No trick questions. Short answers.',
+    'NORMAL':'Generate EXACTLY '+qCount+' questions mixing easy and moderate difficulty. Wrong answers plausible but clearly incorrect on reflection.',
+    'HARD':'Generate EXACTLY '+qCount+' challenging questions with tricky edge cases and highly plausible wrong answers. Requires deep understanding.'
+  };
+  var diffPart=diffInstructions[diffLabel]||diffInstructions['NORMAL'];
+
   var mathPart='';
   if(isMath){
-    var r1=Math.floor(Math.random()*20)+2;
-    var r2=Math.floor(Math.random()*15)+3;
-    var r3=Math.floor(Math.random()*10)+1;
-    if(diffLabel==='EASY'){mathPart='MATH EASY: New one-step equations, e.g. x+'+r1+'='+(r1+r2)+'. Never copy from notes.';}
-    else if(diffLabel==='NORMAL'){mathPart='MATH NORMAL: New two-step equations e.g. '+r3+'x+'+r1+'='+(r3*r2+r1)+'. Never copy from notes.';}
-    else{mathPart='MATH HARD: New complex multi-step problems using seeds '+r1+','+r2+','+r3+'. Never copy from notes.';}
+    var r1=Math.floor(Math.random()*20)+2,r2=Math.floor(Math.random()*15)+3,r3=Math.floor(Math.random()*10)+1;
+    if(diffLabel==='EASY')mathPart='MATH: Create new one-step problems. Example style (use DIFFERENT numbers '+r1+','+r2+'): x+'+r1+'='+(r1+r2)+'. Never copy from notes.';
+    else if(diffLabel==='NORMAL')mathPart='MATH: Create new two-step problems with seeds '+r1+','+r2+','+r3+'. Example: '+r3+'x+'+r1+'='+(r3*r2+r1)+'. Never copy from notes.';
+    else mathPart='MATH: Create complex multi-step problems. Use seeds '+r1+','+r2+','+r3+' to randomize. Word problems encouraged. Never copy from notes.';
   }
-  var source='';
-  if(dung.notes&&dung.notes.trim()){source=dung.notes.slice(0,3000);}
-  else if(dung.story){source=dung.story.title+'. '+(dung.story.intro||'');}
-  else{source='General study material.';}
-  var parts=['Generate '+qCount+' quiz questions. Each run must be different.',diffPart];
-  if(mathPart)parts.push(mathPart);
-  parts.push('Source material: '+source);
-  parts.push('Return ONLY raw JSON: {"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}');
-  parts.push('Generate exactly '+qCount+' questions. correct is 0-3.');
-  var prompt=parts.filter(function(p){return p.trim();}).join(' ');
+
+  var source='No notes provided.';
+  if(dung.notes&&dung.notes.trim())source=dung.notes.slice(0,3000);
+  else if(dung.story)source=dung.story.title+'. '+(dung.story.intro||'');
+
+  var sysPrompt='You are a quiz generator. Output ONLY valid JSON. No markdown, no explanation, no code fences. Start with { end with }.';
+  var userPrompt=[
+    'VARIATION SEEDS (use these to make questions unique this run): '+seed1+', '+seed2+', '+seed3,
+    diffPart,
+    mathPart,
+    'SOURCE MATERIAL:\n'+source,
+    'Return ONLY this JSON format:\n{"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}',
+    'The correct field is 0-3 (index of correct answer). Generate EXACTLY '+qCount+' questions — no more, no less.'
+  ].filter(Boolean).join('\n\n');
+
   var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:prompt}]})
+    body:JSON.stringify({
+      model:'claude-sonnet-4-5',
+      max_tokens:3000,
+      system:sysPrompt,
+      messages:[{role:'user',content:userPrompt}]
+    })
   });
   if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,100));}
   var data=await resp.json();
   if(data.error)throw new Error(data.error.message||'API error');
-  var raw=data.content.map(function(b){return b.text||'';}).join('');
+  var raw=data.content.map(function(b){return b.text||'';}).join('').trim();
+  raw=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
   var si=raw.indexOf('{'),ei=raw.lastIndexOf('}');
-  if(si<0||ei<0)throw new Error('No JSON in response');
-  var parsed=JSON.parse(raw.slice(si,ei+1));
-  if(!parsed.quiz||!parsed.quiz.length)throw new Error('Empty quiz response');
+  if(si<0||ei<0)throw new Error('No JSON in response. Got: '+raw.slice(0,80));
+  var parsed;
+  try{parsed=JSON.parse(raw.slice(si,ei+1));}
+  catch(e){
+    var fixed=raw.slice(si,ei+1).replace(/,(\s*[}\]])/g,'$1');
+    try{parsed=JSON.parse(fixed);}catch(e2){throw new Error('JSON parse failed: '+e2.message);}
+  }
+  if(!parsed.quiz||!Array.isArray(parsed.quiz)||!parsed.quiz.length)throw new Error('No quiz array in response');
   return parsed.quiz;
 }
 
@@ -663,7 +686,7 @@ function dungeonH(){
     const dv=DIFF[dk];
     h+='<div class="diff-card diff-'+dk[0]+' '+(S.difficulty===dk?' on':'')+'" onclick="pickDiff(\''+dk+'\')">';
     h+='<div class="pf" style="font-size:7px;margin-bottom:5px">'+dv.label+'</div>';
-    h+='<div style="font-size:9px;line-height:1.8;white-space:pre">'+dv.desc+'</div></div>';
+    h+='<div style="font-size:11px;color:'+dv.color+';line-height:2;margin-top:5px">'+dv.desc.replace(/\|/g,'<br>')+'</div></div>';
   });
   h+='</div>';
   const isFin=S.isFinal;
@@ -916,22 +939,25 @@ function quizH(){
   if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
   h+='<button class="back" onclick="goTo(\'dungeon\')">&#x25C4; Retreat</button>';
   // Combat bars
-  h+='<div class="combat-bars">';
-  // Hero bar
-  h+='<div class="cbar cbar-hero">';
-  h+='<div class="cbar-label" style="color:#4080ff">HERO</div>';
-  h+='<div class="cbar-name">'+heartsH()+'</div>';
-  if(char)h+='<div style="margin-top:4px">'+sp(U.activeCls,char.gender,44)+'</div>';
+  // Combat arena — big sprites, floating HP
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;align-items:end">';
+  // Hero side
+  h+='<div style="text-align:center;position:relative">';
+  h+='<div style="font-size:9px;color:#60aaff;margin-bottom:4px" class="pf">'+( char?char.charName:'HERO')+'</div>';
+  h+='<div style="display:flex;justify-content:center;gap:2px;margin-bottom:5px">'+heartsH()+'</div>';
+  if(char)h+='<div style="animation:bob 2.5s ease-in-out infinite;display:inline-block">'+sp(U.activeCls,char.gender,130)+'</div>';
   h+='</div>';
-  // Boss bar
-  h+='<div class="cbar cbar-boss">';
-  h+='<div class="cbar-label" style="color:#ff4040">BOSS</div>';
-  h+='<div class="cbar-name" style="font-size:8px;color:#ffbbcc">'+bName+'</div>';
-  h+='<div>'+bossSprite(bName,44)+'</div>';
-  h+='<div class="hp-track"><div class="hp-fill" style="width:'+bPct+'%;background:'+(bPct>60?'#cc2020':bPct>30?'#cc6020':'#cccc20')+'"></div></div>';
-  h+='<div class="hp-text" style="color:#ff8090">'+Math.ceil(S.bossHP)+'/100 HP</div>';
-  h+='</div></div>';
-  // Streak bar
+  // Boss side
+  h+='<div style="text-align:center">';
+  h+='<div style="font-size:8px;color:#ffbbcc;margin-bottom:3px;word-break:break-word">'+bName+'</div>';
+  h+='<div style="height:10px;background:#0a0408;border-radius:5px;border:1px solid #5a1020;overflow:hidden;margin:0 4px 5px">';
+  h+='<div style="height:100%;background:'+(bPct>60?'#dd2020':bPct>30?'#dd6020':'#dddd20')+';width:'+bPct+'%;transition:width .5s;border-radius:5px;"></div></div>';
+  h+='<div class="pf" style="font-size:7px;color:#ff8090;margin-bottom:4px">'+Math.ceil(S.bossHP)+'/100 HP</div>';
+  h+=bossSprite(bName,130);
+  h+='</div>';
+  h+='</div>';
+  // dummy to skip old combat block
+  var _skipOldCombat='x';
   if(S.streak>=2){
     h+='<div class="streak-bar"><span class="streak-fire">'+(S.streak>=4?'&#x1F525;&#x1F525;':S.streak>=3?'&#x1F525;':'&#x26A1;')+'</span>';
     h+='<span class="streak-text pf">'+(S.streak>=4?'x3 COMBO!':S.streak>=3?'x2 COMBO!':'x1.5 BONUS!')+'</span>';
@@ -1117,6 +1143,46 @@ function gotoPaywall(){goTo('paywall');}
 function goToAchievements(){goTo('achievements');}
 function goToCalendar(){goTo('calendar');}
 function lvupContinue(){var ps=S.prevScreen||'home';if(ps==='quiz'){S.screen='quiz';draw();}else if(ps==='fc'){S.screen='fc';draw();}else{goTo(ps);}}
+
+function achievementsH(){
+  var h=tb();
+  h+='<button class="back" onclick="gotoHome()">&#x25C4; Back</button>';
+  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:8px">&#x1F3C6; TROPHY ROOM</div>';
+  var earned=(U.achievements||[]).length;
+  h+='<div style="font-size:10px;color:var(--tx3);margin-bottom:14px">'+earned+' / 12 unlocked</div>';
+  if(!earned){
+    h+='<div style="text-align:center;padding:30px;color:var(--tx3);font-size:11px">No trophies yet.<br>Complete quests and challenges to earn them!</div>';
+  }else{
+    (U.achievements||[]).forEach(function(id){
+      h+='<div style="background:#1e1408;border:2px solid var(--bdg);border-radius:8px;padding:10px;margin-bottom:8px">';
+      h+='<div style="font-size:11px;color:var(--gold)">&#x2B50; '+id.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();})+'</div></div>';
+    });
+  }
+  return h;
+}
+
+function calendarH(){
+  var h=tb();
+  h+='<button class="back" onclick="gotoHome()">&#x25C4; Back</button>';
+  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:8px">&#x1F4C5; STUDY LOG</div>';
+  h+='<div style="font-size:10px;color:var(--tx3);margin-bottom:14px">Your study activity over the last 3 months</div>';
+  var log=U.studyLog||{};
+  var today2=today();
+  var cells=[];
+  for(var i=89;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var ds=d.toISOString().slice(0,10);cells.push({date:ds,count:log[ds]||0,isToday:ds===today2});}
+  h+='<div style="display:flex;gap:3px;flex-wrap:wrap;">';
+  cells.forEach(function(c){
+    var col=c.count===0?'#0a0620':c.count===1?'#1e0840':c.count===2?'#4020a0':'#8040ff';
+    h+='<div style="width:14px;height:14px;border-radius:2px;background:'+col+';'+(c.isToday?'outline:2px solid var(--gold);':'')+'"></div>';
+  });
+  h+='</div>';
+  var totalDays=Object.keys(log).length;
+  h+='<div class="sg" style="margin-top:14px">';
+  h+='<div class="sc"><div class="sv">'+totalDays+'</div><div class="sl">STUDY DAYS</div></div>';
+  h+='<div class="sc"><div class="sv">'+(U.streak||0)+'</div><div class="sl">STREAK</div></div>';
+  h+='</div>';
+  return h;
+}
 function goTo(sc){
   if(sc==='quiz'){S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];}
   if(sc==='fc'){S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;}
@@ -1127,7 +1193,7 @@ function draw(){
   const screens={
     onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,hero:heroH,
     'char-select':charSelectH,dungeon:dungeonH,upload:uploadH,gen:genH,
-    quizgen:quizGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH
+    quizgen:quizGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH,achievements:achievementsH,calendar:calendarH
   };
   el.innerHTML=(screens[S.screen]||authH)();
 }
