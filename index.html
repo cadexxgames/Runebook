@@ -284,9 +284,15 @@ async function generateQuizQuestions(dung,diffConfig,isFinal,char){
     else mathPart='MATH: Create complex multi-step problems. Use seeds '+r1+','+r2+','+r3+' to randomize. Word problems encouraged. Never copy from notes.';
   }
 
-  var source='No notes provided.';
-  if(dung.notes&&dung.notes.trim())source=dung.notes.slice(0,3000);
-  else if(dung.story)source=dung.story.title+'. '+(dung.story.intro||'');
+  // Build source from notes + flashcards (flashcards contain content extracted from images)
+  var source='';
+  if(dung.notes&&dung.notes.trim())source+=dung.notes.slice(0,2000);
+  if(dung.cards&&dung.cards.length){
+    var cardText=dung.cards.map(function(c){return 'Q: '+c.question+' A: '+c.answer;}).join('\n');
+    source+=(source?'\n\nKEY CONCEPTS FROM NOTES:\n':'')+cardText.slice(0,2000);
+  }
+  if(!source&&dung.story)source=dung.story.title+'. '+(dung.story.intro||'');
+  if(!source)source='General study material.';
 
   var sysPrompt='You are a quiz generator. Output ONLY valid JSON. No markdown, no explanation, no code fences. Start with { end with }.';
   var userPrompt=[
@@ -580,16 +586,24 @@ function heroH(){
       h+='<div class="dnum">'+ROMAN[i]+'</div>';
       h+='<div class="dinfo"><div class="dtitle">'+d.title+(cleared2?'<span class="cleared-badge">&#x2B50;</span>':'')+'</div>';
       if(d.story&&d.story.setting)h+='<div class="dloc">'+d.story.setting+'</div>';
-      h+='<div class="dstat">';
-      if(d.scores){
+      // Per-difficulty stats table
+      if(d.scores&&(d.scores.easy.attempts||d.scores.normal.attempts||d.scores.hard.attempts)){
+        h+='<div style="margin-top:5px">';
         ['easy','normal','hard'].forEach(function(dk){
-          var rec=d.scores[dk];
-          if(rec&&rec.attempts){var rk=getRank(rec.best);
-            h+='<span style="font-size:7px;color:'+DIFF[dk].color+';border:1px solid '+DIFF[dk].color+'60;border-radius:2px;padding:1px 4px;margin-right:3px">'+dk[0].toUpperCase()+':'+rk.label+'</span>';
-          }
+          var rec=d.scores[dk];if(!rec||!rec.attempts)return;
+          var rk=getRank(rec.best),dv=DIFF[dk];
+          h+='<div style="display:flex;align-items:center;gap:5px;padding:2px 0">';
+          h+='<span style="font-size:7px;color:'+dv.color+';min-width:36px" class="pf">'+dv.label.slice(0,4)+'</span>';
+          h+='<span style="font-size:8px;background:'+rk.bg+';color:'+rk.color+';border:1px solid '+rk.color+';border-radius:2px;padding:0 4px" class="pf">'+rk.label+'</span>';
+          h+='<span style="font-size:10px;color:#fff;margin-left:2px">'+rec.best+'%</span>';
+          h+='<span style="font-size:9px;color:var(--tx3);margin-left:auto">'+rec.attempts+'x</span>';
+          h+='</div>';
         });
-      }else if(best>0)h+='<span style="color:'+(cleared2?'#50e080':'var(--tx3)')+'">Best: '+best+'%</span>';
-      h+='</div></div>';
+        h+='</div>';
+      }else if(best>0){
+        h+='<div class="dstat"><span style="color:'+(cleared2?'#50e080':'var(--tx3)')+'">Best: '+best+'%</span></div>';
+      }
+      h+='</div>';
       h+='<div class="dbtns"><button class="dbtn dbtn-s" onclick="event.stopPropagation();studyDungeon('+i+')">STUDY</button>';
       h+='<button class="dbtn dbtn-q" onclick="event.stopPropagation();enterDungeon('+i+',false)">QUIZ</button></div></div>';
     });
@@ -1003,8 +1017,16 @@ function qdH(){
   const g=p>=90?'S RANK':p>=70?'A RANK':p>=50?'B RANK':'C RANK';
   const bName=d.story&&d.story.boss?d.story.boss:'The Boss';
   const dv=DIFF[S.diffChosen||'normal'];
-  if(p>(d.bestScore||0)){d.bestScore=p;saveUser();}
-  d.attempts=(d.attempts||0)+1;saveUser();
+  // Save per-difficulty record
+  if(!d.scores)d.scores={easy:{best:0,attempts:0},normal:{best:0,attempts:0},hard:{best:0,attempts:0}};
+  var dk=S.diffChosen||'normal';
+  if(!d.scores[dk])d.scores[dk]={best:0,attempts:0};
+  if(p>d.scores[dk].best)d.scores[dk].best=p;
+  d.scores[dk].attempts=(d.scores[dk].attempts||0)+1;
+  var allBest=Math.max(d.scores.easy.best||0,d.scores.normal.best||0,d.scores.hard.best||0);
+  if(allBest>(d.bestScore||0))d.bestScore=allBest;
+  d.attempts=(d.attempts||0)+1;
+  saveUser();
   var h=tb();
   h+='<div style="text-align:center;padding:14px 0 10px">';
   h+='<div style="font-size:44px;margin-bottom:12px">'+(perfect?'&#x1F451;':won?'&#x2B50;':'&#x25C6;')+'</div>';
