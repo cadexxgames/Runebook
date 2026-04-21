@@ -200,7 +200,12 @@ async function stGet(k){try{const r=await window.storage.get(k);return r?r.value
 async function stSet(k,v){try{await window.storage.set(k,v);}catch(e){}}
 async function stDel(k){try{await window.storage.delete(k);}catch(e){}}
 
-const XL=100,FREE_DUNGEONS=3,FREE_CHARS=1,FINAL_BOSS_REQUIRED=5;
+const FREE_DUNGEONS=3,FREE_CHARS=1,FINAL_BOSS_REQUIRED=5;
+function xpForLevel(lv){return Math.floor(100*Math.pow(1.25,lv-1));}
+function totalXpForLevel(lv){var t=0;for(var i=1;i<lv;i++)t+=xpForLevel(i);return t;}
+function lvFromXp(xp){var lv=1;while(xp>=totalXpForLevel(lv+1))lv++;return lv;}
+function xpInLevel(xp){var lv=lvFromXp(xp);return xp-totalXpForLevel(lv);}
+function xpForThisLevel(lv){return xpForLevel(lv);}
 const TNAME=lv=>lv<3?'Apprentice':lv<6?'Journeyman':lv<10?'Expert':'Legendary';
 const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
 const CLASSES=[
@@ -375,7 +380,7 @@ let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
   heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
   err:'',pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
 
-const lp=()=>U?Math.round((U.xp%XL)/XL*100):0;
+const lp=()=>U?Math.min(100,Math.round(xpInLevel(U.xp||0)/xpForThisLevel(U.lv||1)*100)):0;
 async function saveUser(){if(U)await stSet('rbUser',JSON.stringify(U));}
 function mkKey(e){return'rbAcc_'+e.replace(/[^a-z0-9]/gi,'_').toLowerCase();}
 function get(id){return document.getElementById(id);}
@@ -586,11 +591,12 @@ function heroH(){
       h+='<div class="dnum">'+ROMAN[i]+'</div>';
       h+='<div class="dinfo"><div class="dtitle">'+d.title+(cleared2?'<span class="cleared-badge">&#x2B50;</span>':'')+'</div>';
       if(d.story&&d.story.setting)h+='<div class="dloc">'+d.story.setting+'</div>';
-      // Per-difficulty stats table
-      if(d.scores&&(d.scores.easy.attempts||d.scores.normal.attempts||d.scores.hard.attempts)){
+      // Per-difficulty stats table — always show, even empty
+      var hasAnyAttempt=d.scores&&(['easy','normal','hard'].some(function(dk){return d.scores[dk]&&d.scores[dk].attempts>0;}));
+      if(hasAnyAttempt){
         h+='<div style="margin-top:5px">';
         ['easy','normal','hard'].forEach(function(dk){
-          var rec=d.scores[dk];if(!rec||!rec.attempts)return;
+          var rec=(d.scores&&d.scores[dk])||{best:0,attempts:0};if(!rec.attempts)return;
           var rk=getRank(rec.best),dv=DIFF[dk];
           h+='<div style="display:flex;align-items:center;gap:5px;padding:2px 0">';
           h+='<span style="font-size:7px;color:'+dv.color+';min-width:36px" class="pf">'+dv.label.slice(0,4)+'</span>';
@@ -1095,7 +1101,7 @@ function lvupH(){
 
 function xpu(n,msg){
   const prev=U.lv;U.xp+=n;S.sxp+=n;S.pa=n;S.pop=true;S.popMsg=msg||'+'+n+' XP';
-  U.lv=Math.floor(U.xp/XL)+1;saveUser();
+  U.lv=lvFromXp(U.xp||0);saveUser();
   if(U.lv>prev){setTimeout(function(){S.lvupData={};S.prevScreen=S.screen;S.screen='lvup';draw();},400);}
   else setTimeout(function(){S.pop=false;draw();},1800);
 }
