@@ -1540,8 +1540,6 @@ function draw(){
   };
   el.innerHTML=(screens[S.screen]||authH)();
 }
-init();
-
-</script>
+window.addEventListener('DOMContentLoaded',function(){init().catch(function(e){console.error('Init error:',e);document.getElementById('app').innerHTML='<div style="color:red;padding:20px">Error: '+e.message+'</div>';});});</script>
 </body>
 </html>
