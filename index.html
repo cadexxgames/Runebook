@@ -1024,7 +1024,7 @@ function paywallH(){
   h+='<div class="plan"><div class="pf" style="font-size:8px;color:var(--tx2);margin-bottom:9px">FREE</div>';
   h+='<div class="pf" style="font-size:20px;color:#60ffaa;margin-bottom:3px">$0</div>';
   h+='<div style="font-size:9px;color:var(--tx3)">forever</div>';
-  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.9;text-align:left;margin-top:9px">3 heroes<br>3 dungeons/hero<br>All difficulties<br>Final Boss exam<br>Daily streak</div></div>';
+  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.9;text-align:left;margin-top:9px">1 hero<br>3 dungeons<br>One subject reset<br>Daily quests<br>Achievements</div></div>';
   h+='<div class="plan feat"><div class="pf" style="font-size:8px;color:#c080ff;margin-bottom:9px">PRO &#x2605;</div>';
   h+='<div class="pf" style="font-size:20px;color:var(--gold);margin-bottom:3px">$4.99</div>';
   h+='<div style="font-size:9px;color:var(--tx3)">/month</div>';
@@ -1044,14 +1044,14 @@ function lvupH(){
   h+='<div class="pf" style="font-size:10px;color:#c080ff;margin-bottom:20px">'+TNAME(U.lv)+'</div>';
   if(char)h+='<div class="bob" style="margin:0 auto 18px;display:inline-block">'+sp(U.activeCls,char.gender,120)+'</div>';
   h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:20px;line-height:1.8">'+(char?char.charName:'Your hero')+' grows stronger!</div>';
-  h+='<button class="btn gc pf" onclick="goTo(\'home\')">CONTINUE &#x25BA;</button></div>';
+  h+='<button class="btn gc pf" onclick="lvupContinue()">CONTINUE &#x25BA;</button></div>';
   return h;
 }
 
 function xpu(n,msg){
   const prev=U.lv;U.xp+=n;S.sxp+=n;S.pa=n;S.pop=true;S.popMsg=msg||'+'+n+' XP';
   U.lv=Math.floor(U.xp/XL)+1;saveUser();
-  if(U.lv>prev){setTimeout(function(){S.lvupData={};S.screen='lvup';draw();},400);}
+  if(U.lv>prev){setTimeout(function(){S.lvupData={};S.prevScreen=S.screen;S.screen='lvup';draw();},400);}
   else setTimeout(function(){S.pop=false;draw();},1800);
 }
 function flip(){S.fl=!S.fl;draw();}
@@ -1116,6 +1116,7 @@ function gotoCharSelect(){goTo('char-select');}
 function gotoPaywall(){goTo('paywall');}
 function goToAchievements(){goTo('achievements');}
 function goToCalendar(){goTo('calendar');}
+function lvupContinue(){var ps=S.prevScreen||'home';if(ps==='quiz'){S.screen='quiz';draw();}else if(ps==='fc'){S.screen='fc';draw();}else{goTo(ps);}}
 function goTo(sc){
   if(sc==='quiz'){S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];}
   if(sc==='fc'){S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;}
