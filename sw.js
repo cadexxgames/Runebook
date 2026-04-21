@@ -1,14 +1,14 @@
-const CACHE = 'runebook-v1';
+const CACHE = 'runebook-v2';
+const BASE = '/runebook/';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/favicon.ico',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/manifest.json'
+  BASE,
+  BASE + 'index.html',
+  BASE + 'favicon.ico',
+  BASE + 'icon-192.png',
+  BASE + 'icon-512.png',
+  BASE + 'manifest.json'
 ];
 
-// Install: cache core assets
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(cache) {
@@ -18,7 +18,6 @@ self.addEventListener('install', function(e) {
   self.skipWaiting();
 });
 
-// Activate: clean old caches
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
@@ -31,21 +30,18 @@ self.addEventListener('activate', function(e) {
   self.clients.claim();
 });
 
-// Fetch: network first, fall back to cache
 self.addEventListener('fetch', function(e) {
-  // Don't intercept API calls or Supabase
   var url = e.request.url;
-  if (url.includes('supabase.co') || 
-      url.includes('vercel.app') || 
+  if (url.includes('supabase.co') ||
+      url.includes('vercel.app') ||
       url.includes('stripe.com') ||
       url.includes('jsdelivr.net')) {
     return;
   }
-  
+
   e.respondWith(
     fetch(e.request)
       .then(function(res) {
-        // Cache successful GET responses
         if (e.request.method === 'GET' && res.status === 200) {
           var clone = res.clone();
           caches.open(CACHE).then(function(cache) {
@@ -55,9 +51,8 @@ self.addEventListener('fetch', function(e) {
         return res;
       })
       .catch(function() {
-        // Network failed — serve from cache
         return caches.match(e.request).then(function(cached) {
-          return cached || caches.match('/index.html');
+          return cached || caches.match(BASE + 'index.html');
         });
       })
   );
