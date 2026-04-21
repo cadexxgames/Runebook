@@ -299,13 +299,13 @@ async function generateQuizQuestions(dung,diffConfig,isFinal,char){
   if(!source&&dung.story)source=dung.story.title+'. '+(dung.story.intro||'');
   if(!source)source='General study material.';
 
-  var sysPrompt='You are a quiz generator. Output ONLY valid JSON. No markdown, no explanation, no code fences. Start with { end with }.';
+  var sysPrompt=isMath?'You are a math quiz generator. Output ONLY valid JSON. For each question include a clear step-by-step solution showing full working. No markdown, no code fences. Start with { end with }.':'You are a quiz generator. Output ONLY valid JSON. No markdown, no explanation, no code fences. Start with { end with }.';
   var userPrompt=[
     'VARIATION SEEDS (use these to make questions unique this run): '+seed1+', '+seed2+', '+seed3,
     diffPart,
     mathPart,
     'SOURCE MATERIAL:\n'+source,
-    'Return ONLY this JSON format:\n{"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}',
+    (isMath?'Return ONLY this JSON format with step-by-step solution for each question:\n{"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0,"solution":"Step 1: ... Step 2: ... Answer: ..."}]}':'Return ONLY this JSON format:\n{"quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]}'),
     'The correct field is 0-3 (index of correct answer). Generate EXACTLY '+qCount+' questions — no more, no less.'
   ].filter(Boolean).join('\n\n');
 
@@ -378,7 +378,7 @@ let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
   ci:0,fl:false,shuffled:null,againPile:null,
   qi:0,sel:null,qs:0,streak:0,wrongAnswers:[],
   heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
-  err:'',pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
+  err:'',showSolution:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
 
 const lp=()=>U?Math.min(100,Math.round(xpInLevel(U.xp||0)/xpForThisLevel(U.lv||1)*100)):0;
 async function saveUser(){if(U)await stSet('rbUser',JSON.stringify(U));}
@@ -515,7 +515,7 @@ function doCC(){
 function tb(){
   if(!U)return'';
   var h='<div class="tb"><div class="pf logo">RUNE<span>BOOK</span></div>';
-  h+='<div class="xw"><div class="xn"><span>LV'+U.lv+' '+TNAME(U.lv)+'</span><span>'+(U.xp%XL)+'/'+XL+' XP</span></div>';
+  h+='<div class="xw"><div class="xn"><span>LV'+U.lv+' '+TNAME(U.lv)+'</span><span>'+xpInLevel(U.xp||0)+'/'+xpForThisLevel(U.lv||1)+' XP</span></div>';
   h+='<div class="xt"><div class="xf" style="width:'+lp()+'%"></div></div></div>';
   h+='<div style="display:flex;gap:7px;align-items:center">';
   if(U.streak>0)h+='<div class="streak-pill">&#x1F525; '+U.streak+'</div>';
@@ -991,8 +991,21 @@ function quizH(){
   h+='</div>';
   if(ans){
     const ok=S.sel===q.correct;
-    var msg=ok?(S.streak>=3?'&#x1F525; COMBO! +'+S.pa+' XP':S.streak>=2?'&#x26A1; STREAK! +'+S.pa+' XP':'&#x2713; Correct! +'+S.pa+' XP'):'&#x2715; Wrong \u2014 -1 HP!';
+    var msg=ok?(S.streak>=3?'&#x1F525; COMBO! +'+S.pa+' XP':S.streak>=2?'&#x26A1; STREAK! +'+S.pa+' XP':'&#x2713; Correct! +'+S.pa+' XP'):'&#x2715; Wrong &#x2014; -1 HP!';
     h+='<div style="margin-top:14px;text-align:center;font-size:'+(ok?'12':'11')+'px;color:'+(ok?'#60ff90':'#ff8070')+'">'+msg+'</div>';
+    // Show solution for math questions
+    if(q.solution){
+      if(!ok||S.showSolution){
+        // Wrong answer: show automatically. Right answer: always show since user opted in
+        h+='<div style="background:#1a0840;border:2px solid #8040d0;border-radius:8px;padding:12px;margin-top:10px;text-align:left">';
+        h+='<div class="pf" style="font-size:7px;color:#c080ff;margin-bottom:6px">&#x1F4D0; STEP-BY-STEP</div>';
+        h+='<div style="font-size:11px;color:#e0c8ff;line-height:1.9;white-space:pre-wrap">'+q.solution+'</div>';
+        h+='</div>';
+      }else{
+        // Right answer: offer to show solution
+        h+='<div style="text-align:center;margin-top:8px"><button class="btn gr pf" style="font-size:7px;width:auto;padding:6px 14px" onclick="S.showSolution=true;draw()">&#x1F4D0; SHOW WORKING</button></div>';
+      }
+    }
     if(S.heroHP>0){
       var btnTxt=S.qi<(S.liveQuiz?S.liveQuiz.length:1)-1?'NEXT TRIAL &#x25BA;':(S.isFinal?'CLAIM YOUR DESTINY':'DEFEAT THE BOSS');
       h+='<div style="text-align:center;margin-top:10px"><button class="btn '+(ok?'gn':'gr')+' pf" style="width:auto;padding:10px 20px;font-size:7px" onclick="nq()">'+btnTxt+'</button></div>';
@@ -1142,7 +1155,7 @@ function nq(){
   if(S.heroHP<=0){S.screen='quiz';draw();return;}
   var _nqQuiz=S.liveQuiz;if(!_nqQuiz)return;
   if(S.qi===_nqQuiz.length-1&&S.qs===_nqQuiz.length){U.xp+=50;saveUser();}
-  S.qi++;S.sel=null;
+  S.qi++;S.sel=null;S.showSolution=false;
   if(S.qi>=(_nqQuiz?_nqQuiz.length:0)){recordStudy();S.screen='qd';}
   draw();
 }
