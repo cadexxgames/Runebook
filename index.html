@@ -462,6 +462,39 @@ function gotoCharSelect(){goTo('char-select');}
 function gotoPaywall(){goTo('paywall');}
 function gotoApiKey(){goTo('apikey');}
 function gotoAuth(){goTo('auth');}
+
+async function testApiKey(){
+  S.testResult=null;draw();
+  var key=getApiKey();
+  if(!key){S.testResult={ok:false,msg:'No key saved yet.'};draw();return;}
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'anthropic-dangerous-allow-browser':'true',
+        'x-api-key':key
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:10,
+        messages:[{role:'user',content:'Hi'}]
+      })
+    });
+    var data=await resp.json();
+    if(resp.ok&&data.content){
+      S.testResult={ok:true,msg:'&#x2713; Connection works! Key is valid and credits are active.'};
+    }else if(data.error){
+      S.testResult={ok:false,msg:'API error: '+data.error.message+' (type: '+data.error.type+')'};
+    }else{
+      S.testResult={ok:false,msg:'Unexpected response: '+JSON.stringify(data).slice(0,100)};
+    }
+  }catch(e){
+    S.testResult={ok:false,msg:'Fetch failed: '+e.message+' — Browser may be blocking the request.'};
+  }
+  draw();
+}
+
 function gotoQuests(){goTo('quests');}
 function gotoAchievements(){goTo('achievements');}
 function gotoCalendar(){goTo('calendar');}
@@ -506,7 +539,7 @@ let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
   gauntlet:false,gauntletIdx:0,gauntletHP:3,gauntletMaxHP:3,
   timedMode:false,timerLeft:15,timerInterval:null,
   newAchievements:[],unlockPopup:null,
-  err:'',pop:false,pa:0,sxp:0,popMsg:'',prevScreen:null,lvupData:null,
+  err:'',testResult:null,pop:false,pa:0,sxp:0,popMsg:'',prevScreen:null,lvupData:null,
   spellScreen:'pre-quiz'};
 
 const lp=()=>U?Math.round((U.xp%XL)/XL*100):0;
@@ -574,6 +607,11 @@ function apiKeyH(){
   h+='<input id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." style="font-family:monospace;font-size:11px" value="'+current+'"/>';
   if(S.err)h+='<div class="er">'+S.err+'</div>';
   h+='<button class="btn gc pf" onclick="saveApiKey()" style="margin-bottom:10px">&#x2713; SAVE KEY</button>';
+  if(current)h+='<button class="btn gg pf" style="font-size:7px;margin-bottom:10px" onclick="testApiKey()">&#x26A1; TEST CONNECTION</button>';
+  if(S.testResult){
+    var tStyle=S.testResult.ok?'background:#082818;border:2px solid #30c060;border-radius:6px;padding:10px;color:#60ff90;margin-bottom:8px':'background:#280808;border:2px solid #cc2828;border-radius:6px;padding:10px;color:#ff9090;margin-bottom:8px';
+    h+='<div style="'+tStyle+'">'+S.testResult.msg+'</div>';
+  }
   if(current)h+='<button class="btn gr pf" style="font-size:7px" onclick="gotoAuth()">CONTINUE &#x25BA;</button>';
   h+='<div style="margin-top:16px;background:#140a38;border:2px solid #3a1e80;border-radius:8px;padding:12px;text-align:left">';
   h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:8px">HOW TO GET A KEY</div>';
