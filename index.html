@@ -844,7 +844,7 @@ let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
   ci:0,fl:false,shuffled:null,againPile:null,
   qi:0,sel:null,qs:0,streak:0,wrongAnswers:[],
   heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
-  err:'',proCodeErr:'',proCodeOk:'',showProCode:false,resetSent:false,showReset:false,authLoading:false,showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
+  err:'',proCodeErr:'',proCodeOk:'',showProCode:false,resetSent:false,showReset:false,authLoading:false,genFocus:'standard',genCustom:'',showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
 
 const lp=()=>{var c=aC();if(!c)return 0;return Math.min(100,Math.round(xpInLevel(c.xp||0)/xpForThisLevel(c.lv||1)*100));};
 async function saveUser(){if(U)await sbSaveUser();}
@@ -1386,7 +1386,36 @@ function uploadH(){
       h+='<button class="btn gc pf" onclick="S.err=\'\';doGen()">&#x21BA; RETRY WITH SAME FILES</button>';
     }
   }else{
-    h+='<button class="btn gc pf" onclick="doGen()">&#x26A1; CONJURE DUNGEON</button>';
+    // Generation Focus — Pro only
+  if(U&&U.isPro){
+    var _focuses=[
+      {id:'standard',label:'Standard',desc:'General questions from all material'},
+      {id:'menu',label:'Menu / Food',desc:'Ingredients & descriptions, ignore prices'},
+      {id:'math',label:'Math Practice',desc:'New problems with different numbers'},
+      {id:'vocab',label:'Vocabulary',desc:'Definitions, terms, usage'},
+      {id:'dates',label:'Dates & Events',desc:'Timeline, sequences, cause & effect'},
+      {id:'concepts',label:'Concepts Only',desc:'Big ideas, skip minor details'},
+    ];
+    h+='<div style="background:#0e0818;border:2px solid #3a1060;border-radius:10px;padding:12px;margin-bottom:12px">';
+    h+='<div class="pf" style="font-size:7px;color:#c080ff;margin-bottom:8px">&#x2726; PRO: GENERATION FOCUS</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">';
+    _focuses.forEach(function(f){
+      var active=S.genFocus===f.id;
+      h+='<button onclick="S.genFocus=\''+f.id+'\';draw()" style="background:'+(active?'#4020a0':'#1a0a30')+';border:2px solid '+(active?'#c080ff':'#3a1060')+';border-radius:6px;padding:5px 10px;color:'+(active?'#fff':'var(--tx3)')+';font-size:9px;cursor:pointer">'+f.label+'</button>';
+    });
+    h+='</div>';
+    h+='<div style="font-size:9px;color:#c080ff;margin-bottom:8px">'+(_focuses.find(function(f){return f.id===S.genFocus;})||_focuses[0]).desc+'</div>';
+    h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:4px">CUSTOM INSTRUCTIONS (optional)</div>';
+    h+='<textarea id="genfocus_custom" placeholder="e.g. Focus on cooking techniques, ignore restaurant info..." style="width:100%;font-size:10px;height:50px;resize:none;box-sizing:border-box">'+S.genCustom+'</textarea>';
+    h+='</div>';
+  }else{
+    h+='<div style="background:#0e0818;border:2px solid #3a1060;border-radius:10px;padding:10px;margin-bottom:12px;text-align:center;opacity:.7">';
+    h+='<div style="font-size:9px;color:#c080ff;margin-bottom:4px">&#x2726; Generation Focus</div>';
+    h+='<div style="font-size:9px;color:var(--tx3);margin-bottom:6px">Control how questions are generated — menu mode, math practice, vocab focus & more</div>';
+    h+='<button class="btn gp pf" style="font-size:7px;width:auto;padding:6px 12px" onclick="goTo(\'paywall\')">&#x2605; PRO FEATURE</button>';
+    h+='</div>';
+  }
+  h+='<button class="btn gc pf" onclick="doGen()">&#x26A1; CONJURE DUNGEON</button>';
   }
   return h;
 }
@@ -1437,7 +1466,22 @@ function buildPrompt(isFirst,char,isMath){
   const diffInst=S.difficulty==='hard'?'\n\nDIFFICULTY: HARD. Make questions trickier, use edge cases, add plausible distractors, avoid obvious wrong answers. Generate 6-8 quiz questions.':S.difficulty==='easy'?'\n\nDIFFICULTY: EASY. Keep questions straightforward, clear language, obvious wrong answers. Generate 3-5 quiz questions.':'\n\nGenerate 4-6 quiz questions.';
   const subjectLine=isFirst?'  "subject": "Specific academic subject, max 3 words (e.g. American History, Algebra, Cell Biology)",\n':'';
   const subjectGuard=isFirst?'Also identify the subject field.':('Hero is LOCKED to subject: "'+char.subject+'". If content is NOT about "'+char.subject+'", return ONLY: {"error":"WRONG_SUBJECT","detected":"(actual subject)"}. Otherwise generate normally without a subject field.');
-  return subjectGuard+mathExtra+diffInst+'\n\nCRITICAL INSTRUCTION: You have been given MULTIPLE files/images/documents. You MUST draw quiz questions from ALL files equally. Before writing any question, mentally assign each file a number (File 1, File 2, etc.) and ensure you pull questions from EVERY file. Do NOT focus only on the first file. If you have 2 files split questions 50/50. If 3 files split 33/33/33. Same rule applies to flashcards.\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 4-8 flashcards covering ALL provided files equally. Generate quiz questions covering ALL provided files equally. correct is 0-3.';
+  // Generation focus instructions (Pro only)
+  var focusExtra='';
+  if(U&&U.isPro){
+    var _focusMap={
+      'menu':'FOCUS: This appears to be a menu or food-related document. Generate questions about ingredients, descriptions, dietary information, flavors, and what is included in each item. Do NOT ask about prices, item codes, or layout.',
+      'math':'FOCUS: Generate NEW math practice problems inspired by the types of problems in the notes, but with completely different numbers and variables. Do not copy problems directly.',
+      'vocab':'FOCUS: Prioritize vocabulary, definitions, key terms and their meanings, usage in context, and distinguishing between similar terms.',
+      'dates':'FOCUS: Prioritize dates, timelines, sequences of events, cause and effect relationships, and chronological order.',
+      'concepts':'FOCUS: Focus on big-picture concepts, main ideas, and themes. Avoid minor details, specific numbers, or trivial facts.',
+      'standard':''
+    };
+    var focusInst=_focusMap[S.genFocus||'standard']||'';
+    if(focusInst)focusExtra='\n\n'+focusInst;
+    if(S.genCustom&&S.genCustom.trim())focusExtra+='\n\nADDITIONAL USER INSTRUCTIONS: '+S.genCustom.trim();
+  }
+  return subjectGuard+mathExtra+diffInst+focusExtra+'\n\nCRITICAL INSTRUCTION: You have been given MULTIPLE files/images/documents. You MUST draw quiz questions from ALL files equally. Before writing any question, mentally assign each file a number (File 1, File 2, etc.) and ensure you pull questions from EVERY file. Do NOT focus only on the first file. If you have 2 files split questions 50/50. If 3 files split 33/33/33. Same rule applies to flashcards.\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 4-8 flashcards covering ALL provided files equally. Generate quiz questions covering ALL provided files equally. correct is 0-3.';
 }
 
 async function callAPI(contentBlocks){
@@ -1488,6 +1532,7 @@ function consumeGen(){
 }
 async function doGen(){
   const ta=get('nta');if(ta)S.notes=ta.value;
+  const fc=get('genfocus_custom');if(fc)S.genCustom=fc.value.trim();
   const hasFiles=S.uploadFiles&&S.uploadFiles.length>0;
   const hasText=S.notes&&S.notes.trim().length>0;
   if(!hasFiles&&!hasText){S.err='Please upload files or paste some notes!';draw();return;}
@@ -1604,8 +1649,8 @@ function _startGenAnim(){
   var msgs=_GEN_MSGS[diff]||_GEN_MSGS.normal;
   _genInterval=setInterval(function(){
     // Progress moves slowly, stalls around 60-70%, then surges
-    var inc=_genProgress<30?1.5:_genProgress<60?1:_genProgress<75?0.4:_genProgress<88?0.2:0.1;
-    inc+=Math.random()*0.8;
+    var inc=_genProgress<30?3:_genProgress<60?2:_genProgress<75?0.8:_genProgress<88?0.4:0.15;
+    inc+=Math.random()*1.2;
     _genProgress=Math.min(93,_genProgress+inc);
     // Change message every 6 ticks (~6s)
     _genMsgTick++;
