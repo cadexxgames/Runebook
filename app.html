@@ -25,8 +25,8 @@
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#12093a;--bg2:#1a1050;--bg3:#221668;--bd1:#7040c8;--bd2:#3a1e80;--bdg:#c89018;--tx1:#fff;--tx2:#f0d060;--tx3:#9878c8;--gold:#ffd040;}
-body{background:var(--bg);background-image:radial-gradient(ellipse at 20% 20%,#2a1060 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,#1a2060 0%,transparent 50%);color:var(--tx1);font-family:monospace;min-height:100vh;padding:16px;}
+:root{--bg:#0a0518;--bg2:#0f0828;--bg3:#160d3a;--bd1:#7040c8;--bd2:#2a1460;--bdg:#c89018;--tx1:#fff;--tx2:#f0d060;--tx3:#9878c8;--gold:#ffd040;}
+body{background:var(--bg);background-image:radial-gradient(ellipse at 50% 0%,rgba(96,48,192,0.14) 0%,transparent 60%);color:var(--tx1);font-family:monospace;min-height:100vh;padding:16px;}
 .app{max-width:660px;margin:0 auto;}
 .pf{font-family:'Press Start 2P',monospace;}
 .panel{background:var(--bg2);border:2px solid var(--bd1);border-radius:12px;padding:20px;position:relative;box-shadow:0 0 30px rgba(112,64,200,.3);}
@@ -986,7 +986,7 @@ function onboardH(){
 
 function authH(){
   const isL=S.authTab==='login';
-  var h='<div style="position:fixed;top:0;left:50%;transform:translateX(-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(96,48,192,0.2) 0%,transparent 70%);pointer-events:none;z-index:0"></div>';
+  var h='<div style="position:fixed;top:0;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(60,24,120,0.12) 0%,transparent 65%);pointer-events:none;z-index:0"></div>';
   h+='<div style="max-width:320px;margin:0 auto;padding:14px 0;position:relative;z-index:1">';
   h+='<div style="text-align:center;margin-bottom:22px"><div class="pf" style="font-size:14px;color:var(--gold);margin-bottom:8px">&#x1F4D6; RUNEBOOK &#x1F4D6;</div>';
   h+='<div style="font-size:12px;color:var(--tx3)">Your legend begins here</div></div>';
