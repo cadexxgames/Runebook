@@ -305,13 +305,23 @@ async function stSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 async function stDel(k){try{localStorage.removeItem(k);}catch(e){}}
 async function sbSaveUser(){
   if(!U||!_supaUser||!_supaToken)return;
-  await supaUpsert({id:_supaUser.id,email:U.email,is_pro:U.isPro||false,data:U});
+  await supaUpsert({
+    id:_supaUser.id,
+    email:U.email,
+    is_pro:U.isPro||false,
+    bonus_credits:U._bonusCredits||0,
+    data:U
+  });
 }
 async function sbLoadUser(){
   var row=await supaSelect();
   if(!row)return null;
   var u=row.data||{};
   u.isPro=row.is_pro||u.isPro||false;
+  // Read bonus_credits from dedicated column (overrides JSON value)
+  if(typeof row.bonus_credits==='number'){
+    u._bonusCredits=row.bonus_credits;
+  }
   return u;
 }
 async function saveUser(){if(U)await sbSaveUser();}
