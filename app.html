@@ -818,7 +818,14 @@ async function startQuiz(i,isFinal){
   try{
     var fresh=await generateQuizQuestions(dung,d,isFinal,char);
     if(!fresh||!fresh.length)throw new Error('No questions returned');
-    S.liveQuiz=fresh;S.screen='quiz';
+    S.liveQuiz=fresh;
+    // Smoothly fill quiz bar to 100%
+    if(_quizInterval){clearInterval(_quizInterval);_quizInterval=null;}
+    _quizProgress=100;
+    var _qbar=document.getElementById('quiz-bar');
+    if(_qbar){_qbar.style.transition='width 0.6s ease, background 0.3s ease';_qbar.style.width='100%';_qbar.style.background='#60ff90';}
+    await new Promise(function(r){setTimeout(r,800);});
+    S.screen='quiz';
   }catch(ex){
     console.warn('Fresh gen failed:',ex.message);
     if(dung.quiz&&dung.quiz.length){
@@ -1585,7 +1592,14 @@ async function doGen(){
     });
     S.di=char.dungeons.length-1;S.notes='';S.uploadFiles=[];
     consumeGen();
-    await saveUser();S.screen='dungeon';S.isFinal=false;
+    await saveUser();
+    // Smoothly fill to 100% then pause
+    if(_genInterval){clearInterval(_genInterval);_genInterval=null;}
+    _genProgress=100;
+    var _bar=document.getElementById('gen-bar');
+    if(_bar){_bar.style.transition='width 0.7s ease, background 0.4s ease';_bar.style.width='100%';_bar.style.background='#60ff90';}
+    await new Promise(function(r){setTimeout(r,900);});
+    S.screen='dungeon';S.isFinal=false;
   }catch(ex){
     S.err='Dungeon generation failed: '+friendlyApiError(ex);
     S.screen='upload';
@@ -1615,7 +1629,13 @@ async function genFinalBoss(){
       story:parsed.story||null,cards:parsed.flashcards,quiz:parsed.quiz,
       bestScore:0,attempts:0
     };
-    consumeGen();await saveUser();S.isFinal=true;S.screen='dungeon';
+    consumeGen();await saveUser();
+    if(_genInterval){clearInterval(_genInterval);_genInterval=null;}
+    _genProgress=100;
+    var _bar2=document.getElementById('gen-bar');
+    if(_bar2){_bar2.style.transition='width 0.7s ease, background 0.4s ease';_bar2.style.width='100%';_bar2.style.background='#ffd040';}
+    await new Promise(function(r){setTimeout(r,900);});
+    S.isFinal=true;S.screen='dungeon';
   }catch(ex){S.err='Final boss generation failed: '+ex.message;S.screen='home';}
   draw();
 }
