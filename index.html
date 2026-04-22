@@ -998,7 +998,11 @@ async function doAuth(){
 
 function charCreateH(){
   const cls=clsInfo(S.selCls);
-  var h='<div><div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:16px">&#x2726; FORGE YOUR HERO &#x2726;</div>';
+  var h='<div>';
+  // Show back button if user already has at least one hero
+  var _hasHero=U&&U.chars&&Object.values(U.chars).some(function(c){return c&&c.charName;});
+  if(_hasHero)h+='<button class="back" onclick="goTo(\'char-select\')">&#x25C4; Back</button>';
+  h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:16px">&#x2726; FORGE YOUR HERO &#x2726;</div>';
   h+='<div style="display:flex;gap:16px;flex-wrap:wrap">';
   h+='<div style="flex:0 0 120px;text-align:center"><div class="bob">'+sp(S.selCls,S.selGen,96)+'</div>';
   h+='<div class="pf" style="font-size:7px;color:var(--gold);margin-top:6px">'+cls.name+'</div></div>';
