@@ -308,10 +308,11 @@ async function stSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 async function stDel(k){try{localStorage.removeItem(k);}catch(e){}}
 async function sbSaveUser(){
   if(!U||!_supaUser||!_supaToken)return;
+  U.isPro=U.isPro||false; // ensure consistent
   await supaUpsert({
     id:_supaUser.id,
     email:U.email,
-    is_pro:U.isPro||false,
+    is_pro:U.isPro,
     bonus_credits:U._bonusCredits||0,
     data:U
   });
@@ -320,7 +321,7 @@ async function sbLoadUser(){
   var row=await supaSelect();
   if(!row)return null;
   var u=row.data||{};
-  u.isPro=row.is_pro||u.isPro||false;
+  u.isPro=row.is_pro===true; // Always trust the DB column, ignore JSON cache
   // Read bonus_credits from dedicated column (overrides JSON value)
   if(typeof row.bonus_credits==='number'){
     u._bonusCredits=row.bonus_credits;
