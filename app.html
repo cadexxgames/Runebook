@@ -1495,7 +1495,7 @@ function buildPrompt(isFirst,char,isMath){
   var focusExtra='';
   if(U&&U.isPro){
     var _focusMap={
-      'menu':'FOCUS: This appears to be a menu or food-related document. Generate questions about ingredients, descriptions, dietary information, flavors, and what is included in each item. Do NOT ask about prices, item codes, or layout.',
+      'menu':'FOCUS: This is a menu or food-related image. STRICT RULES FOR MENUS:\n- Only ask about items you can clearly and completely read in the image\n- Questions must be about ingredients, descriptions, what is included, dietary info, or flavor profiles\n- NEVER ask about prices, item numbers, or codes\n- NEVER guess or infer information not explicitly visible — if you cannot clearly read an item, skip it\n- Quote directly from the menu text when writing questions and answers\n- Limit to 2-3 questions per menu page to ensure accuracy over quantity\n- Wrong answer options must be other real items from the same menu, not invented ones',
       'math':'FOCUS: Generate NEW math practice problems inspired by the types of problems in the notes, but with completely different numbers and variables. Do not copy problems directly.',
       'vocab':'FOCUS: Prioritize vocabulary, definitions, key terms and their meanings, usage in context, and distinguishing between similar terms.',
       'dates':'FOCUS: Prioritize dates, timelines, sequences of events, cause and effect relationships, and chronological order.',
@@ -1506,7 +1506,8 @@ function buildPrompt(isFirst,char,isMath){
     if(focusInst)focusExtra='\n\n'+focusInst;
     if(S.genCustom&&S.genCustom.trim())focusExtra+='\n\nADDITIONAL USER INSTRUCTIONS: '+S.genCustom.trim();
   }
-  return subjectGuard+mathExtra+diffInst+focusExtra+'\n\nCRITICAL INSTRUCTION: You have been given MULTIPLE files/images/documents. You MUST draw quiz questions from ALL files equally. Before writing any question, mentally assign each file a number (File 1, File 2, etc.) and ensure you pull questions from EVERY file. Do NOT focus only on the first file. If you have 2 files split questions 50/50. If 3 files split 33/33/33. Same rule applies to flashcards.\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 4-8 flashcards covering ALL provided files equally. Generate quiz questions covering ALL provided files equally. correct is 0-3.';
+  var accuracyRules='\n\nACCURACY RULES (follow strictly):\n1. Every correct answer MUST be directly verifiable from the provided source material. Never guess or invent answers.\n2. Wrong answer options must be plausible but clearly incorrect based on the source — never accidentally correct.\n3. Every question must be clear, specific, and unambiguous — one obvious correct answer. No double negatives, trick phrasing, or vague wording.\n4. If you are not certain about the correct answer to a question, skip it and write a different one you are confident about.\n5. Re-read the source before writing each question to verify accuracy.';
+  return subjectGuard+mathExtra+diffInst+focusExtra+accuracyRules+'\n\nCRITICAL INSTRUCTION: You have been given MULTIPLE files/images/documents. You MUST draw quiz questions from ALL files equally. Before writing any question, mentally assign each file a number (File 1, File 2, etc.) and ensure you pull questions from EVERY file. Do NOT focus only on the first file. If you have 2 files split questions 50/50. If 3 files split 33/33/33. Same rule applies to flashcards.\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 4-8 flashcards covering ALL provided files equally. Generate quiz questions covering ALL provided files equally. correct is 0-3.';
 }
 
 async function callAPI(contentBlocks){
@@ -1564,7 +1565,7 @@ function buildPromptForFile(isFirst,char,isMath,qCount,fcCount,isLeadFile,totalF
   var focusExtra='';
   if(typeof U!=='undefined'&&U&&U.isPro){
     var focusMap={
-      'menu':'FOCUS: Menu/food document. Ask about ingredients, descriptions, dietary info. NOT prices.',
+      'menu':'FOCUS: Menu/food image. STRICT RULES:\n- Only ask about items clearly readable in this image\n- Ask about ingredients, descriptions, what is included, dietary info, flavors\n- NEVER ask about prices, item numbers, or codes\n- NEVER guess — if unsure, skip that item\n- Quote directly from the visible menu text\n- Limit to 2-3 questions to ensure accuracy\n- Wrong options must be real items from this same menu',
       'math':'FOCUS: Generate NEW math problems with different numbers.',
       'vocab':'FOCUS: Prioritize vocabulary, definitions, key terms.',
       'dates':'FOCUS: Prioritize dates, timelines, sequences, cause and effect.',
@@ -1575,7 +1576,8 @@ function buildPromptForFile(isFirst,char,isMath,qCount,fcCount,isLeadFile,totalF
     if(fi)focusExtra='\n\n'+fi;
     if(S.genCustom&&S.genCustom.trim())focusExtra+='\n\nUSER INSTRUCTIONS: '+S.genCustom.trim();
   }
-  return subjectGuard+mathExtra+focusExtra+'\n\nThis is FILE '+(isLeadFile?'1':'2+')+' OF '+totalFiles+'. Generate EXACTLY '+qCount+' quiz questions and '+fcCount+' flashcards from THIS file only.\n\nReturn ONLY raw JSON:\n{\n'+subjectLine+(isLeadFile?storyPart:'')+'  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\ncorrect is 0-3.';
+  var accuracyRules2='\n\nACCURACY RULES:\n1. Every correct answer MUST be directly verifiable from the source material. Never guess.\n2. Wrong options must be plausible but clearly incorrect from the source.\n3. Questions must be clear and unambiguous with one obvious correct answer. No trick phrasing.\n4. If unsure about an answer, generate a different question instead.';
+  return subjectGuard+mathExtra+focusExtra+accuracyRules2+'\n\nThis is FILE '+(isLeadFile?'1':'2+')+' OF '+totalFiles+'. Generate EXACTLY '+qCount+' quiz questions and '+fcCount+' flashcards from THIS file only.\n\nReturn ONLY raw JSON:\n{\n'+subjectLine+(isLeadFile?storyPart:'')+'  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\ncorrect is 0-3.';
 }
 async function doGen(){
   const ta=get('nta');if(ta)S.notes=ta.value;
@@ -1600,8 +1602,10 @@ async function doGen(){
     var shuffledFiles=S.uploadFiles.slice().sort(function(){return Math.random()-0.5;});
     var _diff=S.difficulty||'normal';
     var totalQ=_diff==='hard'?12:_diff==='easy'?4:7;
-    var qPerFile=Math.max(2,Math.ceil(totalQ/_fileCount));
-    var fcPerFile=Math.max(2,Math.ceil(6/_fileCount));
+    // For menu focus, cap questions per file lower to ensure accuracy
+    var _isMenu=(typeof S!=='undefined'&&S.genFocus==='menu');
+    var qPerFile=_isMenu?Math.min(3,Math.max(2,Math.ceil(totalQ/_fileCount))):Math.max(2,Math.ceil(totalQ/_fileCount));
+    var fcPerFile=_isMenu?Math.min(3,Math.max(2,Math.ceil(6/_fileCount))):Math.max(2,Math.ceil(6/_fileCount));
     var allQuiz=[],allCards=[],firstParsed=null;
     for(var _fi=0;_fi<shuffledFiles.length;_fi++){
       var _f=shuffledFiles[_fi];
