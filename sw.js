@@ -1,4 +1,4 @@
-const CACHE = 'runebook-v3.03';
+const CACHE = 'runebook-v3.04';
 const ASSETS = [
   '/',
   '/index.html',
