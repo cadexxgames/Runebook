@@ -27,9 +27,9 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#0a0518;--bg2:#0f0828;--bg3:#160d3a;--bd1:#7040c8;--bd2:#2a1460;--bdg:#c89018;--tx1:#fff;--tx2:#f0d060;--tx3:#9878c8;--gold:#ffd040;}
 body{background:var(--bg);background-image:radial-gradient(ellipse at 50% 0%,rgba(96,48,192,0.14) 0%,transparent 60%);color:var(--tx1);font-family:monospace;min-height:100vh;padding:16px;}
-.app{max-width:660px;margin:0 auto;}
+.app{max-width:480px;margin:0 auto;overflow-x:hidden;}
 .pf{font-family:'Press Start 2P',monospace;}
-.panel{background:var(--bg2);border:2px solid var(--bd1);border-radius:12px;padding:20px;position:relative;box-shadow:0 0 30px rgba(112,64,200,.3);}
+.panel{background:var(--bg2);border:2px solid var(--bd1);border-radius:12px;padding:12px;position:relative;overflow:hidden;box-sizing:border-box;box-shadow:0 0 30px rgba(112,64,200,.3);}
 .panel::before{content:'';position:absolute;inset:5px;border:1px solid var(--bd2);border-radius:9px;pointer-events:none;}
 .tb{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:2px solid var(--bd2);margin-bottom:16px;flex-wrap:wrap;gap:8px;}
 .logo{font-family:'Press Start 2P',monospace;color:var(--gold);font-size:11px;text-shadow:0 0 12px rgba(255,208,64,.5);}
@@ -118,7 +118,7 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 .back{display:inline-block;background:#180e40;border:2px solid #5030a0;border-radius:5px;color:#c0a8ff;cursor:pointer;font-family:monospace;font-size:13px;padding:7px 14px;margin-bottom:13px;transition:border-color .15s,color .15s;}
 .back:hover{border-color:#a060ff;color:#fff;}
 .er{background:#280808;border:2px solid #cc2828;border-radius:6px;padding:11px 13px;color:#ff9090;font-size:11px;margin-bottom:10px;line-height:1.7;}
-.dcard{background:#140a38;border:2px solid #5030a0;border-radius:10px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;}
+.dcard{background:#140a38;border:2px solid #5030a0;border-radius:10px;padding:10px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;overflow:hidden;box-sizing:border-box;width:100%;}
 .dcard.final-boss{border-color:#ffd040;background:#1e1408;box-shadow:0 0 18px rgba(255,208,64,.25);}
 .dcard:hover{border-color:#a060ff;}
 .dnum{font-family:'Press Start 2P',monospace;font-size:14px;color:var(--bdg);min-width:28px;text-align:center;}
@@ -126,8 +126,8 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 .dtitle{font-size:11px;color:#fff;margin-bottom:4px;line-height:1.5;}
 .dloc{font-size:9px;color:var(--tx3);}
 .dstat{font-size:8px;margin-top:5px;}
-.dbtns{display:flex;gap:7px;flex-direction:column;}
-.dbtn{padding:7px 10px;border:2px solid;border-radius:5px;cursor:pointer;font-family:'Press Start 2P',monospace;font-size:7px;background:transparent;white-space:nowrap;transition:filter .15s;}
+.dbtns{display:flex;gap:6px;flex-direction:row;flex-wrap:wrap;margin-top:4px;}
+.dbtn{padding:7px 8px;border:2px solid;border-radius:5px;cursor:pointer;font-family:'Press Start 2P',monospace;font-size:7px;background:transparent;white-space:nowrap;transition:filter .15s;flex:1;text-align:center;}
 .dbtn:hover{filter:brightness(1.4);}
 .dbtn-s{border-color:#d09020;color:#ffd040;}
 .dbtn-q{border-color:#20b050;color:#50ff90;}
@@ -1082,7 +1082,7 @@ function charCreateH(){
   var _hasHero=U&&U.chars&&Object.values(U.chars).some(function(c){return c&&c.charName;});
   if(_hasHero)h+='<button class="back" onclick="goTo(\'char-select\')">&#x25C4; Back</button>';
   h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:16px">&#x2726; FORGE YOUR HERO &#x2726;</div>';
-  h+='<div style="display:flex;gap:16px;flex-wrap:wrap">';
+  h+='<div style="display:flex;gap:12px;flex-wrap:wrap;overflow:hidden">';
   h+='<div style="flex:0 0 120px;text-align:center"><div class="bob">'+sp(S.selCls,S.selGen,96)+'</div>';
   h+='<div class="pf" style="font-size:7px;color:var(--gold);margin-top:6px">'+cls.name+'</div></div>';
   h+='<div style="flex:1;min-width:180px"><span class="lbl">GENDER</span>';
@@ -1160,8 +1160,8 @@ function heroH(){
   var h=tb();
   if(S.pop)h+='<div class="xpp pf">'+(S.popMsg||'+'+S.pa+' XP')+'</div>';
   h+='<button class="back" onclick="gotoHome()">&#x25C4; Main Menu</button>';
-  h+='<div style="display:flex;gap:14px;align-items:flex-start">';
-  h+='<div style="flex:0 0 100px;text-align:center">';
+  h+='<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">';
+  h+='<div style="flex:0 0 100px;min-width:100px;text-align:center">';
   h+='<div class="bob">'+sp(U.activeCls,char.gender,88)+'</div>';
   h+='<div class="pf" style="font-size:7px;color:var(--gold);margin-top:5px">'+char.charName+'</div>';
   h+='<div style="font-size:8px;color:var(--tx3);margin-top:2px">'+cls.name+'</div>';
@@ -1180,7 +1180,7 @@ function heroH(){
   h+='<div class="pf" style="font-size:7px;color:#60ffaa;margin-top:2px">LV '+(char.lv||1)+' '+TNAME(char.lv||1)+'</div>';
   if(U.isPro)h+='<div style="font-size:8px;color:#c080ff;margin-top:2px">&#x2605; PRO</div>';
   h+='</div>';
-  h+='<div style="flex:1">';
+  h+='<div style="flex:1;min-width:0;overflow:hidden">';
   if(U.streak>0){
     h+='<div style="background:#1e0808;border:2px solid '+streakColor(U.streak)+';border-radius:8px;padding:7px 10px;margin-bottom:10px;display:flex;align-items:center;gap:8px">';
     h+='<span style="font-size:16px">&#x1F525;</span>';
@@ -1203,8 +1203,7 @@ function heroH(){
       var best=d.bestScore||0,cleared2=best>=70,att=d.attempts||0;
       if(d.scores){var eb=Math.max(d.scores.easy&&d.scores.easy.best||0,d.scores.normal&&d.scores.normal.best||0,d.scores.hard&&d.scores.hard.best||0);cleared2=eb>=70;best=eb||best;}
       h+='<div class="dcard" onclick="enterDungeon('+i+',false)" style="cursor:pointer">';
-      h+='<div class="dnum">'+ROMAN[i]+'</div>';
-      h+='<div class="dinfo"><div class="dtitle">'+d.title+(cleared2?'<span class="cleared-badge">&#x2B50;</span>':'')+'</div>';
+      h+='<div class="dinfo"><div class="dtitle"><span class="dnum" style="margin-right:6px">'+ROMAN[i]+'</span>'+d.title+(cleared2?'<span class="cleared-badge">&#x2B50;</span>':'')+'</div>';
       if(d.story&&d.story.setting)h+='<div class="dloc">'+d.story.setting+'</div>';
       // Per-difficulty stats table — always show, even empty
       var hasAnyAttempt=d.scores&&(['easy','normal','hard'].some(function(dk){return d.scores[dk]&&d.scores[dk].attempts>0;}));
@@ -1225,9 +1224,9 @@ function heroH(){
         h+='<div class="dstat"><span style="color:'+(cleared2?'#50e080':'var(--tx3)')+'">Best: '+best+'%</span></div>';
       }
       h+='</div>';
-      h+='<div class="dbtns"><button class="dbtn dbtn-s" onclick="event.stopPropagation();studyDungeon('+i+')">STUDY</button>';
+      h+='<div class="dbtns" style="flex-direction:column;gap:4px"><button class="dbtn dbtn-s" onclick="event.stopPropagation();studyDungeon('+i+')">STUDY</button>';
       h+='<button class="dbtn dbtn-q" onclick="event.stopPropagation();enterDungeon('+i+',false)">QUIZ</button>';
-      h+='<button class="dbtn" style="background:#3a0a0a;border-color:#a03030;color:#ff6060;padding:0 8px" onclick="event.stopPropagation();deleteDungeon('+i+')">🗑</button>';
+      h+='<button class="dbtn" style="background:#3a0a0a;border-color:#a03030;color:#ff6060;padding:0 8px;min-width:0" onclick="event.stopPropagation();deleteDungeon('+i+')">🗑</button>';
       h+='</div></div>';
     });
     if(fbUnlocked){
@@ -1265,7 +1264,7 @@ function heroH(){
     h+='<div style="font-size:20px;min-width:28px;text-align:center">'+sp.icon+'</div>';
     h+='<div style="flex:1">';
     h+='<div class="pf" style="font-size:8px;color:'+(unlocked?sp.color:'var(--tx3)')+'">'+sp.name+(unlocked?' ✓':' — Unlock at LV'+sp.lv)+'</div>';
-    h+='<div style="font-size:9px;color:var(--tx3);margin-top:2px">'+sp.desc+'</div>';
+    h+='<div style="font-size:9px;color:var(--tx3);margin-top:2px;word-break:break-word">'+sp.desc+'</div>';
     h+='</div></div>';
   });
   if(_heroLv<SPELLS[0].lv)h+='<div style="font-size:9px;color:var(--tx3);margin-top:8px;text-align:center">Reach LV'+SPELLS[0].lv+' to unlock your first spell!</div>';
