@@ -1388,7 +1388,7 @@ function buildPrompt(isFirst,char,isMath){
 }
 
 async function callAPI(contentBlocks){
-  var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:contentBlocks}]})});
+  var resp=await fetch('https://runebook-api.vercel.app/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:4000,messages:[{role:'user',content:contentBlocks}]})});
   if(!resp.ok){var t=await resp.text();throw new Error('HTTP '+resp.status+': '+t.slice(0,120));}
   var data=await resp.json();
   if(data.error)throw new Error(data.error.message||'API error');
@@ -1455,7 +1455,9 @@ async function doGen(){
       :{type:'image',source:{type:'base64',media_type:f.mtype,data:f.b64}});
   });
   if(hasText)blocks.push({type:'text',text:'Additional typed notes:\n'+S.notes});
-  blocks.push({type:'text',text:'Generate study materials from the notes/images/documents above.\n\n'+buildPrompt(isFirst,char,isMath)});
+  var _fileCount=hasFiles?S.uploadFiles.length:0;
+  var _fileNote=_fileCount>1?'You have been provided '+_fileCount+' files/images. You MUST synthesize and draw from ALL of them equally — do not focus only on the first one. Cover concepts from every file when generating flashcards and quiz questions.\n\n':'';
+  blocks.push({type:'text',text:_fileNote+'Generate study materials from ALL of the notes/images/documents above.\n\n'+buildPrompt(isFirst,char,isMath)});
   try{
     const parsed=await callAPI(blocks);
     if(parsed.error==='WRONG_SUBJECT'){
