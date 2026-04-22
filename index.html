@@ -15,8 +15,8 @@
 :root{
   --gold:#ffd040;
   --purple:#6030c0;
-  --dark:#07040f;
-  --darker:#04020a;
+  --dark:#0a0518;
+  --darker:#070310;
   --card:#0e0818;
   --border:#2a1a40;
   --tx1:#f0e8ff;
@@ -45,6 +45,16 @@ body::before{
     radial-gradient(1px 1px at 20% 40%,rgba(255,208,64,0.2) 0%,transparent 100%),
     radial-gradient(1px 1px at 90% 10%,rgba(255,255,255,0.3) 0%,transparent 100%),
     radial-gradient(1px 1px at 60% 50%,rgba(192,128,255,0.2) 0%,transparent 100%);
+  pointer-events:none;
+  z-index:0;
+}
+body::after{
+  content:'';
+  position:fixed;
+  top:-20%;left:50%;
+  transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse at center,rgba(96,48,192,0.18) 0%,rgba(48,16,96,0.08) 50%,transparent 70%);
   pointer-events:none;
   z-index:0;
 }
@@ -79,6 +89,14 @@ nav{
 .nav-cta:hover{opacity:.9;}
 
 /* HERO */
+.hero-glow{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:700px;height:400px;
+  background:radial-gradient(ellipse,rgba(96,48,192,0.12) 0%,transparent 70%);
+  pointer-events:none;
+}
 .hero{
   min-height:100vh;
   display:flex;flex-direction:column;
@@ -354,7 +372,7 @@ footer p{font-size:12px;color:var(--tx3);}
 </nav>
 
 <section class="hero">
-  <div class="hero-badge">⚔ AI-powered study app</div>
+  <div class="hero-glow"></div><div class="hero-badge">⚔ AI-powered study app</div>
   <h1>Turn Your Notes Into<br>an <span>Epic Quest</span></h1>
   <p class="hero-sub">Upload your notes. Let AI forge dungeons, bosses, and quizzes. Level up your hero as you master the material.</p>
   <div class="hero-btns">
@@ -471,7 +489,7 @@ footer p{font-size:12px;color:var(--tx3);}
         <li>Generation Focus modes</li>
         <li>Priority support</li>
       </ul>
-      <a href="app.html" class="plan-btn plan-btn-pro">⭐ Get Pro — $4.99/mo</a>
+      <a href="app.html" class="plan-btn plan-btn-pro" data-pro="1">⭐ Get Pro — $4.99/mo</a>
     </div>
   </div>
 </div>
@@ -489,11 +507,33 @@ footer p{font-size:12px;color:var(--tx3);}
   <p>© 2025 Runebook · <a href="app.html" style="color:inherit;">Launch app</a></p>
 </footer>
 
+<style>
+#fade-overlay{position:fixed;inset:0;background:#07040f;opacity:0;pointer-events:none;transition:opacity .5s;z-index:9999;}
+#fade-overlay.active{opacity:1;pointer-events:all;}
+</style>
+<div id="fade-overlay"></div>
 <script>
 // Redirect logged-in users straight to app
 if(localStorage.getItem('sb_token')){
   window.location.href='app.html';
 }
+
+// Smooth fade transition on any internal link click
+function goToApp(url){
+  var ov=document.getElementById('fade-overlay');
+  ov.classList.add('active');
+  setTimeout(function(){window.location.href=url;},500);
+}
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a');
+  if(a&&a.href&&a.href.includes('app.html')){
+    e.preventDefault();
+    var url=a.href;
+    // If Pro button, go to app with paywall flag
+    if(a.dataset.pro){url='app.html?goto=paywall';}
+    goToApp(url);
+  }
+});
 
 // Scroll fade-in
 var observer=new IntersectionObserver(function(entries){

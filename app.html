@@ -20,6 +20,8 @@
 <meta name="apple-mobile-web-app-title" content="Runebook">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/press-start-2p@5.0.0/index.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -178,6 +180,7 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 /* UPLOAD DROP ZONE */
 .dropzone{background:#0c0830;border:2px dashed #5030a0;border-radius:10px;padding:22px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s,background .2s;}
 .dropzone:hover{border-color:#a060ff;background:#100c38;}
+@keyframes appFadeIn{from{opacity:0;}to{opacity:1;}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes popUp{0%{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-48px)}}
@@ -844,7 +847,7 @@ let S={screen:'loading',authTab:'login',authName:'',authEmail:'',authPass:'',
   ci:0,fl:false,shuffled:null,againPile:null,
   qi:0,sel:null,qs:0,streak:0,wrongAnswers:[],
   heroHP:3,heroMaxHP:3,bossHP:10,bossMaxHP:10,
-  err:'',proCodeErr:'',proCodeOk:'',showProCode:false,resetSent:false,showReset:false,authLoading:false,genFocus:'standard',genCustom:'',showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
+  err:'',proCodeErr:'',proCodeOk:'',showProCode:false,pendingGoto:null,resetSent:false,showReset:false,authLoading:false,genFocus:'standard',genCustom:'',showSolution:false,gauntlet:false,gauntletIdx:0,gauntletXP:0,qdSaved:false,spellUsed:null,shieldActive:false,doubleActive:false,pop:false,pa:0,sxp:0,popMsg:'',lvupData:null};
 
 const lp=()=>{var c=aC();if(!c)return 0;return Math.min(100,Math.round(xpInLevel(c.xp||0)/xpForThisLevel(c.lv||1)*100));};
 async function saveUser(){if(U)await sbSaveUser();}
@@ -933,13 +936,16 @@ async function init(){
         await stSet('rbSeen','1');
         if(!U.chars[U.activeCls]||!U.chars[U.activeCls].charName){
           S.selCls=U.activeCls;S.selGen='m';S.charName=U.name+"'s Hero";S.screen='char-create';
-        }else{S.screen='home';}
+        }else{S.screen=S.pendingGoto||'home';S.pendingGoto=null;}
         draw();return;
       }
     }
   }catch(e){console.warn('Session restore failed:',e);}
   var seen=await stGet('rbSeen');
   if(!seen){S.screen='onboard';}else{S.screen='auth';}
+  // Handle deep links from landing page
+  var _urlParams=new URLSearchParams(window.location.search);
+  if(_urlParams.get('goto')==='paywall')S.pendingGoto='paywall';
   draw();
 }
 function updateStreak(){
@@ -959,6 +965,7 @@ function recordStudy(){
 }
 
 function onboardH(){
+  // Atmospheric glow
   const slides=[
     {icon:'📖',title:'Your Notes → Your Quest',desc:'Upload photos, PDFs, or typed notes. The AI reads everything and builds a fully custom dungeon just for you.'},
     {icon:'🔒',title:'One Hero, One Subject',desc:'Each hero is <b>permanently locked</b> to the subject of their first dungeon. Choose wisely — a Knight studies one thing forever! Create more heroes for more subjects.'},
@@ -979,7 +986,8 @@ function onboardH(){
 
 function authH(){
   const isL=S.authTab==='login';
-  var h='<div style="max-width:320px;margin:0 auto;padding:14px 0">';
+  var h='<div style="position:fixed;top:0;left:50%;transform:translateX(-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(96,48,192,0.2) 0%,transparent 70%);pointer-events:none;z-index:0"></div>';
+  h+='<div style="max-width:320px;margin:0 auto;padding:14px 0;position:relative;z-index:1">';
   h+='<div style="text-align:center;margin-bottom:22px"><div class="pf" style="font-size:14px;color:var(--gold);margin-bottom:8px">&#x1F4D6; RUNEBOOK &#x1F4D6;</div>';
   h+='<div style="font-size:12px;color:var(--tx3)">Your legend begins here</div></div>';
   h+='<div class="tabs"><button class="tab'+(isL?' on':'')+'" onclick="setTab(\'login\')">LOGIN</button>';
@@ -1103,7 +1111,7 @@ function doCC(){
 function tb(){
   if(!U)return'';
   var _hc=aC(),_hl=_hc?(_hc.lv||1):1,_hx=_hc?(_hc.xp||0):0;
-  var h='<div class="tb"><div class="pf logo">RUNE<span>BOOK</span></div>';
+  var h='<div class="tb"><div class="logo" style="font-family:Cinzel,serif;font-size:14px;font-weight:700;letter-spacing:2px;color:#f0e8ff">RUNE<span style="color:#ffd040">BOOK</span></div>';
   h+='<div class="xw"><div class="xn"><span>LV'+_hl+' '+TNAME(_hl)+'</span><span>'+xpInLevel(_hx)+'/'+xpForThisLevel(_hl)+' XP</span></div>';
   h+='<div class="xt"><div class="xf" style="width:'+lp()+'%"></div></div></div>';
   h+='<div style="display:flex;gap:7px;align-items:center">';
@@ -2013,7 +2021,7 @@ function paywallH(){
   var h=tb();
   h+='<button class="back" onclick="goTo(\'home\')">&#x25C4; Back</button>';
   h+='<div style="max-width:380px;margin:0 auto">';
-  h+='<div class="pf" style="font-size:11px;color:var(--gold);text-align:center;margin-bottom:4px">&#x2605; UNLOCK PRO &#x2605;</div>';
+  h+='<div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);text-align:center;margin-bottom:4px;font-weight:600;letter-spacing:1px">&#x2605; Unlock Pro &#x2605;</div>';
   h+='<div style="font-size:11px;color:var(--tx3);text-align:center;margin-bottom:16px">Unlock all heroes and unlimited dungeons</div>';
   h+='<div class="plans">';
   // Free plan
