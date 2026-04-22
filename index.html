@@ -712,14 +712,16 @@ function _startQuizAnim(color){
   if(_quizInterval)return;
   _quizMsgIdx=0;_quizProgress=5;
   _quizInterval=setInterval(function(){
-    _quizProgress=Math.min(95,_quizProgress+(Math.random()*8+3));
-    _quizMsgIdx=(_quizMsgIdx+1)%_QUIZ_MSGS.length;
+    var qinc=_quizProgress<50?(Math.random()*3+1.5):_quizProgress<80?(Math.random()*1.5+0.5):(Math.random()*0.5+0.1);
+    _quizProgress=Math.min(93,_quizProgress+qinc);
+    if(_genMsgTick%4===0)_quizMsgIdx=(_quizMsgIdx+1)%_QUIZ_MSGS.length;
+    _genMsgTick++;
     var bar=document.getElementById('quiz-bar');
     var msg=document.getElementById('quiz-msg');
     if(bar)bar.style.width=_quizProgress+'%';
     if(msg)msg.textContent=_QUIZ_MSGS[_quizMsgIdx];
     if(!document.getElementById('quiz-bar')){clearInterval(_quizInterval);_quizInterval=null;}
-  },700);
+  },1000);
 }
 function quizGenH(){
   var dv=DIFF[S.diffChosen||S.difficulty||'normal'];
@@ -1416,7 +1418,7 @@ function buildPrompt(isFirst,char,isMath){
   const diffInst=S.difficulty==='hard'?'\n\nDIFFICULTY: HARD. Make questions trickier, use edge cases, add plausible distractors, avoid obvious wrong answers. Generate 6-8 quiz questions.':S.difficulty==='easy'?'\n\nDIFFICULTY: EASY. Keep questions straightforward, clear language, obvious wrong answers. Generate 3-5 quiz questions.':'\n\nGenerate 4-6 quiz questions.';
   const subjectLine=isFirst?'  "subject": "Specific academic subject, max 3 words (e.g. American History, Algebra, Cell Biology)",\n':'';
   const subjectGuard=isFirst?'Also identify the subject field.':('Hero is LOCKED to subject: "'+char.subject+'". If content is NOT about "'+char.subject+'", return ONLY: {"error":"WRONG_SUBJECT","detected":"(actual subject)"}. Otherwise generate normally without a subject field.');
-  return subjectGuard+mathExtra+diffInst+'\n\nCRITICAL: You have been given multiple files/documents. You MUST spread both flashcards AND quiz questions evenly across ALL of the provided material — not just the first file. Each file should contribute roughly equal numbers of flashcards and quiz questions.\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 4-8 flashcards covering ALL provided files equally. Generate quiz questions covering ALL provided files equally. correct is 0-3.';
+  return subjectGuard+mathExtra+diffInst+'\n\nCRITICAL INSTRUCTION: You have been given MULTIPLE files/images/documents. You MUST draw quiz questions from ALL files equally. Before writing any question, mentally assign each file a number (File 1, File 2, etc.) and ensure you pull questions from EVERY file. Do NOT focus only on the first file. If you have 2 files split questions 50/50. If 3 files split 33/33/33. Same rule applies to flashcards.\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 4-8 flashcards covering ALL provided files equally. Generate quiz questions covering ALL provided files equally. correct is 0-3.';
 }
 
 async function callAPI(contentBlocks){
@@ -1543,37 +1545,72 @@ async function genFinalBoss(){
 }
 
 var _GEN_STEPS=['📜 Reading your notes...','✨ Weaving the story...','⚔️ Forging challenges...','👹 Waking the boss...','🔮 Almost ready...'];
-var _GEN_MSGS=['Consulting ancient tomes...','Transcribing forbidden knowledge...','Binding dark magic to parchment...','The dungeon stirs...','Preparing your trial...','The boss senses your approach...','Fate is being written...','The oracle speaks...'];
-var _genStep=0,_genMsgIdx=0,_genProgress=0,_genInterval=null;
+var _GEN_MSGS={
+  easy:['The scrolls smile upon you...','Gentle trials await...','Your notes shine with clarity...','The path is being lit...','Fortune favors the prepared...','The dungeon welcomes you...'],
+  normal:['Consulting ancient tomes...','Transcribing forbidden knowledge...','Binding dark magic to parchment...','The dungeon stirs...','Fate is being written...','The oracle speaks...'],
+  hard:['The boss stirs in the darkness...','Ancient powers are being unleashed...','Your trial will not be easy...','The dungeon hungers...','Darkness gathers...','Something wicked this way comes...']
+};
+var _HERO_QUOTES={
+  knight:['Faced worse. Probably.','For honor and knowledge!','My blade is ready. Is yours?','The dungeon trembles before me.','Onwards, to glory!'],
+  mage:['Fascinating arcane incantations...','The knowledge shall be mine.','I sense powerful magic ahead.','My spells are prepared.','The runes align...'],
+  druid:['The forest whispers of trials ahead.','Nature guides my path.','Ancient wisdom stirs within me.','The spirits are restless...','Balance must be maintained.'],
+  bard:['This will make a great story!','A song of victory awaits!','My lute hums with anticipation.','Every battle is a verse waiting to be written.','The crowd awaits my triumph!'],
+  cleric:['The light shall guide us.','I pray for wisdom in battle.','Faith will see me through.','The divine answers my call.','Blessings upon this quest.'],
+  monk:['Breathe. Focus. Conquer.','The mind is the sharpest weapon.','Inner peace before battle.','Each question is a stepping stone.','Discipline forges victory.'],
+  ranger:['Tracked worse prey before.','The dungeon holds no secrets from me.','Arrows notched and ready.','Eyes sharp, mind sharper.','The hunt begins.'],
+  rogue:['Piece of cake. Probably.','I work best in the shadows.','Every lock has a key.','Stealth and wit shall prevail.','Secrets hide here no longer.']
+};
+var _BOSS_TAUNTS=[
+  'You dare face me with those notes?!',
+  'Haunting these halls for centuries...',
+  'Your knowledge is no match for my power!',
+  'Many have tried. None have passed.',
+  'I smell fear... and flashcards.',
+  'Do you truly think you can defeat me?',
+  'The dungeon is MY domain!',
+  'Prepare yourself, little scholar...',
+  'Stronger minds have fallen here.',
+  'Come then. Show me what you know.',
+];
+var _genStep=0,_genMsgIdx=0,_genProgress=0,_genInterval=null,_genMsgTick=0;
 function _startGenAnim(){
   if(_genInterval)return;
-  _genStep=0;_genMsgIdx=0;_genProgress=2;
+  _genStep=0;_genMsgIdx=0;_genProgress=2;_genMsgTick=0;
   sfx('conjure');
+  var diff=S.difficulty||'normal';
+  var msgs=_GEN_MSGS[diff]||_GEN_MSGS.normal;
   _genInterval=setInterval(function(){
-    _genProgress=Math.min(95,_genProgress+(Math.random()*4+1));
-    _genMsgIdx=(_genMsgIdx+1)%_GEN_MSGS.length;
-    if(_genProgress>20&&_genStep<1){_genStep=1;sfx('tick');}
-    if(_genProgress>45&&_genStep<2){_genStep=2;sfx('tick');}
-    if(_genProgress>70&&_genStep<3){_genStep=3;sfx('tick');}
-    if(_genProgress>88&&_genStep<4){_genStep=4;sfx('tick');}
+    // Progress moves slowly, stalls around 60-70%, then surges
+    var inc=_genProgress<30?1.5:_genProgress<60?1:_genProgress<75?0.4:_genProgress<88?0.2:0.1;
+    inc+=Math.random()*0.8;
+    _genProgress=Math.min(93,_genProgress+inc);
+    // Only change message every 4 ticks (~4s)
+    _genMsgTick++;
+    if(_genMsgTick%4===0)_genMsgIdx=(_genMsgIdx+1)%msgs.length;
+    // Step advances at fixed progress thresholds
+    if(_genProgress>18&&_genStep<1){_genStep=1;sfx('tick');}
+    if(_genProgress>40&&_genStep<2){_genStep=2;sfx('tick');}
+    if(_genProgress>65&&_genStep<3){_genStep=3;sfx('tick');}
+    if(_genProgress>85&&_genStep<4){_genStep=4;sfx('tick');}
     var bar=document.getElementById('gen-bar');
     var msg=document.getElementById('gen-msg');
     var steps=document.getElementById('gen-steps');
-    if(bar)bar.style.width=_genProgress+'%';
-    if(msg)msg.textContent=_GEN_MSGS[_genMsgIdx];
+    var bcolor=diff==='hard'?'#c02020':diff==='easy'?'#20a050':'#6030c0';
+    if(bar){bar.style.width=_genProgress+'%';bar.style.background=bcolor;}
+    if(msg)msg.textContent=msgs[_genMsgIdx];
     if(steps){
       var sh='';
       _GEN_STEPS.forEach(function(s,i){
         var done=i<_genStep,active=i===_genStep;
         sh+='<div style="display:flex;align-items:center;gap:6px;padding:3px 0;opacity:'+(done||active?'1':'0.35')+'">';
-        sh+='<div style="width:16px;height:16px;border-radius:50%;background:'+(done?'#30a050':active?'#6030c0':'#1a0a30')+';border:2px solid '+(done?'#30a050':active?'#c080ff':'#3a1060')+';display:flex;align-items:center;justify-content:center;font-size:8px">'+(done?'✓':'')+'</div>';
+        sh+='<div style="width:16px;height:16px;border-radius:50%;background:'+(done?'#30a050':active?bcolor:'#1a0a30')+';border:2px solid '+(done?'#30a050':active?'#c080ff':'#3a1060')+';display:flex;align-items:center;justify-content:center;font-size:8px">'+(done?'✓':'')+'</div>';
         sh+='<div style="font-size:9px;color:'+(done?'#60ff90':active?'#c080ff':'var(--tx3)')+'">'+s.replace(/^[^ ]+ /,'')+'</div>';
         sh+='</div>';
       });
       steps.innerHTML=sh;
     }
     if(!document.getElementById('gen-bar')){clearInterval(_genInterval);_genInterval=null;}
-  },600);
+  },1000);
 }
 function genH(){
   setTimeout(_startGenAnim,50);
@@ -1595,6 +1632,22 @@ function genH(){
     h+='</div>';
   });
   h+='</div>';
+  // Hero quote
+  var _hq=_HERO_QUOTES[U&&U.activeCls?U.activeCls:'knight']||_HERO_QUOTES.knight;
+  var _hqText=_hq[Math.floor(Math.random()*_hq.length)];
+  var _char=aC();
+  h+='<div style="background:#0e0818;border:1px solid #2a1040;border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;text-align:left">';
+  if(_char)h+='<div style="flex:0 0 36px">'+sp(U.activeCls,_char.gender,36,true)+'</div>';
+  h+='<div style="font-size:10px;color:#c0a0ff;font-style:italic">"'+_hqText+'"</div>';
+  h+='</div>';
+  // Boss taunt on Hard
+  if((S.difficulty||'normal')==='hard'){
+    var _bt=_BOSS_TAUNTS[Math.floor(Math.random()*_BOSS_TAUNTS.length)];
+    h+='<div style="background:#1a0408;border:1px solid #6a1020;border-radius:8px;padding:10px 12px;margin-bottom:10px;text-align:left">';
+    h+='<div style="font-size:8px;color:#ff6070;margin-bottom:4px" class="pf">👹 THE BOSS SPEAKS:</div>';
+    h+='<div style="font-size:10px;color:#ffaaaa;font-style:italic">"'+_bt+'"</div>';
+    h+='</div>';
+  }
   h+='<div style="font-size:9px;color:var(--tx3)">~15-25 seconds</div>';
   h+='</div>';
   return h;
