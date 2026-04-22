@@ -725,16 +725,35 @@ function _startQuizAnim(color){
 }
 function quizGenH(){
   var dv=DIFF[S.diffChosen||S.difficulty||'normal'];
-  setTimeout(function(){_startQuizAnim(dv.color);},50);
+  if(!_quizInterval)setTimeout(function(){_startQuizAnim(dv.color);},50);
+  var diff=S.diffChosen||S.difficulty||'normal';
+  var _char=aC();
   var h=tb();
-  h+='<div style="text-align:center;padding:24px 0">';
+  h+='<div style="text-align:center;padding:20px 0">';
+  // Icon and title
   h+='<div style="font-size:40px;margin-bottom:12px;display:inline-block;animation:bob 1.5s ease-in-out infinite">⚔️</div>';
   h+='<div class="pf" style="font-size:10px;color:var(--gold);margin-bottom:6px">PREPARING BATTLE...</div>';
-  h+='<div class="pf" style="font-size:12px;color:'+dv.color+';margin-bottom:16px">'+dv.label+' MODE</div>';
-  h+='<div style="background:#0e0818;border:1px solid #3a1060;border-radius:8px;height:10px;overflow:hidden;margin-bottom:8px">';
+  h+='<div class="pf" style="font-size:12px;color:'+dv.color+';margin-bottom:14px">'+dv.label+' MODE</div>';
+  // Progress bar
+  h+='<div style="background:#0e0818;border:1px solid #3a1060;border-radius:8px;height:10px;overflow:hidden;margin-bottom:6px">';
   h+='<div id="quiz-bar" style="height:100%;width:5%;background:'+dv.color+';border-radius:8px;transition:width 0.5s ease"></div>';
   h+='</div>';
-  h+='<div id="quiz-msg" class="lm" style="min-height:20px">Rolling for initiative...</div>';
+  h+='<div id="quiz-msg" class="lm" style="min-height:20px;margin-bottom:16px">Rolling for initiative...</div>';
+  // Hero quote
+  var _hq=_HERO_QUOTES[U&&U.activeCls?U.activeCls:'knight']||_HERO_QUOTES.knight;
+  var _hqText=_hq[Math.floor(Math.random()*_hq.length)];
+  h+='<div style="background:#0e0818;border:1px solid #2a1040;border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;text-align:left">';
+  if(_char)h+='<div style="flex:0 0 36px">'+sp(U.activeCls,_char.gender,36,true)+'</div>';
+  h+='<div style="font-size:10px;color:#c0a0ff;font-style:italic">"'+_hqText+'"</div>';
+  h+='</div>';
+  // Boss taunt on Hard
+  if(diff==='hard'){
+    var _bt=_BOSS_TAUNTS[Math.floor(Math.random()*_BOSS_TAUNTS.length)];
+    h+='<div style="background:#1a0408;border:1px solid #6a1020;border-radius:8px;padding:10px 12px;margin-bottom:10px;text-align:left">';
+    h+='<div style="font-size:8px;color:#ff6070;margin-bottom:4px" class="pf">👹 THE BOSS SPEAKS:</div>';
+    h+='<div style="font-size:10px;color:#ffaaaa;font-style:italic">"'+_bt+'"</div>';
+    h+='</div>';
+  }
   h+='</div>';
   return h;
 }
@@ -1483,11 +1502,15 @@ async function doGen(){
   const isFirst=char.dungeons.length===0;
   const isMath=char.subject&&/math|algebra|calculus|geometry|statistics|trig/i.test(char.subject);
   var blocks=[];
-  if(hasFiles)S.uploadFiles.forEach(function(f){
-    blocks.push(f.mtype==='application/pdf'
-      ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:f.b64}}
-      :{type:'image',source:{type:'base64',media_type:f.mtype,data:f.b64}});
-  });
+  if(hasFiles){
+    // Shuffle file order so AI doesn't always weight the first file most heavily
+    var shuffledFiles=S.uploadFiles.slice().sort(function(){return Math.random()-0.5;});
+    shuffledFiles.forEach(function(f){
+      blocks.push(f.mtype==='application/pdf'
+        ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:f.b64}}
+        :{type:'image',source:{type:'base64',media_type:f.mtype,data:f.b64}});
+    });
+  }
   if(hasText)blocks.push({type:'text',text:'Additional typed notes:\n'+S.notes});
   var _fileCount=hasFiles?S.uploadFiles.length:0;
   var _fileNote=_fileCount>1?'You have been provided '+_fileCount+' files/images. You MUST synthesize and draw from ALL of them equally — do not focus only on the first one. Cover concepts from every file when generating flashcards and quiz questions.\n\n':'';
@@ -1574,7 +1597,7 @@ var _BOSS_TAUNTS=[
 ];
 var _genStep=0,_genMsgIdx=0,_genProgress=0,_genInterval=null,_genMsgTick=0;
 function _startGenAnim(){
-  if(_genInterval)return;
+  if(_genInterval)return; // Already running — don't restart
   _genStep=0;_genMsgIdx=0;_genProgress=2;_genMsgTick=0;
   sfx('conjure');
   var diff=S.difficulty||'normal';
@@ -1584,9 +1607,9 @@ function _startGenAnim(){
     var inc=_genProgress<30?1.5:_genProgress<60?1:_genProgress<75?0.4:_genProgress<88?0.2:0.1;
     inc+=Math.random()*0.8;
     _genProgress=Math.min(93,_genProgress+inc);
-    // Only change message every 4 ticks (~4s)
+    // Change message every 6 ticks (~6s)
     _genMsgTick++;
-    if(_genMsgTick%4===0)_genMsgIdx=(_genMsgIdx+1)%msgs.length;
+    if(_genMsgTick%6===0)_genMsgIdx=(_genMsgIdx+1)%msgs.length;
     // Step advances at fixed progress thresholds
     if(_genProgress>18&&_genStep<1){_genStep=1;sfx('tick');}
     if(_genProgress>40&&_genStep<2){_genStep=2;sfx('tick');}
@@ -1613,7 +1636,7 @@ function _startGenAnim(){
   },1000);
 }
 function genH(){
-  setTimeout(_startGenAnim,50);
+  if(!_genInterval)setTimeout(_startGenAnim,50);
   var h=tb();
   h+='<div style="text-align:center;padding:20px 0">';
   h+='<div style="font-size:44px;margin-bottom:14px;display:inline-block;animation:bob 2s ease-in-out infinite">'+(S.isFinal?'💀':'⚔️')+'</div>';
