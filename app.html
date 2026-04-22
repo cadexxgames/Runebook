@@ -2214,7 +2214,7 @@ function friendlyApiError(err){
   var msg=err&&err.message?err.message:'Unknown error';
   if(msg.indexOf('529')>=0||msg.indexOf('overloaded')>=0)return 'Anthropic servers are busy. Wait a minute and try again.';
   if(msg.indexOf('401')>=0||msg.indexOf('authentication')>=0)return 'API error (401). Check your Vercel API key setting.';
-  if(msg.indexOf('429')>=0||msg.indexOf('quota')>=0)return 'API limit reached. Please let Cade know!';
+  if(msg.indexOf('429')>=0||msg.indexOf('quota')>=0)return 'API limit reached. Please try again later or contact support@runebook.study';
   if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0)return 'Connection error. Check your internet and try again.';
   if(msg.indexOf('503')>=0||msg.indexOf('502')>=0||msg.indexOf('500')>=0)return 'Anthropic is having issues. Try again in a few minutes.';
   return 'Error: '+msg;
