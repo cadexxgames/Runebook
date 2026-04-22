@@ -1962,8 +1962,9 @@ function pick(i){
     sfx(S.streak>=3?'combo':'correct');
     S.qs++;
     var _qlen=(S.liveQuiz&&S.liveQuiz.length)||1;
+    // Flat damage per correct answer so boss hits 0 exactly when all answered correctly
+    // Streaks give bonus XP but don't affect boss HP scaling
     var dmg=S.bossMaxHP/_qlen;
-    if(S.streak>=4)dmg*=2;else if(S.streak>=3)dmg*=1.5;else if(S.streak>=2)dmg*=1.2;
     S.bossHP=Math.max(0,S.bossHP-dmg);
     xpu(earned,msg);
   }else{
