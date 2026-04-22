@@ -1555,6 +1555,28 @@ function consumeGen(){
   if(monthly>0){incrementMonthlyGens();}
   else if((U._bonusCredits||0)>0){U._bonusCredits--;saveUser();}
 }
+
+function buildPromptForFile(isFirst,char,isMath,qCount,fcCount,isLeadFile,totalFiles){
+  var mathExtra=isMath?'\n\nIMPORTANT FOR MATH: Do NOT just repeat equations. Generate NEW practice problems of the same TYPE with different numbers/variables.':'';
+  var subjectLine=isFirst?'  "subject": "Specific academic subject, max 3 words",\n':'';
+  var subjectGuard=isFirst?'Also identify the subject field.':('Hero is LOCKED to subject: "'+char.subject+'". If content is NOT about "'+char.subject+'", return ONLY: {"error":"WRONG_SUBJECT","detected":"(actual subject)"}. Otherwise generate normally without a subject field.');
+  var storyPart=isLeadFile?'  "story":{"title":"Fantasy quest title max 8 words","setting":"Fantasy location name","intro":"2-3 sentences","boss":"Creative boss name"},\n':'';
+  var focusExtra='';
+  if(typeof U!=='undefined'&&U&&U.isPro){
+    var focusMap={
+      'menu':'FOCUS: Menu/food document. Ask about ingredients, descriptions, dietary info. NOT prices.',
+      'math':'FOCUS: Generate NEW math problems with different numbers.',
+      'vocab':'FOCUS: Prioritize vocabulary, definitions, key terms.',
+      'dates':'FOCUS: Prioritize dates, timelines, sequences, cause and effect.',
+      'concepts':'FOCUS: Big-picture concepts and main ideas only.',
+      'standard':''
+    };
+    var fi=focusMap[S.genFocus||'standard']||'';
+    if(fi)focusExtra='\n\n'+fi;
+    if(S.genCustom&&S.genCustom.trim())focusExtra+='\n\nUSER INSTRUCTIONS: '+S.genCustom.trim();
+  }
+  return subjectGuard+mathExtra+focusExtra+'\n\nThis is FILE '+(isLeadFile?'1':'2+')+' OF '+totalFiles+'. Generate EXACTLY '+qCount+' quiz questions and '+fcCount+' flashcards from THIS file only.\n\nReturn ONLY raw JSON:\n{\n'+subjectLine+(isLeadFile?storyPart:'')+'  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\ncorrect is 0-3.';
+}
 async function doGen(){
   const ta=get('nta');if(ta)S.notes=ta.value;
   const fc=get('genfocus_custom');if(fc)S.genCustom=fc.value.trim();
@@ -1571,22 +1593,52 @@ async function doGen(){
   S.screen='gen';S.err='';draw();
   const isFirst=char.dungeons.length===0;
   const isMath=char.subject&&/math|algebra|calculus|geometry|statistics|trig/i.test(char.subject);
-  var blocks=[];
-  if(hasFiles){
-    // Shuffle file order so AI doesn't always weight the first file most heavily
-    var shuffledFiles=S.uploadFiles.slice().sort(function(){return Math.random()-0.5;});
-    shuffledFiles.forEach(function(f){
-      blocks.push(f.mtype==='application/pdf'
-        ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:f.b64}}
-        :{type:'image',source:{type:'base64',media_type:f.mtype,data:f.b64}});
-    });
-  }
-  if(hasText)blocks.push({type:'text',text:'Additional typed notes:\n'+S.notes});
   var _fileCount=hasFiles?S.uploadFiles.length:0;
-  var _fileNote=_fileCount>1?'IMPORTANT: You have '+_fileCount+' labeled sources above (SOURCE 1 OF '+_fileCount+', SOURCE 2 OF '+_fileCount+', etc.). Generate approximately equal numbers of flashcards AND quiz questions from EACH source. Do not skip or underrepresent any source.\n\n':'';
-  blocks.push({type:'text',text:_fileNote+'Generate study materials from ALL sources above.\n\n'+buildPrompt(isFirst,char,isMath)});
+  var parsed;
+  if(hasFiles&&_fileCount>1){
+    // Multiple files: call API once per file then merge for even coverage
+    var shuffledFiles=S.uploadFiles.slice().sort(function(){return Math.random()-0.5;});
+    var _diff=S.difficulty||'normal';
+    var totalQ=_diff==='hard'?12:_diff==='easy'?4:7;
+    var qPerFile=Math.max(2,Math.ceil(totalQ/_fileCount));
+    var fcPerFile=Math.max(2,Math.ceil(6/_fileCount));
+    var allQuiz=[],allCards=[],firstParsed=null;
+    for(var _fi=0;_fi<shuffledFiles.length;_fi++){
+      var _f=shuffledFiles[_fi];
+      var _fb=[];
+      if(hasText)_fb.push({type:'text',text:'Additional context:\n'+S.notes});
+      _fb.push(_f.mtype==='application/pdf'
+        ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:_f.b64}}
+        :{type:'image',source:{type:'base64',media_type:_f.mtype,data:_f.b64}});
+      _fb.push({type:'text',text:buildPromptForFile(isFirst&&_fi===0,char,isMath,qPerFile,fcPerFile,_fi===0,_fileCount)});
+      var _fp=await callAPI(_fb);
+      if(_fp.error==='WRONG_SUBJECT'){
+        S.err='Wrong subject! Locked to "'+char.subject+'" but content is about "'+_fp.detected+'". Use a different hero.';
+        S.screen='upload';S.uploadFiles=[];draw();return;
+      }
+      if(_fi===0)firstParsed=_fp;
+      if(_fp.quiz&&_fp.quiz.length)allQuiz=allQuiz.concat(_fp.quiz);
+      if(_fp.flashcards&&_fp.flashcards.length)allCards=allCards.concat(_fp.flashcards);
+    }
+    allQuiz=allQuiz.sort(function(){return Math.random()-0.5;}).slice(0,totalQ);
+    allCards=allCards.sort(function(){return Math.random()-0.5;}).slice(0,8);
+    parsed={subject:firstParsed?firstParsed.subject:null,story:firstParsed?firstParsed.story:null,flashcards:allCards,quiz:allQuiz};
+  }else{
+    // Single file or text only
+    var blocks=[];
+    if(hasFiles){
+      var _sf=S.uploadFiles[0];
+      if(hasText)blocks.push({type:'text',text:'Additional typed notes:\n'+S.notes});
+      blocks.push(_sf.mtype==='application/pdf'
+        ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:_sf.b64}}
+        :{type:'image',source:{type:'base64',media_type:_sf.mtype,data:_sf.b64}});
+    }else{
+      blocks.push({type:'text',text:S.notes});
+    }
+    blocks.push({type:'text',text:'Generate study materials from the above.\n\n'+buildPrompt(isFirst,char,isMath)});
+    parsed=await callAPI(blocks);
+  }
   try{
-    const parsed=await callAPI(blocks);
     if(parsed.error==='WRONG_SUBJECT'){
       S.err='Wrong subject! Locked to "'+char.subject+'" but content is about "'+parsed.detected+'". Use a different hero.';
       S.screen='upload';S.uploadFiles=[];draw();return;
