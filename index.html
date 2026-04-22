@@ -868,8 +868,8 @@ async function init(){
       var loaded=await sbLoadUser();
       if(loaded){
         U=loaded;migrateUser();updateStreak();
-        var seen=await stGet('rbSeen');
-        if(!seen){S.screen='onboard';draw();return;}
+        // Logged-in users never see onboarding again
+        await stSet('rbSeen','1');
         if(!U.chars[U.activeCls]||!U.chars[U.activeCls].charName){
           S.selCls=U.activeCls;S.selGen='m';S.charName=U.name+"'s Hero";S.screen='char-create';
         }else{S.screen='home';}
@@ -909,7 +909,10 @@ function onboardH(){
   h+='<div class="pf ob-title">'+sl.title+'</div><div class="ob-desc">'+sl.desc+'</div>';
   h+='<div class="ob-dots">';
   slides.forEach(function(_,i){h+='<div class="ob-dot'+(i===n?' on':'')+'"></div>';});
-  h+='</div><button class="btn gc pf" onclick="obNext()">'+(n<2?'NEXT &#x25BA;':'GET STARTED &#x2694;')+'</button></div>';
+  h+='</div><div style="display:flex;gap:12px;justify-content:center;align-items:center">';
+  h+='<button class="btn gc pf" onclick="obNext()">'+( n<2?'NEXT &#x25BA;':'GET STARTED &#x2694;')+'</button>';
+  if(n<2)h+='<button onclick="S.screen=\'auth\';stSet(\'rbSeen\',\'1\');draw()" style="background:none;border:none;color:var(--tx3);font-size:9px;cursor:pointer;text-decoration:underline">Skip</button>';
+  h+='</div></div>';
   return h;
 }
 
