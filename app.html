@@ -1165,7 +1165,18 @@ function heroH(){
   h+='<div class="bob">'+sp(U.activeCls,char.gender,88)+'</div>';
   h+='<div class="pf" style="font-size:7px;color:var(--gold);margin-top:5px">'+char.charName+'</div>';
   h+='<div style="font-size:8px;color:var(--tx3);margin-top:2px">'+cls.name+'</div>';
-  if(char.subject)h+='<div style="font-size:7px;color:#c080ff;margin-top:2px">&#x1F512; '+char.subject+'</div>';
+  if(char.subject){
+    h+='<div style="display:flex;align-items:center;gap:8px;margin-top:2px">';
+    h+='<div style="font-size:7px;color:#c080ff">&#x1F512; '+char.subject+'</div>';
+    if(U.isPro){
+      h+='<button onclick="resetSubject()" style="background:#1a0a30;border:1px solid #6030c0;border-radius:4px;padding:2px 6px;color:#c080ff;font-size:7px;cursor:pointer">Reset Subject</button>';
+    }else{
+      h+='<button onclick="goTo(\'paywall\')" style="background:none;border:1px solid #3a1060;border-radius:4px;padding:2px 6px;color:#6030a0;font-size:7px;cursor:pointer">&#x2605; PRO</button>';
+    }
+    h+='</div>';
+  }else{
+    h+='<div style="font-size:7px;color:#6050a0;margin-top:2px">No subject set yet</div>';
+  }
   h+='<div class="pf" style="font-size:7px;color:#60ffaa;margin-top:2px">LV '+(char.lv||1)+' '+TNAME(char.lv||1)+'</div>';
   if(U.isPro)h+='<div style="font-size:8px;color:#c080ff;margin-top:2px">&#x2605; PRO</div>';
   h+='</div>';
@@ -2249,6 +2260,21 @@ function deleteDungeon(i){
   if(S.di>=char.dungeons.length)S.di=Math.max(0,char.dungeons.length-1);
   sfx('wrong');
   saveUser();
+  draw();
+}
+
+function resetSubject(){
+  if(!U.isPro){goTo('paywall');return;}
+  var char=aC();if(!char)return;
+  if(!confirm('Reset your subject lock? Your hero will accept any new subject on the next dungeon generation. Existing dungeons are kept.'))return;
+  char.subject=null;
+  char.finalBoss=null;
+  char.finalBossCleared=false;
+  // Reset dungeon count so they can generate fresh ones
+  saveUser();
+  S.pop=true;S.pa=0;S.popMsg='Subject reset! Generate a new dungeon to set a new subject.';
+  setTimeout(function(){S.pop=false;draw();},3000);
+  sfx('levelup');
   draw();
 }
 function startGauntlet(){
