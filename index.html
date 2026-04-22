@@ -370,6 +370,15 @@ function sfx(name){
       // Hit crunch
       playTone(220,'sawtooth',0.08,0.12,0);
       playTone(180,'sawtooth',0.12,0.08,0.05);
+    }else if(name==='conjure'){
+      // Mystical building sound for loading
+      playTone(220,'sine',0.06,0.4,0);
+      playTone(277,'sine',0.06,0.4,0.2);
+      playTone(330,'sine',0.08,0.4,0.4);
+      playTone(440,'sine',0.1,0.5,0.7);
+    }else if(name==='tick'){
+      // Small tick for progress steps
+      playTone(880,'sine',0.04,0.08,0);
     }else if(name==='flip'){
       // Card flip click
       playTone(800,'sine',0.05,0.08,0);
@@ -697,13 +706,34 @@ function updateQuest(type,amount){
 function switchCls(id){if(!U.chars||!U.chars[id])return;U.activeCls=id;saveUser();S.screen='hero';draw();}
 function enterDungeon(i,isFinal){S.di=i;S.isFinal=!!isFinal;goTo('dungeon');}
 function studyDungeon(i){S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;goTo('fc');}
+var _QUIZ_MSGS=['Rolling for initiative...','Sharpening the questions...','Waking the boss...','Preparing the battlefield...','Consulting ancient tomes...','Almost ready...'];
+var _quizMsgIdx=0,_quizProgress=0,_quizInterval=null;
+function _startQuizAnim(color){
+  if(_quizInterval)return;
+  _quizMsgIdx=0;_quizProgress=5;
+  _quizInterval=setInterval(function(){
+    _quizProgress=Math.min(95,_quizProgress+(Math.random()*8+3));
+    _quizMsgIdx=(_quizMsgIdx+1)%_QUIZ_MSGS.length;
+    var bar=document.getElementById('quiz-bar');
+    var msg=document.getElementById('quiz-msg');
+    if(bar)bar.style.width=_quizProgress+'%';
+    if(msg)msg.textContent=_QUIZ_MSGS[_quizMsgIdx];
+    if(!document.getElementById('quiz-bar')){clearInterval(_quizInterval);_quizInterval=null;}
+  },700);
+}
 function quizGenH(){
   var dv=DIFF[S.diffChosen||S.difficulty||'normal'];
+  setTimeout(function(){_startQuizAnim(dv.color);},50);
   var h=tb();
-  h+='<div class="la"><div class="spin">&#x2694;</div>';
-  h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:10px">PREPARING BATTLE...</div>';
-  h+='<div style="font-size:10px;color:'+dv.color+';margin-bottom:14px">'+dv.label+' MODE</div>';
-  h+='<div class="lm">Loading questions...<br>Almost ready...</div></div>';
+  h+='<div style="text-align:center;padding:24px 0">';
+  h+='<div style="font-size:40px;margin-bottom:12px;display:inline-block;animation:bob 1.5s ease-in-out infinite">⚔️</div>';
+  h+='<div class="pf" style="font-size:10px;color:var(--gold);margin-bottom:6px">PREPARING BATTLE...</div>';
+  h+='<div class="pf" style="font-size:12px;color:'+dv.color+';margin-bottom:16px">'+dv.label+' MODE</div>';
+  h+='<div style="background:#0e0818;border:1px solid #3a1060;border-radius:8px;height:10px;overflow:hidden;margin-bottom:8px">';
+  h+='<div id="quiz-bar" style="height:100%;width:5%;background:'+dv.color+';border-radius:8px;transition:width 0.5s ease"></div>';
+  h+='</div>';
+  h+='<div id="quiz-msg" class="lm" style="min-height:20px">Rolling for initiative...</div>';
+  h+='</div>';
   return h;
 }
 
@@ -1149,7 +1179,9 @@ function heroH(){
       }
       h+='</div>';
       h+='<div class="dbtns"><button class="dbtn dbtn-s" onclick="event.stopPropagation();studyDungeon('+i+')">STUDY</button>';
-      h+='<button class="dbtn dbtn-q" onclick="event.stopPropagation();enterDungeon('+i+',false)">QUIZ</button></div></div>';
+      h+='<button class="dbtn dbtn-q" onclick="event.stopPropagation();enterDungeon('+i+',false)">QUIZ</button>';
+      h+='<button class="dbtn" style="background:#3a0a0a;border-color:#a03030;color:#ff6060;padding:0 8px" onclick="event.stopPropagation();deleteDungeon('+i+')">🗑</button>';
+      h+='</div></div>';
     });
     if(fbUnlocked){
       h+='<div class="dcard final-boss">';
@@ -1510,11 +1542,61 @@ async function genFinalBoss(){
   draw();
 }
 
+var _GEN_STEPS=['📜 Reading your notes...','✨ Weaving the story...','⚔️ Forging challenges...','👹 Waking the boss...','🔮 Almost ready...'];
+var _GEN_MSGS=['Consulting ancient tomes...','Transcribing forbidden knowledge...','Binding dark magic to parchment...','The dungeon stirs...','Preparing your trial...','The boss senses your approach...','Fate is being written...','The oracle speaks...'];
+var _genStep=0,_genMsgIdx=0,_genProgress=0,_genInterval=null;
+function _startGenAnim(){
+  if(_genInterval)return;
+  _genStep=0;_genMsgIdx=0;_genProgress=2;
+  sfx('conjure');
+  _genInterval=setInterval(function(){
+    _genProgress=Math.min(95,_genProgress+(Math.random()*4+1));
+    _genMsgIdx=(_genMsgIdx+1)%_GEN_MSGS.length;
+    if(_genProgress>20&&_genStep<1){_genStep=1;sfx('tick');}
+    if(_genProgress>45&&_genStep<2){_genStep=2;sfx('tick');}
+    if(_genProgress>70&&_genStep<3){_genStep=3;sfx('tick');}
+    if(_genProgress>88&&_genStep<4){_genStep=4;sfx('tick');}
+    var bar=document.getElementById('gen-bar');
+    var msg=document.getElementById('gen-msg');
+    var steps=document.getElementById('gen-steps');
+    if(bar)bar.style.width=_genProgress+'%';
+    if(msg)msg.textContent=_GEN_MSGS[_genMsgIdx];
+    if(steps){
+      var sh='';
+      _GEN_STEPS.forEach(function(s,i){
+        var done=i<_genStep,active=i===_genStep;
+        sh+='<div style="display:flex;align-items:center;gap:6px;padding:3px 0;opacity:'+(done||active?'1':'0.35')+'">';
+        sh+='<div style="width:16px;height:16px;border-radius:50%;background:'+(done?'#30a050':active?'#6030c0':'#1a0a30')+';border:2px solid '+(done?'#30a050':active?'#c080ff':'#3a1060')+';display:flex;align-items:center;justify-content:center;font-size:8px">'+(done?'✓':'')+'</div>';
+        sh+='<div style="font-size:9px;color:'+(done?'#60ff90':active?'#c080ff':'var(--tx3)')+'">'+s.replace(/^[^ ]+ /,'')+'</div>';
+        sh+='</div>';
+      });
+      steps.innerHTML=sh;
+    }
+    if(!document.getElementById('gen-bar')){clearInterval(_genInterval);_genInterval=null;}
+  },600);
+}
 function genH(){
+  setTimeout(_startGenAnim,50);
   var h=tb();
-  h+='<div class="la"><div class="spin">&#x2726;</div>';
-  h+='<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:14px">CONJURING'+(S.isFinal?' FINAL BOSS':'')+'...</div>';
-  h+='<div class="lm">Reading the ancient scroll...<br>Weaving your story...<br>Forging challenges...<br>'+(S.isFinal?'Summoning the ultimate boss...<br>':'')+'<br>~15-25 seconds</div></div>';
+  h+='<div style="text-align:center;padding:20px 0">';
+  h+='<div style="font-size:44px;margin-bottom:14px;display:inline-block;animation:bob 2s ease-in-out infinite">'+(S.isFinal?'💀':'⚔️')+'</div>';
+  h+='<div class="pf" style="font-size:11px;color:var(--gold);margin-bottom:20px">'+(S.isFinal?'SUMMONING THE FINAL BOSS...':'CONJURING YOUR DUNGEON...')+'</div>';
+  // Progress bar
+  h+='<div style="background:#0e0818;border:1px solid #3a1060;border-radius:8px;height:12px;overflow:hidden;margin-bottom:6px;position:relative">';
+  h+='<div id="gen-bar" style="height:100%;width:2%;background:linear-gradient(90deg,#5030a0,#c080ff);border-radius:8px;transition:width 0.5s ease"></div>';
+  h+='</div>';
+  h+='<div id="gen-msg" class="lm" style="margin-bottom:20px;min-height:20px">Consulting ancient tomes...</div>';
+  // Step indicators
+  h+='<div id="gen-steps" style="text-align:left;background:#0e0818;border:1px solid #2a1040;border-radius:10px;padding:12px;margin-bottom:16px">';
+  _GEN_STEPS.forEach(function(s,i){
+    h+='<div style="display:flex;align-items:center;gap:6px;padding:3px 0;opacity:'+(i===0?'1':'0.35')+'">';
+    h+='<div style="width:16px;height:16px;border-radius:50%;background:'+(i===0?'#6030c0':'#1a0a30')+';border:2px solid '+(i===0?'#c080ff':'#3a1060')+';font-size:8px;display:flex;align-items:center;justify-content:center"></div>';
+    h+='<div style="font-size:9px;color:'+(i===0?'#c080ff':'var(--tx3)')+'">'+s.replace(/^[^ ]+ /,'')+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  h+='<div style="font-size:9px;color:var(--tx3)">~15-25 seconds</div>';
+  h+='</div>';
   return h;
 }
 
@@ -2009,6 +2091,17 @@ function friendlyApiError(err){
   return 'Error: '+msg;
 }
 
+
+function deleteDungeon(i){
+  if(!confirm('Delete this dungeon? This cannot be undone.'))return;
+  var char=aC();if(!char)return;
+  char.dungeons.splice(i,1);
+  // Reset di if needed
+  if(S.di>=char.dungeons.length)S.di=Math.max(0,char.dungeons.length-1);
+  sfx('wrong');
+  saveUser();
+  draw();
+}
 function startGauntlet(){
   var char=aC();if(!char||char.dungeons.length<2)return;
   S.gauntlet=true;
@@ -2133,6 +2226,9 @@ function buyPack(url){
 function goTo(sc){
   if(sc==='quiz'){S.qi=0;S.qs=0;S.sel=null;S.sxp=0;S.streak=0;S.wrongAnswers=[];S.qdSaved=false;S._sfxPlayed=false;S._finalBossBonus=0;S._finalBossFirst=false;S.spellUsed=null;S.shieldActive=false;S.doubleActive=false;}
   if(sc==='fc'){S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;}
+  if(sc!=='gen'&&typeof _genInterval!=='undefined'&&_genInterval){clearInterval(_genInterval);_genInterval=null;}
+  if(sc!=='quizgen'&&typeof _quizInterval!=='undefined'&&_quizInterval){clearInterval(_quizInterval);_quizInterval=null;}
+  S.prevScreen=S.screen;
   S.screen=sc;draw();
 }
 function draw(){
