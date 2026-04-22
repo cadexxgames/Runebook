@@ -1513,8 +1513,8 @@ async function doGen(){
   }
   if(hasText)blocks.push({type:'text',text:'Additional typed notes:\n'+S.notes});
   var _fileCount=hasFiles?S.uploadFiles.length:0;
-  var _fileNote=_fileCount>1?'You have been provided '+_fileCount+' files/images. You MUST synthesize and draw from ALL of them equally — do not focus only on the first one. Cover concepts from every file when generating flashcards and quiz questions.\n\n':'';
-  blocks.push({type:'text',text:_fileNote+'Generate study materials from ALL of the notes/images/documents above.\n\n'+buildPrompt(isFirst,char,isMath)});
+  var _fileNote=_fileCount>1?'IMPORTANT: You have '+_fileCount+' labeled sources above (SOURCE 1 OF '+_fileCount+', SOURCE 2 OF '+_fileCount+', etc.). Generate approximately equal numbers of flashcards AND quiz questions from EACH source. Do not skip or underrepresent any source.\n\n':'';
+  blocks.push({type:'text',text:_fileNote+'Generate study materials from ALL sources above.\n\n'+buildPrompt(isFirst,char,isMath)});
   try{
     const parsed=await callAPI(blocks);
     if(parsed.error==='WRONG_SUBJECT'){
