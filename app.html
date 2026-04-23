@@ -709,7 +709,41 @@ function updateQuest(type,amount){
 
 function switchCls(id){if(!U.chars||!U.chars[id])return;U.activeCls=id;saveUser();S.screen='hero';draw();}
 function enterDungeon(i,isFinal){S.di=i;S.isFinal=!!isFinal;goTo('dungeon');}
-function studyDungeon(i){S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;goTo('fc');}
+function studyDungeon(i){
+  S.di=i;S.isFinal=false;S.ci=0;S.fl=false;S.shuffled=null;S.againPile=null;
+  if(U&&U.isPro){
+    // Pro: generate fresh flashcards from saved notes
+    S.screen='quizgen';draw();
+    _generateFreshCards(i);
+  }else{
+    goTo('fc');
+  }
+}
+async function _generateFreshCards(di){
+  var char=aC();
+  var dung=char&&char.dungeons?char.dungeons[di]:null;
+  if(!dung){goTo('fc');return;}
+  try{
+    var isMath=char.subject&&/math|algebra|calculus|geometry|trig/i.test(char.subject);
+    var prompt='Generate 15-20 diverse flashcards based on this topic: '+( char.subject||'general study')+'. Dungeon title: '+(dung.title||'Study Session')+'.\n\nACCURACY RULES: Only include facts you are certain about. Each flashcard must have a clear, specific question and a concise correct answer.\n\nReturn ONLY raw JSON: {"flashcards":[{"question":"...","answer":"..."}]}';
+    var blocks=[{type:'text',text:prompt}];
+    var parsed=await callAPI(blocks);
+    if(parsed.flashcards&&parsed.flashcards.length){
+      S.freshCards=parsed.flashcards;
+    }else{
+      S.freshCards=null;
+    }
+  }catch(e){
+    S.freshCards=null;
+  }
+  // Fill bar to 100%
+  if(_quizInterval){clearInterval(_quizInterval);_quizInterval=null;}
+  var _qbar=document.getElementById('quiz-bar');
+  if(_qbar){_qbar.style.transition='width 0.6s ease';_qbar.style.width='100%';_qbar.style.background='#60ff90';}
+  await new Promise(function(r){setTimeout(r,700);});
+  S.ci=0;S.fl=false;S.shuffled=null;
+  S.screen='fc';draw();
+}
 var _QUIZ_MSGS=['Rolling for initiative...','Sharpening the questions...','Waking the boss...','Preparing the battlefield...','Consulting ancient tomes...','Almost ready...'];
 var _quizMsgIdx=0,_quizProgress=0,_quizInterval=null;
 function _startQuizAnim(color){
@@ -1113,7 +1147,20 @@ function doCC(){
   if(!U.chars)U.chars={};
   if(!U.chars[S.selCls])U.chars[S.selCls]={charName:S.charName,gender:S.selGen,dungeons:[],finalBoss:null,xp:0,lv:1,spellCharges:{skip:1,shield:1,double:1}};
   else{U.chars[S.selCls].charName=S.charName;U.chars[S.selCls].gender=S.selGen;}
-  U.activeCls=S.selCls;saveUser();S.screen='hero';S.err='';draw();
+  U.activeCls=S.selCls;saveUser();S.err='';
+  // If this is their first hero with no dungeons, send them straight to upload
+  var _isFirstDungeon=!U.chars[S.selCls].dungeons||U.chars[S.selCls].dungeons.length===0;
+  var _totalDungeons=Object.values(U.chars).reduce(function(s,c){return s+(c&&c.dungeons?c.dungeons.length:0);},0);
+  if(_isFirstDungeon&&_totalDungeons===0){
+    // Show a quick welcome prompt before upload
+    S.screen='upload';
+    S.pop=true;
+    S.popMsg='Welcome! Upload your notes to forge your first dungeon!';
+    setTimeout(function(){S.pop=false;draw();},3000);
+  }else{
+    S.screen='hero';
+  }
+  draw();
 }
 
 function tb(){
@@ -1371,21 +1418,39 @@ function uploadH(){
   if(!canAdd()){goTo('paywall');return'';}
   var h=tb();
   h+='<button class="back" onclick="goTo(\'home\')">&#x25C4; Back</button>';
-  h+='<div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">';
-  h+=sp(U.activeCls,char.gender,64);
-  h+='<div><div class="pf" style="font-size:8px;color:var(--gold)">NEW DUNGEON</div>';
-  h+='<div style="font-size:10px;color:var(--tx3);margin-top:4px">'+char.charName+' the '+clsInfo(U.activeCls).name+'</div>';
-  var _gl=gensLeft();
-  h+='<div style="font-size:9px;color:var(--tx3);margin-top:3px">Dungeon '+(char.dungeons.length+1)+(U.isPro?' &middot; '+_gl+' generations left this month':' of '+FREE_DUNGEONS)+'</div>';
-  if(U.isPro&&_gl!==null&&_gl<=3)h+='<button class="btn gp pf" style="font-size:7px;margin-top:4px;width:auto;padding:5px 10px" onclick="goTo(\'shop\')">&#x26A1; Buy More Credits</button>';
-  if(char.subject){
-    h+='<div style="margin-top:7px;background:#1a0840;border:2px solid #8040d0;border-radius:6px;padding:6px 10px">';
-    h+='<span style="font-size:8px;color:#c080ff">&#x1F512; LOCKED: </span><span style="font-size:9px;color:#fff">'+char.subject+'</span></div>';
+  var _isFirstDung=!char.dungeons||char.dungeons.length===0;
+  // Compelling header for first-time users
+  if(_isFirstDung){
+    h+='<div style="background:linear-gradient(135deg,#1a0840,#0e0420);border:2px solid #6030c0;border-radius:14px;padding:18px 16px;margin-bottom:16px;text-align:center">';
+    h+='<div style="font-size:32px;margin-bottom:8px">⚔️📜</div>';
+    h+='<div class="pf" style="font-size:11px;color:var(--gold);margin-bottom:8px">YOUR NOTES BECOME A DUNGEON</div>';
+    h+='<div style="font-size:11px;color:var(--tx2);line-height:1.8;margin-bottom:12px">Upload a photo of your notes and AI will create a <span style="color:#c080ff">boss battle</span>, <span style="color:#60ff90">flashcards</span>, and <span style="color:#ffd040">quiz questions</span> built from YOUR material.</div>';
+    h+='<div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap">';
+    h+='<div style="text-align:center"><div style="font-size:20px">📸</div><div style="font-size:9px;color:var(--tx3);margin-top:4px">Photo of notes</div></div>';
+    h+='<div style="font-size:18px;color:var(--tx3);align-self:center">→</div>';
+    h+='<div style="text-align:center"><div style="font-size:20px">🔮</div><div style="font-size:9px;color:var(--tx3);margin-top:4px">AI reads them</div></div>';
+    h+='<div style="font-size:18px;color:var(--tx3);align-self:center">→</div>';
+    h+='<div style="text-align:center"><div style="font-size:20px">🏰</div><div style="font-size:9px;color:var(--tx3);margin-top:4px">Dungeon created</div></div>';
+    h+='<div style="font-size:18px;color:var(--tx3);align-self:center">→</div>';
+    h+='<div style="text-align:center"><div style="font-size:20px">🏆</div><div style="font-size:9px;color:var(--tx3);margin-top:4px">You learn it</div></div>';
+    h+='</div></div>';
+  }else{
+    h+='<div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">';
+    h+=sp(U.activeCls,char.gender,64);
+    h+='<div><div class="pf" style="font-size:8px;color:var(--gold)">NEW DUNGEON</div>';
+    h+='<div style="font-size:10px;color:var(--tx3);margin-top:4px">'+char.charName+' the '+clsInfo(U.activeCls).name+'</div>';
+    var _gl=gensLeft();
+    h+='<div style="font-size:9px;color:var(--tx3);margin-top:3px">Dungeon '+(char.dungeons.length+1)+(U.isPro?' &middot; '+_gl+' generations left this month':' of '+FREE_DUNGEONS)+'</div>';
+    if(U.isPro&&_gl!==null&&_gl<=3)h+='<button class="btn gp pf" style="font-size:7px;margin-top:4px;width:auto;padding:5px 10px" onclick="goTo(\'shop\')">&#x26A1; Buy More Credits</button>';
+    if(char.subject){
+      h+='<div style="margin-top:7px;background:#1a0840;border:2px solid #8040d0;border-radius:6px;padding:6px 10px">';
+      h+='<span style="font-size:8px;color:#c080ff">&#x1F512; LOCKED: </span><span style="font-size:9px;color:#fff">'+char.subject+'</span></div>';
+    }
+    h+='</div></div>';
   }
-  h+='</div></div>';
   h+=(char.subject
     ?'<div style="font-size:12px;color:var(--tx3);margin-bottom:12px;line-height:1.8">Bound to <span style="color:var(--gold)">'+char.subject+'</span>. New dungeons must cover the same subject.</div>'
-    :'<div style="font-size:12px;color:var(--tx3);margin-bottom:12px;line-height:1.8">Upload notes or photos. The subject will be <span style="color:var(--gold)">permanently locked</span> to this hero after the first dungeon.</div>');
+    :(_isFirstDung?'':('<div style="font-size:12px;color:var(--tx3);margin-bottom:12px;line-height:1.8">Upload notes or photos. The subject will be <span style="color:var(--gold)">permanently locked</span> to this hero after the first dungeon.</div>')));
   h+='<div class="dropzone" id="dropzone" onclick="document.getElementById(\'fileinput\').click()" ';
   h+='ondragover="event.preventDefault();this.style.borderColor=\'#a060ff\'" ';
   h+='ondragleave="this.style.borderColor=\'#5030a0\'" ondrop="handleDrop(event)">';
@@ -1508,7 +1573,7 @@ function buildPrompt(isFirst,char,isMath){
     if(S.genCustom&&S.genCustom.trim())focusExtra+='\n\nADDITIONAL USER INSTRUCTIONS: '+S.genCustom.trim();
   }
   var accuracyRules='\n\nACCURACY RULES (follow strictly):\n1. Every correct answer MUST be directly verifiable from the provided source material. Never guess or invent answers.\n2. Wrong answer options must be plausible but clearly incorrect based on the source — never accidentally correct.\n3. Every question must be clear, specific, and unambiguous — one obvious correct answer. No double negatives, trick phrasing, or vague wording.\n4. If you are not certain about the correct answer to a question, skip it and write a different one you are confident about.\n5. Re-read the source before writing each question to verify accuracy.';
-  return subjectGuard+mathExtra+diffInst+focusExtra+accuracyRules+'\n\nCRITICAL INSTRUCTION: You have been given MULTIPLE files/images/documents. You MUST draw quiz questions from ALL files equally. Before writing any question, mentally assign each file a number (File 1, File 2, etc.) and ensure you pull questions from EVERY file. Do NOT focus only on the first file. If you have 2 files split questions 50/50. If 3 files split 33/33/33. Same rule applies to flashcards.\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 4-8 flashcards covering ALL provided files equally. Generate quiz questions covering ALL provided files equally. correct is 0-3.';
+  return subjectGuard+mathExtra+diffInst+focusExtra+accuracyRules+'\n\nCRITICAL INSTRUCTION: You have been given MULTIPLE files/images/documents. You MUST draw quiz questions from ALL files equally. Before writing any question, mentally assign each file a number (File 1, File 2, etc.) and ensure you pull questions from EVERY file. Do NOT focus only on the first file. If you have 2 files split questions 50/50. If 3 files split 33/33/33. Same rule applies to flashcards.\n\nReturn ONLY raw JSON (no markdown, no code fences):\n{\n'+subjectLine+'  "story":{\n    "title":"Fantasy quest title max 8 words",\n    "setting":"Fantasy location name",\n    "intro":"2-3 sentences: hero must master these concepts to defeat evil, using real terms from the notes.",\n    "boss":"Creative boss name personifying the hardest concept"\n  },\n  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\nGenerate 15-20 flashcards covering ALL provided files equally. Generate quiz questions covering ALL provided files equally. correct is 0-3.';
 }
 
 async function callAPI(contentBlocks){
@@ -1578,7 +1643,7 @@ function buildPromptForFile(isFirst,char,isMath,qCount,fcCount,isLeadFile,totalF
     if(S.genCustom&&S.genCustom.trim())focusExtra+='\n\nUSER INSTRUCTIONS: '+S.genCustom.trim();
   }
   var accuracyRules2='\n\nACCURACY RULES:\n1. Every correct answer MUST be directly verifiable from the source material. Never guess.\n2. Wrong options must be plausible but clearly incorrect from the source.\n3. Questions must be clear and unambiguous with one obvious correct answer. No trick phrasing.\n4. If unsure about an answer, generate a different question instead.';
-  return subjectGuard+mathExtra+focusExtra+accuracyRules2+'\n\nThis is FILE '+(isLeadFile?'1':'2+')+' OF '+totalFiles+'. Generate EXACTLY '+qCount+' quiz questions and '+fcCount+' flashcards from THIS file only.\n\nReturn ONLY raw JSON:\n{\n'+subjectLine+(isLeadFile?storyPart:'')+'  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\ncorrect is 0-3.';
+  return subjectGuard+mathExtra+focusExtra+accuracyRules2+'\n\nThis is FILE '+(isLeadFile?'1':'2+')+' OF '+totalFiles+'. Generate EXACTLY '+qCount+' quiz questions and '+fcCount+' flashcards from THIS file only. Aim for detailed, thorough flashcards.\n\nReturn ONLY raw JSON:\n{\n'+subjectLine+(isLeadFile?storyPart:'')+'  "flashcards":[{"question":"...","answer":"..."}],\n  "quiz":[{"question":"...","options":["A","B","C","D"],"correct":0}]\n}\ncorrect is 0-3.';
 }
 async function doGen(){
   const ta=get('nta');if(ta)S.notes=ta.value;
@@ -1606,7 +1671,7 @@ async function doGen(){
     // For menu focus, cap questions per file lower to ensure accuracy
     var _isMenu=(typeof S!=='undefined'&&S.genFocus==='menu');
     var qPerFile=_isMenu?Math.min(3,Math.max(2,Math.ceil(totalQ/_fileCount))):Math.max(2,Math.ceil(totalQ/_fileCount));
-    var fcPerFile=_isMenu?Math.min(3,Math.max(2,Math.ceil(6/_fileCount))):Math.max(2,Math.ceil(6/_fileCount));
+    var fcPerFile=_isMenu?Math.min(3,Math.max(2,Math.ceil(10/_fileCount))):Math.max(3,Math.ceil(20/_fileCount));
     var allQuiz=[],allCards=[],firstParsed=null;
     for(var _fi=0;_fi<shuffledFiles.length;_fi++){
       var _f=shuffledFiles[_fi];
@@ -1626,7 +1691,7 @@ async function doGen(){
       if(_fp.flashcards&&_fp.flashcards.length)allCards=allCards.concat(_fp.flashcards);
     }
     allQuiz=allQuiz.sort(function(){return Math.random()-0.5;}).slice(0,totalQ);
-    allCards=allCards.sort(function(){return Math.random()-0.5;}).slice(0,8);
+    allCards=allCards.sort(function(){return Math.random()-0.5;}).slice(0,20);
     parsed={subject:firstParsed?firstParsed.subject:null,story:firstParsed?firstParsed.story:null,flashcards:allCards,quiz:allQuiz};
   }else{
     // Single file or text only
@@ -1817,12 +1882,17 @@ function genH(){
 }
 
 function getCards(){
-  const d=aD();if(!d||!d.cards)return[];
+  // Pro users with fresh cards use those; otherwise use saved dungeon cards
+  var cardSource=(U&&U.isPro&&S.freshCards&&S.freshCards.length)?S.freshCards:null;
+  if(!cardSource){
+    const d=aD();if(!d||!d.cards)return[];
+    cardSource=d.cards;
+  }
   if(!S.shuffled){
-    S.shuffled=d.cards.map(function(_,i){return i;});
+    S.shuffled=cardSource.map(function(_,i){return i;});
     for(var i=S.shuffled.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=S.shuffled[i];S.shuffled[i]=S.shuffled[j];S.shuffled[j]=tmp;}
   }
-  return S.shuffled.map(function(i){return d.cards[i];});
+  return S.shuffled.map(function(i){return cardSource[i];});
 }
 
 function fcH(){
@@ -1849,7 +1919,7 @@ function fcH(){
   h+='</div></div>';
   if(S.fl){
     h+='<div class="row"><button class="btn gx pf f1" style="font-size:7px" onclick="cr(false)">&#x2715; AGAIN</button>';
-    h+='<button class="btn gn pf f1" style="font-size:7px" onclick="cr(true)">&#x2713; GOT IT +10 XP</button></div>';
+    h+='<button class="btn gn pf f1" style="font-size:7px" onclick="cr(true)">&#x2713; GOT IT</button></div>';
   }else{
     h+='<div class="row">';
     if(S.ci>0&&!isReview)h+='<button class="btn gr pf" style="font-size:7px" onclick="prevC()">&#x25C4; PREV</button>';
@@ -1857,7 +1927,7 @@ function fcH(){
   }
   return h;
 }
-function endFC(){S.againPile=null;S.shuffled=null;goTo('dungeon');}
+function endFC(){S.againPile=null;S.shuffled=null;S.freshCards=null;goTo('dungeon');}
 
 function heartsH(){
   var h='';
@@ -2241,8 +2311,13 @@ function xpu(n,msg){
 function flip(){sfx('flip');S.fl=!S.fl;draw();}
 function prevC(){if(S.ci>0){S.ci--;S.fl=false;draw();}}
 function cr(k){
-  if(k){xpu(10);}
-  else{if(!S.againPile)S.againPile=[];const cards=getCards();if(S.ci<cards.length)S.againPile.push(cards[S.ci]);}
+  if(!k){
+    // Marked as wrong — add to again pile
+    if(!S.againPile)S.againPile=[];
+    const cards=getCards();
+    if(S.ci<cards.length)S.againPile.push(cards[S.ci]);
+  }
+  // No XP for flashcards — self-reporting is unreliable
   S.fl=false;
   const cards=getCards();
   if(S.ci<cards.length-1){S.ci++;draw();}
