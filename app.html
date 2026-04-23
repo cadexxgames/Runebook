@@ -142,6 +142,11 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 .slot.used{background:#a060ff;border-color:#c080ff;}
 .xpp{position:absolute;top:55px;right:16px;font-family:'Press Start 2P',monospace;font-size:10px;color:var(--gold);pointer-events:none;animation:popUp 1.8s forwards;z-index:10;text-shadow:0 0 10px rgba(255,208,64,.8);}
 .lvup-screen{text-align:center;padding:20px 0;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-box{background:#0e0818;border:2px solid #6030c0;border-radius:16px;padding:24px 20px;max-width:320px;width:100%;text-align:center;animation:appFadeIn .2s ease-out;}
+.modal-title{font-family:Cinzel,serif;font-size:13px;color:var(--gold);margin-bottom:10px;}
+.modal-msg{font-size:11px;color:var(--tx2);line-height:1.7;margin-bottom:20px;}
+.modal-btns{display:flex;gap:10px;justify-content:center;}
 .ob-slide{text-align:center;padding:10px 0 20px;}
 .ob-icon{font-size:52px;margin-bottom:16px;}
 .ob-title{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--gold);margin-bottom:12px;line-height:1.6;}
@@ -2278,7 +2283,7 @@ async function redeemCode(){
     await supaUpdatePro();saveUser();
     S.proCodeErr='';S.proCodeOk='';
     sfx('levelup');
-    alert('🎉 Welcome to PRO!\nAll 8 heroes and unlimited dungeons unlocked!');
+    showToast('🎉 Welcome to PRO! All 8 heroes and unlimited dungeons unlocked!',3500);
     goTo('home');
   }else{
     S.proCodeErr='Invalid code. Check your Stripe email.';S.proCodeOk='';draw();
@@ -2413,30 +2418,57 @@ function friendlyApiError(err){
 }
 
 
-function deleteDungeon(i){
-  if(!confirm('Delete this dungeon? This cannot be undone.'))return;
-  var char=aC();if(!char)return;
-  char.dungeons.splice(i,1);
-  // Reset di if needed
-  if(S.di>=char.dungeons.length)S.di=Math.max(0,char.dungeons.length-1);
-  sfx('wrong');
-  saveUser();
+
+// In-app modal system
+var _modal=null;
+function showModal(title,msg,confirmTxt,cancelTxt,onConfirm,isDestructive){
+  _modal={title,msg,confirmTxt:confirmTxt||'Confirm',cancelTxt:cancelTxt||'Cancel',onConfirm,isDestructive:isDestructive||false};
   draw();
+}
+function closeModal(){_modal=null;draw();}
+function confirmModal(){var cb=_modal&&_modal.onConfirm;_modal=null;draw();if(cb)cb();}
+function modalH(){
+  if(!_modal)return '';
+  var m=_modal;
+  var h='<div class="modal-overlay" onclick="closeModal()">';
+  h+='<div class="modal-box" onclick="event.stopPropagation()">';
+  h+='<div class="modal-title">'+m.title+'</div>';
+  h+='<div class="modal-msg">'+m.msg+'</div>';
+  h+='<div class="modal-btns">';
+  h+='<button class="btn gr pf" style="font-size:8px;width:auto;padding:9px 16px" onclick="closeModal()">'+m.cancelTxt+'</button>';
+  h+='<button class="btn '+(m.isDestructive?'gx':'gc')+' pf" style="font-size:8px;width:auto;padding:9px 16px" onclick="confirmModal()">'+m.confirmTxt+'</button>';
+  h+='</div></div></div>';
+  return h;
+}
+// Success toast
+function showToast(msg,duration){
+  S.pop=true;S.popMsg=msg;S.pa=0;
+  setTimeout(function(){S.pop=false;draw();},duration||2500);
+  draw();
+}
+function deleteDungeon(i){
+  showModal('Delete Dungeon','Are you sure? This dungeon and all its progress will be permanently removed.','Delete','Keep It',function(){
+    var char=aC();if(!char)return;
+    char.dungeons.splice(i,1);
+    if(S.di>=char.dungeons.length)S.di=Math.max(0,char.dungeons.length-1);
+    sfx('wrong');saveUser();draw();
+  },true);
+  return;
+  if(false){
+  }// end false
 }
 
 function resetSubject(){
   if(!U.isPro){goTo('paywall');return;}
   var char=aC();if(!char)return;
-  if(!confirm('Reset your subject lock? Your hero will accept any new subject on the next dungeon generation. Existing dungeons are kept.'))return;
-  char.subject=null;
-  char.finalBoss=null;
-  char.finalBossCleared=false;
-  // Reset dungeon count so they can generate fresh ones
-  saveUser();
-  S.pop=true;S.pa=0;S.popMsg='Subject reset! Generate a new dungeon to set a new subject.';
-  setTimeout(function(){S.pop=false;draw();},3000);
-  sfx('levelup');
-  draw();
+  showModal('Reset Subject','Your hero will accept any new subject on the next dungeon generation. Existing dungeons are kept.','Reset','Cancel',function(){
+    var char=aC();if(!char)return;
+    char.subject=null;char.finalBoss=null;char.finalBossCleared=false;
+    saveUser();showToast('Subject reset! Generate a new dungeon to set a new subject.',3000);sfx('levelup');
+  },false);
+  return;
+  if(false){
+  }//end false
 }
 function startGauntlet(){
   var char=aC();if(!char||char.dungeons.length<2)return;
@@ -2574,7 +2606,7 @@ function draw(){
     'char-select':charSelectH,dungeon:dungeonH,upload:uploadH,gen:genH,
     quizgen:quizGenH,fcgen:fcGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH,achievements:achievementsH,calendar:calendarH,shop:shopH
   };
-  el.innerHTML=(screens[S.screen]||authH)();
+  el.innerHTML=(screens[S.screen]||authH)()+modalH();
 }
 init();
 
