@@ -2457,19 +2457,58 @@ function accountH(){
   h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:20px">'+(U.email||'')+'</div>';
 
   // ── Account Info ──
+  var _acctEditing=S._acctEditing||null;
   h+='<div style="background:#0e0818;border:1px solid #2a1a40;border-radius:10px;padding:14px;margin-bottom:14px">';
   h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:10px">ACCOUNT INFO</div>';
-  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-  h+='<div style="font-size:11px;color:var(--tx2)">Name</div>';
-  h+='<div style="font-size:11px;color:#fff">'+(U.name||'—')+'</div></div>';
-  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-  h+='<div style="font-size:11px;color:var(--tx2)">Plan</div>';
+  // Name row
+  h+='<div style="margin-bottom:10px">';
+  h+='<div style="font-size:9px;color:var(--tx2);margin-bottom:4px">Name</div>';
+  if(_acctEditing==="name"){
+    h+='<div style="display:flex;gap:8px">';
+    h+='<input id="acct-name" value="'+(U.name||'')+'" style="flex:1;font-size:11px" placeholder="Your name"/>';
+    h+='<button onclick="saveAcctName()" style="background:#6030c0;border:none;border-radius:6px;color:#fff;padding:6px 12px;font-size:9px;cursor:pointer">Save</button>';
+    h+='<button onclick="S._acctEditing=null;draw()" style="background:#1a0a30;border:1px solid #3a1060;border-radius:6px;color:var(--tx3);padding:6px 10px;font-size:9px;cursor:pointer">✕</button>';
+    h+='</div>';
+  }else{
+    h+='<div style="display:flex;justify-content:space-between;align-items:center">';
+    h+='<div style="font-size:11px;color:#fff">'+(U.name||'—')+'</div>';
+    h+='<button onclick="S._acctEditing=\'name\';draw()" style="background:none;border:1px solid #3a1060;border-radius:4px;color:var(--tx3);padding:3px 8px;font-size:9px;cursor:pointer">Edit</button>';
+    h+='</div>';
+  }
+  h+='</div>';
+  // Email row
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+  h+='<div><div style="font-size:9px;color:var(--tx2);margin-bottom:2px">Email</div>';
+  h+='<div style="font-size:11px;color:#fff">'+(U.email||'—')+'</div></div>';
+  h+='</div>';
+  // Plan row
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:'+(U.isPro?'10':'0')+'px">';
+  h+='<div><div style="font-size:9px;color:var(--tx2);margin-bottom:2px">Plan</div>';
   h+='<div style="font-size:11px;color:'+(U.isPro?'#c080ff':'var(--tx3)')+'">'+(U.isPro?'&#x2605; PRO':'Free')+'</div></div>';
+  h+='</div>';
   if(U.isPro){
     var gl=gensLeft();
     h+='<div style="display:flex;justify-content:space-between;align-items:center">';
-    h+='<div style="font-size:11px;color:var(--tx2)">Generations left</div>';
-    h+='<div style="font-size:11px;color:var(--gold)">'+(gl!==null?gl:'Unlimited')+'</div></div>';
+    h+='<div><div style="font-size:9px;color:var(--tx2);margin-bottom:2px">Generations left</div>';
+    h+='<div style="font-size:11px;color:var(--gold)">'+(gl!==null?gl:'—')+'</div></div>';
+    h+='</div>';
+  }
+  h+='</div>';
+  // Change password section
+  h+='<div style="background:#0e0818;border:1px solid #2a1a40;border-radius:10px;padding:14px;margin-bottom:14px">';
+  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:10px">CHANGE PASSWORD</div>';
+  if(_acctEditing==="password"){
+    h+='<input id="acct-pw1" type="password" placeholder="New password" style="margin-bottom:8px;font-size:11px"/>';
+    h+='<input id="acct-pw2" type="password" placeholder="Confirm new password" style="margin-bottom:10px;font-size:11px"/>';
+    if(S._acctPwErr)h+='<div class="er" style="margin-bottom:8px">'+S._acctPwErr+'</div>';
+    if(S._acctPwOk)h+='<div style="color:#60ff90;font-size:10px;margin-bottom:8px">'+S._acctPwOk+'</div>';
+    h+='<div style="display:flex;gap:8px">';
+    h+='<button onclick="saveAcctPassword()" style="background:#6030c0;border:none;border-radius:6px;color:#fff;padding:8px 14px;font-size:9px;cursor:pointer;flex:1">Update Password</button>';
+    h+='<button onclick="S._acctEditing=null;S._acctPwErr=\'\';S._acctPwOk=\'\';draw()" style="background:#1a0a30;border:1px solid #3a1060;border-radius:6px;color:var(--tx3);padding:8px 12px;font-size:9px;cursor:pointer">Cancel</button>';
+    h+='</div>';
+  }else{
+    h+='<div style="font-size:11px;color:var(--tx2);margin-bottom:10px">Update your account password.</div>';
+    h+='<button onclick="S._acctEditing=\'password\';S._acctPwErr=\'\';S._acctPwOk=\'\';draw()" style="background:#1a0a30;border:1px solid #3a1060;border-radius:8px;padding:9px 14px;color:var(--tx2);font-size:9px;cursor:pointer;width:100%;font-family:inherit">Change Password</button>';
   }
   h+='</div>';
 
@@ -2497,6 +2536,44 @@ function accountH(){
 
   h+='<div style="font-size:9px;color:var(--tx3);text-align:center;margin-top:8px">Questions? <a href="mailto:support@runebook.study" style="color:#9070c0">support@runebook.study</a></div>';
   return h;
+}
+
+function saveAcctName(){
+  var inp=document.getElementById('acct-name');
+  if(!inp)return;
+  var name=inp.value.trim();
+  if(!name){showToast('Name cannot be empty',2000);return;}
+  U.name=name;
+  saveUser();
+  S._acctEditing=null;
+  showToast('Name updated!',2000);
+  draw();
+}
+
+async function saveAcctPassword(){
+  var pw1=document.getElementById('acct-pw1');
+  var pw2=document.getElementById('acct-pw2');
+  if(!pw1||!pw2)return;
+  var p1=pw1.value,p2=pw2.value;
+  if(!p1){S._acctPwErr='Enter a new password.';draw();return;}
+  if(p1.length<6){S._acctPwErr='Password must be at least 6 characters.';draw();return;}
+  if(p1!==p2){S._acctPwErr='Passwords do not match.';draw();return;}
+  try{
+    var resp=await fetch(SUPA_URL+'/auth/v1/user',{
+      method:'PUT',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+_supaToken,'Content-Type':'application/json'},
+      body:JSON.stringify({password:p1})
+    });
+    if(!resp.ok)throw new Error('Failed');
+    S._acctPwErr='';
+    S._acctPwOk='Password updated successfully!';
+    S._acctEditing=null;
+    showToast('Password updated!',2500);
+    draw();
+  }catch(e){
+    S._acctPwErr='Failed to update password. Try again.';
+    draw();
+  }
 }
 
 function cancelSubscription(){
