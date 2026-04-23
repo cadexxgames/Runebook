@@ -1074,6 +1074,7 @@ function authH(){
   h+='<input id="ae" type="email" placeholder="Email address" value="'+S.authEmail+'" oninput="S.authEmail=this.value"/>';
   h+='<input id="ap" type="password" placeholder="Password" value="'+S.authPass+'" oninput="S.authPass=this.value"/>';
   h+=S.authLoading?'<button class="btn gc pf" disabled style="opacity:.6">⏳ PLEASE WAIT...</button>':'<button class="btn gc pf" onclick="doAuth()">'+(isL?'ENTER THE REALM':'BEGIN YOUR LEGEND')+'</button>';
+  if(!isL)h+='<div style="font-size:9px;color:var(--tx3);text-align:center;margin-top:10px;line-height:1.6">By signing up you agree to our <a href="https://runebook.study/tos.html" target="_blank" style="color:#9070c0">Terms of Service</a> and <a href="https://runebook.study/privacy.html" target="_blank" style="color:#9070c0">Privacy Policy</a></div>';
   if(isL){
     h+='<div style="text-align:center;margin-top:12px">';
     h+='<button onclick="S.showReset=!S.showReset;S.resetSent=false;S.err=\'\';draw()" style="background:none;border:none;color:var(--tx3);font-size:9px;cursor:pointer;text-decoration:underline">Forgot password?</button>';
