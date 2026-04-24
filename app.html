@@ -2112,6 +2112,11 @@ function gameOverH(){
 }
 
 function qdH(){
+  // Record first win and check if review should show
+  recordFirstWin();
+  var _pct=S.qs>0?Math.round((S.qs/((S.liveQuiz&&S.liveQuiz.length)||1))*100):0;
+  if(_pct>=70&&shouldShowReview())S._showReview=true;
+  else if(!shouldShowReview())S._showReview=false;
   const d=aD();if(!d)return homeH();
   var quiz=S.liveQuiz||(d?d.quiz:[]);
   const p=quiz&&quiz.length?Math.round(S.qs/quiz.length*100):0,won=p>=70,perfect=quiz&&S.qs===quiz.length;
@@ -2216,7 +2221,8 @@ function qdH(){
     h+='<button class="btn gc pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="rq()">RETRY</button>';
     if(!S.isFinal)h+='<button class="btn gg pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="studyDungeon('+S.di+')">STUDY</button>';
     h+='<button class="btn gg pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="goTo(\'dungeon\')">QUEST</button>';
-    h+='<button class="btn gr pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="goTo(\'home\')">HALL</button>';
+    if(S._showReview)h+=reviewBannerH();
+  h+='<button class="btn gr pf" style="width:auto;padding:10px 14px;font-size:7px" onclick="goTo(\'home\')">HALL</button>';
   }
   h+='</div>';
   if(S.wrongAnswers&&S.wrongAnswers.length>0){
@@ -2578,6 +2584,18 @@ function accountH(){
   h+='<button onclick="requestDeleteAccount()" style="background:#0e0818;border:1px solid #3a1020;border-radius:8px;padding:10px 14px;color:#ff6060;font-size:9px;cursor:pointer;width:100%;font-family:inherit">Delete Account</button>';
   h+='</div>';
 
+  // Review section in account
+  var _reviewed=localStorage.getItem('rb_reviewed');
+  h+='<div style="background:#0e0818;border:1px solid #2a1a40;border-radius:10px;padding:14px;margin-bottom:14px">';
+  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:10px">FEEDBACK</div>';
+  if(_reviewed){
+    h+='<div style="font-size:11px;color:#60ff90;margin-bottom:4px">✓ Thanks for your feedback!</div>';
+    h+='<div style="font-size:10px;color:var(--tx3)">Your review helps us improve Runebook.</div>';
+  }else{
+    h+='<div style="font-size:11px;color:var(--tx2);margin-bottom:10px">Enjoying Runebook? Let us know what you think!</div>';
+    h+='<button onclick="submitReview()" style="background:#1a0a30;border:1px solid #6030c0;border-radius:8px;padding:10px 14px;color:#c080ff;font-size:9px;cursor:pointer;width:100%;font-family:inherit">⭐ Leave Feedback</button>';
+  }
+  h+='</div>';
   h+='<div style="font-size:9px;color:var(--tx3);text-align:center;margin-top:8px">Questions? <a href="mailto:support@runebook.study" style="color:#9070c0">support@runebook.study</a></div>';
   return h;
 }
@@ -2646,6 +2664,53 @@ function requestDeleteAccount(){
     },
     true
   );
+}
+
+function shouldShowReview(){
+  // Never show if already submitted
+  if(localStorage.getItem('rb_reviewed'))return false;
+  // Check first dungeon date
+  var firstWin=localStorage.getItem('rb_first_win');
+  if(!firstWin)return false;
+  var daysSinceFirst=(Date.now()-parseInt(firstWin))/(1000*60*60*24);
+  if(daysSinceFirst<3)return false;
+  // Check last dismissed
+  var lastDismissed=localStorage.getItem('rb_review_dismissed');
+  if(lastDismissed){
+    var daysSince=(Date.now()-parseInt(lastDismissed))/(1000*60*60*24);
+    if(daysSince<14)return false;
+  }
+  return true;
+}
+
+function recordFirstWin(){
+  if(!localStorage.getItem('rb_first_win')){
+    localStorage.setItem('rb_first_win',Date.now().toString());
+  }
+}
+
+function dismissReview(){
+  localStorage.setItem('rb_review_dismissed',Date.now().toString());
+  S._showReview=false;
+  draw();
+}
+
+function submitReview(){
+  localStorage.setItem('rb_reviewed','1');
+  S._showReview=false;
+  window.location.href='mailto:support@runebook.study?subject=Runebook Review&body=Rating (1-5): %0A%0AWhat I love about Runebook: %0A%0AWhat could be better: %0A%0A';
+  draw();
+}
+
+function reviewBannerH(){
+  return '<div style="background:linear-gradient(135deg,#1a0840,#0e0420);border:2px solid #6030c0;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center">'
+    +'<div style="font-size:24px;margin-bottom:8px">⭐</div>'
+    +'<div class="pf" style="font-size:9px;color:var(--gold);margin-bottom:6px">ENJOYING RUNEBOOK?</div>'
+    +'<div style="font-size:11px;color:var(--tx2);margin-bottom:12px;line-height:1.7">Your feedback helps us improve! Takes less than a minute.</div>'
+    +'<div style="display:flex;gap:8px;justify-content:center">'
+    +'<button onclick="submitReview()" style="background:#6030c0;border:none;border-radius:8px;color:#fff;padding:9px 16px;font-size:9px;cursor:pointer;font-family:inherit">⭐ Leave Feedback</button>'
+    +'<button onclick="dismissReview()" style="background:none;border:1px solid #3a1060;border-radius:8px;color:var(--tx3);padding:9px 14px;font-size:9px;cursor:pointer;font-family:inherit">Maybe Later</button>'
+    +'</div></div>';
 }
 function deleteDungeon(i){
   showModal('Delete Dungeon','Are you sure? This dungeon and all its progress will be permanently removed.','Delete','Keep It',function(){
