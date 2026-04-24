@@ -186,6 +186,7 @@ textarea{min-height:100px;line-height:1.65;resize:vertical;}
 .dropzone{background:#0c0830;border:2px dashed #5030a0;border-radius:10px;padding:22px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .2s,background .2s;}
 .dropzone:hover{border-color:#a060ff;background:#100c38;}
 @keyframes appFadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes heroNamePulse{0%,100%{border-color:#3a1e80;box-shadow:none;}50%{border-color:#c080ff;box-shadow:0 0 0 3px rgba(192,128,255,0.25);}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes popUp{0%{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-48px)}}
@@ -1012,7 +1013,7 @@ async function init(){
         // Logged-in users never see onboarding again
         await stSet('rbSeen','1');
         if(!U.chars[U.activeCls]||!U.chars[U.activeCls].charName){
-          S.selCls=U.activeCls;S.selGen='m';S.charName=U.name+"'s Hero";S.screen='char-create';
+          S.selCls=U.activeCls;S.selGen='m';S.charName='';S.screen='char-create';
         }else{S.screen=S.pendingGoto||'home';S.pendingGoto=null;}
         draw();return;
       }
@@ -1135,7 +1136,7 @@ async function doAuth(){
       if(loaded){U=loaded;migrateUser();updateStreak();S.screen='home';}
       else{
         var nu={name:S.authEmail.split('@')[0],email:S.authEmail,xp:0,lv:1,isPro:false,activeCls:'knight',chars:{},streak:0,lastStudy:null,achievements:[],questProgress:{},_quizCount:0};
-        U=nu;await saveUser();S.selCls='knight';S.selGen='m';S.charName=U.name+"'s Hero";S.screen='char-create';
+        U=nu;await saveUser();S.selCls='knight';S.selGen='m';S.charName='';S.screen='char-create';
       }
     }else{
       var nu2={name:S.authName,email:S.authEmail,xp:0,lv:1,isPro:false,activeCls:'knight',chars:{},streak:0,lastStudy:null,achievements:[],questProgress:{},_quizCount:0};
@@ -1179,7 +1180,8 @@ function charCreateH(){
   h+='<div class="gtog"><button class="gt'+(S.selGen==='m'?' on':'')+'" onclick="pickGenCC(\'m\')">MALE</button>';
   h+='<button class="gt'+(S.selGen==='f'?' on':'')+'" onclick="pickGenCC(\'f\')">FEMALE</button></div>';
   h+='<span class="lbl">HERO NAME</span>';
-  h+='<input id="cname" placeholder="Name your hero..." value="'+S.charName+'" oninput="S.charName=this.value"/>';
+  h+='<input id="cname" placeholder="Give your hero a name..." value="'+S.charName+'" oninput="S.charName=this.value"" style="animation:heroNamePulse 1.8s ease-in-out 3"/>';
+  h+='<div style="font-size:8px;color:#9070c0;margin-top:4px">&#x270F; Make it yours — this is your hero!</div>';
   h+='<div style="font-size:11px;color:var(--tx3);line-height:1.7;margin-top:4px">Once you start your first dungeon, this hero is locked to that subject forever.</div>';
   h+='</div></div><span class="lbl" style="margin-top:12px">CHOOSE CLASS</span><div class="cc-grid">';
   CLASSES.forEach(function(c){
@@ -2696,10 +2698,81 @@ function dismissReview(){
 }
 
 function submitReview(){
-  localStorage.setItem('rb_reviewed','1');
+  S.screen='feedback';
   S._showReview=false;
-  window.location.href='mailto:support@runebook.study?subject=Runebook Review&body=Rating (1-5): %0A%0AWhat I love about Runebook: %0A%0AWhat could be better: %0A%0A';
+  S._fbRating=0;
+  S._fbMsg='';
+  S._fbErr='';
+  S._fbSent=false;
   draw();
+}
+
+async function doSubmitFeedback(){
+  if(!S._fbRating){S._fbErr='Please select a star rating.';draw();return;}
+  if(!S._fbMsg||S._fbMsg.trim().length<5){S._fbErr='Please write a short message.';draw();return;}
+  S._fbErr='';S._fbSending=true;draw();
+  try{
+    var resp=await fetch(SUPA_URL+'/rest/v1/feedback',{
+      method:'POST',
+      headers:{
+        'apikey':SUPA_KEY,
+        'Authorization':'Bearer '+(_supaToken||SUPA_KEY),
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({
+        user_id:_supaUser?_supaUser.id:null,
+        email:U?U.email:'',
+        rating:S._fbRating,
+        message:S._fbMsg.trim()
+      })
+    });
+    if(!resp.ok)throw new Error('Failed to submit');
+    localStorage.setItem('rb_reviewed','1');
+    S._fbSent=true;
+    S._fbSending=false;
+    draw();
+  }catch(e){
+    S._fbErr='Failed to send. Please try again.';
+    S._fbSending=false;
+    draw();
+  }
+}
+
+function feedbackH(){
+  var h=tb();
+  h+='<button class="back" onclick="goTo(\'home\')">&#x25C4; Back</button>';
+  if(S._fbSent){
+    h+='<div style="text-align:center;padding:40px 0">';
+    h+='<div style="font-size:48px;margin-bottom:16px">🎉</div>';
+    h+='<div class="pf" style="font-size:12px;color:var(--gold);margin-bottom:10px">THANK YOU!</div>';
+    h+='<div style="font-size:11px;color:var(--tx2);line-height:1.7;margin-bottom:24px">Your feedback means a lot and helps us make Runebook better for everyone.</div>';
+    h+='<button class="btn gc pf" onclick="goTo(\'home\')">&#x2665; Back to Home</button>';
+    h+='</div>';
+    return h;
+  }
+  h+='<div class="pf" style="font-size:10px;color:var(--gold);margin-bottom:4px">&#x2605; LEAVE FEEDBACK</div>';
+  h+='<div style="font-size:11px;color:var(--tx2);margin-bottom:20px;line-height:1.7">How are you enjoying Runebook? Your honest feedback helps us improve.</div>';
+  // Star rating
+  h+='<div style="background:#0e0818;border:1px solid #2a1a40;border-radius:10px;padding:14px;margin-bottom:12px">';
+  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:10px">YOUR RATING</div>';
+  h+='<div style="display:flex;gap:8px;justify-content:center;margin-bottom:4px">';
+  for(var i=1;i<=5;i++){
+    var filled=i<=(S._fbRating||0);
+    h+='<button onclick="S._fbRating='+i+';draw()" style="background:none;border:none;font-size:32px;cursor:pointer;opacity:'+(filled?'1':'0.3')+';transition:opacity .15s">'+(filled?'⭐':'☆')+'</button>';
+  }
+  h+='</div>';
+  var labels=['','Terrible','Poor','Okay','Good','Amazing!'];
+  if(S._fbRating)h+='<div style="text-align:center;font-size:11px;color:var(--gold)">'+(labels[S._fbRating]||'')+'</div>';
+  h+='</div>';
+  // Message
+  h+='<div style="background:#0e0818;border:1px solid #2a1a40;border-radius:10px;padding:14px;margin-bottom:12px">';
+  h+='<div class="pf" style="font-size:7px;color:var(--tx3);margin-bottom:8px">YOUR THOUGHTS</div>';
+  h+='<textarea id="fb-msg" placeholder="What do you love? What could be better?" style="width:100%;height:100px;font-size:11px;resize:none;box-sizing:border-box">'+(S._fbMsg||'')+'</textarea>';
+  h+='</div>';
+  if(S._fbErr)h+='<div class="er" style="margin-bottom:10px">'+S._fbErr+'</div>';
+  h+='<button onclick="var t=document.getElementById(\'fb-msg\');if(t)S._fbMsg=t.value;doSubmitFeedback()" class="btn gc pf" style="'+(S._fbSending?'opacity:.6':'')+'">'+( S._fbSending?'Sending...':'&#x2605; Submit Feedback')+'</button>';
+  return h;
 }
 
 function reviewBannerH(){
@@ -2870,7 +2943,7 @@ function draw(){
   const screens={
     onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,hero:heroH,
     'char-select':charSelectH,dungeon:dungeonH,upload:uploadH,gen:genH,
-    quizgen:quizGenH,fcgen:fcGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH,achievements:achievementsH,calendar:calendarH,shop:shopH,account:accountH,banned:bannedH
+    quizgen:quizGenH,fcgen:fcGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH,achievements:achievementsH,calendar:calendarH,shop:shopH,account:accountH,banned:bannedH,feedback:feedbackH
   };
   el.innerHTML=(screens[S.screen]||authH)()+modalH();
 }
