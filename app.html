@@ -1150,11 +1150,12 @@ async function doAuth(){
       S._banEmail=S.authEmail;
       // Try to fetch ban reason from users table
       try{
-        var _br=await fetch(SUPA_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(S.authEmail)+'&select=ban_reason',{
-          headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        var _br=await fetch(SUPA_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(S.authEmail)+'&select=ban_reason,ban_until',{
+          headers:{'apikey':SUPA_KEY,'Content-Type':'application/json'}
         });
         var _brd=await _br.json();
         S._banReason=(_brd&&_brd[0]&&_brd[0].ban_reason)||null;
+        S._banUntil=(_brd&&_brd[0]&&_brd[0].ban_until)||null;
       }catch(e){S._banReason=null;}
       S.authLoading=false;draw();return;
     }
@@ -2475,10 +2476,16 @@ function bannedH(){
   h+='<div style="font-size:48px;margin-bottom:16px">🚫</div>';
   h+='<div style="font-family:Cinzel,serif;font-size:16px;color:#ff6060;margin-bottom:8px;font-weight:600">Account Suspended</div>';
   h+='<div style="font-size:11px;color:var(--tx2);margin-bottom:16px">Your account has been suspended from Runebook.</div>';
-  if(S._banReason){
+  if(S._banReason||S._banUntil){
     h+='<div style="background:#1a0808;border:1px solid #6a1020;border-radius:10px;padding:14px;margin-bottom:16px;text-align:left">';
-    h+='<div style="font-size:9px;color:#ff6070;margin-bottom:6px" class="pf">REASON</div>';
-    h+='<div style="font-size:11px;color:#ffaaaa;line-height:1.7">'+S._banReason+'</div>';
+    if(S._banReason){
+      h+='<div style="font-size:9px;color:#ff6070;margin-bottom:4px" class="pf">REASON</div>';
+      h+='<div style="font-size:11px;color:#ffaaaa;line-height:1.7;margin-bottom:'+(S._banUntil?'12':'0')+'px">'+S._banReason+'</div>';
+    }
+    if(S._banUntil){
+      h+='<div style="font-size:9px;color:#ff6070;margin-bottom:4px" class="pf">DURATION</div>';
+      h+='<div style="font-size:11px;color:#ffaaaa;line-height:1.7">'+S._banUntil+'</div>';
+    }
     h+='</div>';
   }
   h+='<div style="font-size:11px;color:var(--tx2);margin-bottom:20px;line-height:1.7">If you believe this is a mistake, you can appeal by contacting our support team.</div>';
