@@ -16,6 +16,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0518">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Runebook">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -2759,7 +2760,7 @@ function feedbackH(){
   h+='<div style="display:flex;gap:8px;justify-content:center;margin-bottom:4px">';
   for(var i=1;i<=5;i++){
     var filled=i<=(S._fbRating||0);
-    h+='<button onclick="S._fbRating='+i+';draw()" style="background:none;border:none;font-size:32px;cursor:pointer;opacity:'+(filled?'1':'0.3')+';transition:opacity .15s">'+(filled?'⭐':'☆')+'</button>';
+    h+='<button onclick="S._fbRating='+i+';draw()" style="background:none;border:none;font-size:36px;cursor:pointer;transition:transform .1s;color:'+(filled?'#ffd040':'#6040a0')+'">'+(filled?'★':'★')+'</button>';
   }
   h+='</div>';
   var labels=['','Terrible','Poor','Okay','Good','Amazing!'];
