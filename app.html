@@ -1142,7 +1142,25 @@ async function doAuth(){
       U=nu2;await saveUser();await stSet('rbSeen','1');
       S.selCls='knight';S.selGen='m';S.charName=S.authName+"'s Hero";S.screen='char-create';
     }
-  }catch(err){S.err=err.message||'Auth error. Try again.';}
+  }catch(err){
+    var _errMsg=err.message||'';
+    // Check if banned
+    if(_errMsg.toLowerCase().includes('ban')||_errMsg.toLowerCase().includes('banned')){
+      S.screen='banned';
+      S._banEmail=S.authEmail;
+      // Try to fetch ban reason from users table
+      try{
+        var _br=await fetch(SUPA_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(S.authEmail)+'&select=ban_reason',{
+          headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        var _brd=await _br.json();
+        S._banReason=(_brd&&_brd[0]&&_brd[0].ban_reason)||null;
+      }catch(e){S._banReason=null;}
+      S.authLoading=false;draw();return;
+    }
+    S.err=_errMsg||'Auth error. Try again.';
+    S.authLoading=false;draw();
+  }
   S.authLoading=false;draw();
 }
 
@@ -2450,6 +2468,25 @@ function showToast(msg,duration){
   draw();
 }
 
+
+function bannedH(){
+  var h='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg);background-image:radial-gradient(ellipse at 50% 0%,rgba(120,20,20,0.15) 0%,transparent 60%)">';
+  h+='<div style="max-width:340px;width:100%;text-align:center">';
+  h+='<div style="font-size:48px;margin-bottom:16px">🚫</div>';
+  h+='<div style="font-family:Cinzel,serif;font-size:16px;color:#ff6060;margin-bottom:8px;font-weight:600">Account Suspended</div>';
+  h+='<div style="font-size:11px;color:var(--tx2);margin-bottom:16px">Your account has been suspended from Runebook.</div>';
+  if(S._banReason){
+    h+='<div style="background:#1a0808;border:1px solid #6a1020;border-radius:10px;padding:14px;margin-bottom:16px;text-align:left">';
+    h+='<div style="font-size:9px;color:#ff6070;margin-bottom:6px" class="pf">REASON</div>';
+    h+='<div style="font-size:11px;color:#ffaaaa;line-height:1.7">'+S._banReason+'</div>';
+    h+='</div>';
+  }
+  h+='<div style="font-size:11px;color:var(--tx2);margin-bottom:20px;line-height:1.7">If you believe this is a mistake, you can appeal by contacting our support team.</div>';
+  h+='<a href="mailto:support@runebook.study?subject=Account Appeal&body=My email: '+(S._banEmail||'')+'%0A%0AReason for appeal: " style="display:block;background:#6030c0;color:#fff;padding:12px;border-radius:8px;text-decoration:none;font-size:11px;margin-bottom:10px;font-family:inherit">✉ Appeal This Decision</a>';
+  h+='<button onclick="S.screen=\'auth\';S.err=\'\';draw()" style="background:none;border:1px solid #2a1a40;border-radius:8px;padding:10px;color:var(--tx3);font-size:10px;cursor:pointer;width:100%;font-family:inherit">← Back to Login</button>';
+  h+='</div></div>';
+  return h;
+}
 function accountH(){
   var h=tb();
   h+='<button class="back" onclick="goTo(\'home\')">&#x25C4; Back</button>';
@@ -2761,7 +2798,7 @@ function draw(){
   const screens={
     onboard:onboardH,auth:authH,'char-create':charCreateH,home:homeH,hero:heroH,
     'char-select':charSelectH,dungeon:dungeonH,upload:uploadH,gen:genH,
-    quizgen:quizGenH,fcgen:fcGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH,achievements:achievementsH,calendar:calendarH,shop:shopH,account:accountH
+    quizgen:quizGenH,fcgen:fcGenH,fc:fcH,quiz:quizH,qd:qdH,paywall:paywallH,lvup:lvupH,'game-over':gameOverH,achievements:achievementsH,calendar:calendarH,shop:shopH,account:accountH,banned:bannedH
   };
   el.innerHTML=(screens[S.screen]||authH)()+modalH();
 }
