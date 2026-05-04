@@ -502,7 +502,14 @@ function streakColor(n){return n>=30?'#ff4040':n>=14?'#ff7020':n>=7?'#ffaa20':'#
 
 function aC(){return U&&U.chars&&U.chars[U.activeCls]?U.chars[U.activeCls]:null;}
 function aD(){const c=aC();if(!c)return null;const d=S.isFinal?c.finalBoss:c.dungeons[S.di];return d||null;}
-function canAdd(){const c=aC();if(!c)return false;return U.isPro||c.dungeons.length<FREE_DUNGEONS;}
+function canAdd(){
+  const c=aC();if(!c)return false;
+  if(U.isPro)return true;
+  // Free users can add if under limit OR have bonus credits
+  if(c.dungeons.length<FREE_DUNGEONS)return true;
+  if((U._bonusCredits||0)>0)return true;
+  return false;
+}
 function clsInfo(id){return CLASSES.find(function(c){return c.id===id;})||CLASSES[0];}
 function clearedCount(){const c=aC();if(!c)return 0;return c.dungeons.filter(function(d){return(d.bestScore||0)>=70;}).length;}
 function finalBossUnlocked(){return clearedCount()>=FINAL_BOSS_REQUIRED;}
@@ -833,6 +840,17 @@ function quizGenH(){
   return h;
 }
 
+function getQuizRunsToday(){
+  var today=new Date().toISOString().slice(0,10);
+  var key='rb_quiz_'+today;
+  return parseInt(localStorage.getItem(key)||'0');
+}
+function incrementQuizRuns(){
+  var today=new Date().toISOString().slice(0,10);
+  var key='rb_quiz_'+today;
+  localStorage.setItem(key,String(getQuizRunsToday()+1));
+}
+var FREE_DAILY_QUIZ_LIMIT=5;
 async function generateQuizQuestions(dung,diffConfig,isFinal,char){
   var isMath=char&&char.subject&&/math|algebra|calculus|geometry|statistics|trig|arithmetic/i.test(char.subject);
   var qCount=typeof diffConfig.qCount==='number'?diffConfig.qCount:7;
@@ -885,11 +903,27 @@ async function startQuiz(i,isFinal){
   if(!char){S.screen='home';draw();return;}
   var dung=isFinal?char.finalBoss:char.dungeons[i];
   if(!dung){S.err='Dungeon not found.';S.screen='hero';draw();return;}
+  // Check daily quiz limit for free users
+  if(!U.isPro){
+    var _qToday=getQuizRunsToday();
+    if(_qToday>=FREE_DAILY_QUIZ_LIMIT){
+      showModal(
+        'Daily Limit Reached',
+        'Free users can run '+FREE_DAILY_QUIZ_LIMIT+' quizzes per day. Come back tomorrow or upgrade to Pro for unlimited quizzes!',
+        'Upgrade to Pro',
+        'Maybe Later',
+        function(){goTo('paywall');},
+        false
+      );
+      return;
+    }
+  }
   // Always generate fresh questions from API based on chosen difficulty
   S.screen='quizgen';draw();
   try{
     var fresh=await generateQuizQuestions(dung,d,isFinal,char);
     if(!fresh||!fresh.length)throw new Error('No questions returned');
+    if(!U.isPro)incrementQuizRuns();
     S.liveQuiz=fresh;
     // Smoothly fill quiz bar to 100%
     if(_quizInterval){clearInterval(_quizInterval);_quizInterval=null;}
@@ -1252,7 +1286,10 @@ function homeH(){
   }
   h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="goToAchievements()">&#x1F3C6; TROPHIES</button>';
   h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="goToCalendar()">&#x1F3AF; QUESTS &amp; LOG</button>';
-  if(!U.isPro)h+='<button class="btn gg pf" style="font-size:7px;margin-bottom:8px" onclick="gotoPaywall()">&#x2605; GO PRO</button>';
+  if(!U.isPro){
+    h+='<button class="btn gg pf" style="font-size:7px;margin-bottom:8px" onclick="gotoPaywall()">&#x2605; GO PRO</button>';
+    h+='<button class="btn gp pf" style="font-size:7px;margin-bottom:8px" onclick="goTo(\'shop\')">&#x26A1; Buy Credits</button>';
+  }
   h+='<button class="btn gr pf" style="font-size:7px;margin-bottom:8px" onclick="goTo(\'account\')">&#x2699; ACCOUNT</button>';
   h+='<button class="btn gr pf" style="font-size:7px" onclick="doLogout()">LEAVE REALM</button>';
   h+='</div>';
@@ -1351,7 +1388,10 @@ function heroH(){
     else if(!fbUnlocked){
       h+='<div style="background:#1e0840;border:2px solid #8040d0;border-radius:8px;padding:10px;margin-top:4px;text-align:center">';
       h+='<div style="font-size:10px;color:#c080ff;margin-bottom:6px">Dungeon limit reached!</div>';
-      h+='<button class="btn gp pf" style="font-size:7px" onclick="gotoPaywall()">&#x2605; GO PRO</button></div>';
+      h+='<div style="display:flex;gap:8px;justify-content:center">';
+      h+='<button class="btn gp pf" style="font-size:7px;width:auto;padding:8px 12px" onclick="gotoPaywall()">&#x2605; GO PRO</button>';
+      h+='<button class="btn gg pf" style="font-size:7px;width:auto;padding:8px 12px" onclick="goTo(\'shop\')">&#x26A1; Buy Credits</button>';
+      h+='</div></div>';
     }
   }
   // Spells section
@@ -1515,8 +1555,8 @@ function uploadH(){
   h+='ondragleave="this.style.borderColor=\'#5030a0\'" ondrop="handleDrop(event)">';
   h+='<div style="font-size:30px;margin-bottom:10px">&#x1F4C2;</div>';
   h+='<div class="pf" style="font-size:8px;color:var(--gold);margin-bottom:8px">UPLOAD NOTES</div>';
-  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.9">Click or drag files here<br>PDF, JPG, PNG, WEBP &mdash; up to 10 files<br><span style="color:#a060ff">Photos of handwritten notes work!</span></div>';
-  h+='<input id="fileinput" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" multiple style="display:none" onchange="handleFiles(this.files)"/>';
+  h+='<div style="font-size:11px;color:var(--tx3);line-height:1.9">Click or drag files here<br>PDF, JPG, PNG, WEBP, PPTX, DOCX &mdash; up to 10 files<br><span style="color:#a060ff">Photos of handwritten notes work!</span></div>';
+  h+='<input id="fileinput" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.pptx,.docx" multiple style="display:none" onchange="handleFiles(this.files)"/>';
   h+='</div>';
   if(S.uploadFiles&&S.uploadFiles.length>0){
     h+='<div style="background:#0a2010;border:2px solid #20a040;border-radius:8px;padding:10px 12px;margin-bottom:10px">';
@@ -1575,6 +1615,25 @@ function handleDrop(e){
   var dz=document.getElementById('dropzone');if(dz)dz.style.borderColor='#5030a0';
   handleFiles(e.dataTransfer.files);
 }
+async function extractDocText(file,callback){
+  // Send file to Vercel extract API
+  var formData=new FormData();
+  formData.append('file',file);
+  try{
+    var resp=await fetch('https://runebook-api.vercel.app/api/extract',{method:'POST',body:formData});
+    var data=await resp.json();
+    if(data.text){
+      // Encode text as base64 for consistency
+      var b64=btoa(unescape(encodeURIComponent(data.text)));
+      callback(b64,'text/plain',data.text);
+    }else{
+      S.err='Could not read file: '+(data.error||'Unknown error');draw();
+    }
+  }catch(e){
+    S.err='Failed to process file. Try converting to PDF first.';draw();
+  }
+}
+
 function compressImage(file,callback){
   var nm=file.name.toLowerCase();
   if(nm.endsWith('.pdf')){
@@ -1605,9 +1664,16 @@ function handleFiles(files){
   if(!files||!files.length)return;
   if(!S.uploadFiles)S.uploadFiles=[];
   Array.from(files).slice(0,10-S.uploadFiles.length).forEach(function(file){
-    compressImage(file,function(b64,mtype){
-      S.uploadFiles.push({name:file.name,b64:b64,mtype:mtype});draw();
+    var nm=file.name.toLowerCase();
+    if(nm.endsWith('.pptx')||nm.endsWith('.docx')){
+      extractDocText(file,function(b64,mtype,rawText){
+        S.uploadFiles.push({name:file.name,b64:b64,mtype:mtype,rawText:rawText,isDoc:true});draw();
+      });
+    }else{
+      compressImage(file,function(b64,mtype){
+        S.uploadFiles.push({name:file.name,b64:b64,mtype:mtype});draw();
     });
+    }
   });
 }
 
@@ -1671,7 +1737,6 @@ function canGenerate(){
   return getTotalGensLeft()>0;
 }
 function gensLeft(){
-  if(!U.isPro)return null;
   return getTotalGensLeft();
 }
 function consumeGen(){
@@ -1758,9 +1823,13 @@ async function doGen(){
     if(hasFiles){
       var _sf=S.uploadFiles[0];
       if(hasText)blocks.push({type:'text',text:'Additional typed notes:\n'+S.notes});
-      blocks.push(_sf.mtype==='application/pdf'
-        ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:_sf.b64}}
-        :{type:'image',source:{type:'base64',media_type:_sf.mtype,data:_sf.b64}});
+      if(_sf.isDoc&&_sf.rawText){
+        blocks.push({type:'text',text:_sf.rawText});
+      }else{
+        blocks.push(_sf.mtype==='application/pdf'
+          ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:_sf.b64}}
+          :{type:'image',source:{type:'base64',media_type:_sf.mtype,data:_sf.b64}});
+      }
     }else{
       blocks.push({type:'text',text:S.notes});
     }
@@ -2912,8 +2981,13 @@ function shopH(){
   h+='<button class="back" onclick="goTo(S.prevScreen||(\'home\'))">&#x25C4; Back</button>';
   h+='<div class="pf" style="font-size:10px;color:var(--gold);margin-bottom:4px">&#x26A1; BUY GENERATION CREDITS</div>';
   h+='<div style="font-size:11px;color:var(--tx3);margin-bottom:16px">Credits never expire. Used for generating new dungeons.</div>';
-  var gl=gensLeft();
-  if(gl!==null)h+='<div style="background:#0e0818;border:2px solid #5030a0;border-radius:8px;padding:10px;margin-bottom:16px;text-align:center"><div style="font-size:10px;color:var(--tx3)">Credits remaining this month</div><div class="pf" style="font-size:22px;color:var(--gold)">'+gl+'</div></div>';
+  var gl=U._bonusCredits||0;
+  if(!U.isPro){
+    h+='<div style="background:#0e0818;border:2px solid #5030a0;border-radius:8px;padding:10px;margin-bottom:16px;text-align:center"><div style="font-size:10px;color:var(--tx3)">Bonus credits</div><div class="pf" style="font-size:22px;color:var(--gold)">'+gl+'</div><div style="font-size:9px;color:var(--tx3);margin-top:4px">Use to generate extra dungeons beyond the free limit</div></div>';
+  }else{
+    var glp=gensLeft();
+    if(glp!==null)h+='<div style="background:#0e0818;border:2px solid #5030a0;border-radius:8px;padding:10px;margin-bottom:16px;text-align:center"><div style="font-size:10px;color:var(--tx3)">Credits remaining this month</div><div class="pf" style="font-size:22px;color:var(--gold)">'+glp+'</div></div>';
+  }
   CREDIT_PACKS.forEach(function(pack){
     h+='<div style="background:#1a0a30;border:2px solid #5030a0;border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:14px">';
     h+='<div style="flex:1"><div class="pf" style="font-size:10px;color:var(--gold)">'+pack.name+'</div>';
